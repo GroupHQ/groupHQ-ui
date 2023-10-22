@@ -1,0 +1,43 @@
+@use '@angular/material' as mat;
+
+:host ::ng-deep .utilityBar {
+  @include mat.form-field-density(-4);
+  caret-color: transparent;
+
+  background-color: #0D3168;
+  //width: 100%;
+  height: fit-content;
+  padding: 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px 32px;
+
+  mat-label {
+    color: #FFF;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  mat-form-field {
+    width: 240px;
+    font-size: 20px;
+    border-radius: 4px;
+    background-color: white;
+    letter-spacing: 0.0312rem;
+  }
+}
+
+@media (min-width: 744px) {
+  .utilityBar {
+    padding: 16px 32px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .utilityBar {
+    padding: 16px 160px;
+  }
+}

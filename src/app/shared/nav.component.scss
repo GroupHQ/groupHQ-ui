@@ -1,0 +1,49 @@
+.header-row {
+    .site-name {
+        font-size: 36px;
+        font-weight: 700;
+        color: #4050B5;
+        caret-color: transparent;
+    }
+
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    margin: 16px;
+    justify-content: space-between;
+    gap: 32px;
+}
+
+.button-tabs {
+    width: 518px;
+    display: flex;
+    flex-direction: row;
+
+    a {
+        flex-grow: 1;
+        flex-basis: 0;
+        font-size: 14px;
+        font-weight: 500;
+        height: 44px;
+    }
+
+    a.about-tab.active {
+        background-color: #A06101;
+    }
+
+    a.sources-tab.active {
+        background-color: #B510AE;
+    }
+}
+
+@media (min-width: 744px) {
+    .header-row {
+        margin: 32px 32px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .header-row {
+        margin: 32px 160px;
+    }
+}
