@@ -1,4 +1,10 @@
 .header-row {
+    background-color: white;
+    margin: 16px;
+    padding: 0;
+    width: auto;
+    height: fit-content;
+
     .site-name {
         font-size: 36px;
         font-weight: 700;
@@ -9,7 +15,6 @@
     display: flex;
     flex-flow: row wrap;
     align-items: center;
-    margin: 16px;
     justify-content: space-between;
     gap: 32px;
 }
@@ -17,7 +22,7 @@
 .button-tabs {
     width: 518px;
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
 
     a {
         flex-grow: 1;
@@ -36,14 +41,10 @@
     }
 }
 
-@media (min-width: 744px) {
-    .header-row {
-        margin: 32px 32px;
-    }
+.header-row-tablet {
+    margin: 32px 32px;
 }
 
-@media (min-width: 1280px) {
-    .header-row {
-        margin: 32px 160px;
-    }
+.header-row-web {
+    margin: 32px 160px;
 }

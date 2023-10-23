@@ -1,8 +1,10 @@
-<nav class="header-row">
-  <div class="site-name">GroupHQ Demo</div>
-  <div class="button-tabs">
-    <a mat-flat-button [color]="page === 'GROUPS' ? 'primary' : undefined"  (click)="select('GROUPS')">GROUPS</a>
-    <a class="about-tab" [class.active]="page=='ABOUT'" mat-flat-button [color]="page === 'ABOUT' ? 'primary' : undefined"  (click)="select('ABOUT')">ABOUT</a>
-    <a class="sources-tab" [class.active]="page=='SOURCES'" mat-flat-button [color]="page === 'SOURCES' ? 'primary' : undefined"  (click)="select('SOURCES')">SOURCES</a>
-  </div>
+<nav>
+  <mat-toolbar ghq-media ghq-media-base-class="header-row">
+    <div class="site-name">GroupHQ Demo</div>
+    <div class="button-tabs">
+      <a mat-flat-button [color]="page === 'GROUPS' ? 'primary' : undefined"  (click)="select('GROUPS')">GROUPS</a>
+      <a class="about-tab" [class.active]="page=='ABOUT'" mat-flat-button [color]="page === 'ABOUT' ? 'primary' : undefined"  (click)="select('ABOUT')">ABOUT</a>
+      <a class="sources-tab" [class.active]="page=='SOURCES'" mat-flat-button [color]="page === 'SOURCES' ? 'primary' : undefined"  (click)="select('SOURCES')">SOURCES</a>
+    </div>
+  </mat-toolbar>
 </nav>

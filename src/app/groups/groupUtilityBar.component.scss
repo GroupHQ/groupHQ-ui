@@ -5,17 +5,17 @@
   caret-color: transparent;
 
   background-color: #0D3168;
-  //width: 100%;
   height: fit-content;
   padding: 16px;
 
   display: flex;
+  flex-flow: row wrap;
   align-items: center;
-  gap: 8px 32px;
+  gap: 8px 16px;
 
   mat-label {
     color: #FFF;
-    font-size: 24px;
+    font-size: 20px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -30,14 +30,15 @@
   }
 }
 
-@media (min-width: 744px) {
-  .utilityBar {
-    padding: 16px 32px;
-  }
+.utilityBar-tablet {
+  padding: 16px 32px;
 }
 
-@media (min-width: 1280px) {
-  .utilityBar {
-    padding: 16px 160px;
+.utilityBar-web {
+  padding: 16px 160px;
+  gap: 8px 32px;
+
+  mat-label {
+    font-size: 24px;
   }
 }
