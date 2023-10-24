@@ -15,6 +15,11 @@
 $groupHQ-UI-primary: mat.define-palette(mat.$indigo-palette);
 $groupHQ-UI-accent: mat.define-palette(mat.$cyan-palette, 700, 500, 900);
 
+$groupHQ-UI-groups: #2B40B1;
+$groupHQ-UI-about: #A06101;
+$groupHQ-UI-sources: #B510AE;
+$groupHQ-UI-none: #9396A2;
+
 // The warn palette is optional (defaults to red).
 $groupHQ-UI-warn: mat.define-palette(mat.$red-palette, 700, 500, 900);
 

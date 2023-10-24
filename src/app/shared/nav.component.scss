@@ -1,22 +1,21 @@
-.header-row {
-    background-color: white;
+@use '../../custom-theme' as theme;
+
+.nav-row {
     margin: 16px;
     padding: 0;
     width: auto;
     height: fit-content;
 
     .site-name {
-        font-size: 36px;
-        font-weight: 700;
-        color: #4050B5;
         caret-color: transparent;
+
+        &.groups { color: theme.$groupHQ-UI-groups; }
+        &.about { color: theme.$groupHQ-UI-about; }
+        &.sources { color: theme.$groupHQ-UI-sources; }
     }
 
     display: flex;
-    flex-flow: row wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 32px;
 }
 
 .button-tabs {
@@ -30,21 +29,87 @@
         font-size: 14px;
         font-weight: 500;
         height: 44px;
-    }
 
-    a.about-tab.active {
-        background-color: #A06101;
-    }
-
-    a.sources-tab.active {
-        background-color: #B510AE;
+        &.about-tab.active { background-color: theme.$groupHQ-UI-about; }
+        &.sources-tab.active { background-color: theme.$groupHQ-UI-sources; }
     }
 }
 
-.header-row-tablet {
-    margin: 32px 32px;
+.nav-row-tablet, .nav-row-handset {
+    background-color: theme.$groupHQ-UI-none;
+    &.groups { background-color: theme.$groupHQ-UI-groups; }
+    &.about { background-color: theme.$groupHQ-UI-about; }
+    &.sources { background-color: theme.$groupHQ-UI-sources; }
+    font-size: 20px;
+
+    margin: 0;
+    padding: 4px;
+
+    flex-flow: row nowrap;
+    justify-content: start;
+
+    .site-name {
+        color: var(--shades-white, #FFF);
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 32px; /* 160% */
+        letter-spacing: 0.25px;
+    }
+
+    gap: 16px;
 }
 
-.header-row-web {
+mat-action-list {
+    padding: 0 8px;
+    overflow: hidden;
+    height: fit-content;
+
+    .button-tabs-list {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-items: center;
+        align-items: center;
+        padding: 8px 0;
+
+        a {
+            display: flex;
+            align-content: center;
+            border-radius: 56px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            min-height: 56px;
+            letter-spacing: 0.5px;
+
+            &.groups-tab.active { background-color: rgba(theme.$groupHQ-UI-groups, 0.12) }
+            &.about-tab.active { background-color: rgba(theme.$groupHQ-UI-about, 0.12) }
+            &.sources-tab.active { background-color: rgba(theme.$groupHQ-UI-sources, 0.12) }
+        }
+    }
+}
+
+.nav-row-tablet {
+    padding: 16px;
+}
+
+.nav-row-web {
+    background-color: white;
+
     margin: 32px 160px;
+
+    flex-flow: row wrap;
+    justify-content: space-between;
+
+    .site-name {
+        font-size: 36px;
+        font-weight: 700;
+        color: #4050B5;
+    }
+
+    gap: 32px;
+}
+
+.menu-icon {
+    color: white;
 }

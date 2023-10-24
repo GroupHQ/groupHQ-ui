@@ -13,6 +13,8 @@ export class GhqMediaBreakpointDirective {
         [Breakpoints.Handset, "handset"]
     ]);
 
+    private currentDeviceClass : string | undefined;
+
     private readonly destroy$ = new Subject<void>();
 
     constructor(private readonly element: ElementRef,
@@ -26,9 +28,10 @@ export class GhqMediaBreakpointDirective {
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(result => {
                     if (result.matches) {
-                        element.nativeElement.className = '';
                         const deviceClass : string = baseClass + '-' + this.screenTypesMap.get(screenType) ?? "web";
-                        element.nativeElement.classList.add(baseClass, deviceClass);
+                        if (this.currentDeviceClass) element.nativeElement.classList.remove(this.currentDeviceClass);
+                        element.nativeElement.classList.add(deviceClass);
+                        this.currentDeviceClass = deviceClass;
                     }
                 });
         }, (error : any) => {

@@ -1,10 +1,26 @@
-<nav>
-  <mat-toolbar ghq-media ghq-media-base-class="header-row">
-    <div class="site-name">GroupHQ Demo</div>
+<nav [ngSwitch]="navType">
+  <mat-toolbar class="nav-row nav-row-web" *ngSwitchCase="'web'">
+    <div class="site-name" [ngClass]="getPage()">GroupHQ Demo</div>
     <div class="button-tabs">
       <a mat-flat-button [color]="page === 'GROUPS' ? 'primary' : undefined"  (click)="select('GROUPS')">GROUPS</a>
       <a class="about-tab" [class.active]="page=='ABOUT'" mat-flat-button [color]="page === 'ABOUT' ? 'primary' : undefined"  (click)="select('ABOUT')">ABOUT</a>
       <a class="sources-tab" [class.active]="page=='SOURCES'" mat-flat-button [color]="page === 'SOURCES' ? 'primary' : undefined"  (click)="select('SOURCES')">SOURCES</a>
     </div>
   </mat-toolbar>
+
+  <ng-container *ngSwitchCase="'tablet | handset'">
+    <mat-toolbar ghq-media ghq-media-base-class="nav-row" [ngClass]="getPage()">
+      <button mat-icon-button aria-label="Toggle menu" (click)="toggleMenu()">
+        <mat-icon class="menu-icon">menu</mat-icon>
+      </button>
+      <div class="site-name">GroupHQ Demo</div>
+    </mat-toolbar>
+    <mat-action-list *ngIf="showMenu" [@extensionAnimation]="'visible'">
+      <div class="button-tabs-list" >
+        <a class="groups-tab" mat-list-item [class.active]="page=='GROUPS'" (click)="select('GROUPS')">Groups</a>
+        <a class="about-tab" mat-list-item [class.active]="page=='ABOUT'" (click)="select('ABOUT')">About</a>
+        <a class="sources-tab" mat-list-item [class.active]="page=='SOURCES'" (click)="select('SOURCES')">Sources</a>
+      </div>
+    </mat-action-list>
+  </ng-container>
 </nav>
