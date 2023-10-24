@@ -7,4 +7,17 @@ body {
     letter-spacing: 0.1rem;
 }
 
+h1, p {
+    color: black;
+}
 
+/* Defined here because a dialog's panelClass is a lower-level component
+ * An alternative solution could be to use the deprecated ::ng-deep selector
+ * on the component's style file.
+*/
+.full-screen-modal {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
