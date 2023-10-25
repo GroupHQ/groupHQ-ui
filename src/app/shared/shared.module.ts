@@ -9,9 +9,10 @@ import {NgClass, NgIf, NgSwitch, NgSwitchCase, NgTemplateOutlet} from "@angular/
 import {MatIconModule} from "@angular/material/icon";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatListModule} from "@angular/material/list";
+import {RouterLink} from "@angular/router";
 
 @NgModule({
-    imports: [MatToolbarModule, MatButtonToggleModule, MatButtonModule, NgSwitch, NgSwitchCase, NgTemplateOutlet, MatIconModule, MatExpansionModule, MatListModule, NgIf, NgClass],
+    imports: [MatToolbarModule, MatButtonToggleModule, MatButtonModule, NgSwitch, NgSwitchCase, NgTemplateOutlet, MatIconModule, MatExpansionModule, MatListModule, NgIf, NgClass, RouterLink],
     declarations: [NavComponent, FooterComponent, GhqMediaBreakpointDirective],
     exports: [NavComponent, FooterComponent, GhqMediaBreakpointDirective]
 })

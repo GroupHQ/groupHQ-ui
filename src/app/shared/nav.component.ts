@@ -1,7 +1,8 @@
 import {Component} from "@angular/core";
 import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
-import {Subject, takeUntil} from "rxjs";
+import {filter, Subject, takeUntil} from "rxjs";
 import {ExtensionAnimation} from "./nav.animations";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 
 @Component({
     selector: "app-nav",
@@ -24,12 +25,15 @@ export class NavComponent {
         [Breakpoints.Handset, "tablet | handset"]
     ]);
 
-    private readonly destroy$ = new Subject<void>();
+    private readonly destroyBreakpoints = new Subject<void>();
 
-    constructor(private readonly breakpoints$ : BreakpointObserver) {
+    constructor(private router: Router,
+                private activatedRoute: ActivatedRoute,
+                private readonly breakpoints$ : BreakpointObserver) {
+
         Array.from(this.screenTypesMap.keys()).forEach(screenType => {
             breakpoints$.observe(screenType)
-                .pipe(takeUntil(this.destroy$))
+                .pipe(takeUntil(this.destroyBreakpoints))
                 .subscribe(result => {
                     if (result.matches) {
                         this.updateNav(screenType);
@@ -40,7 +44,34 @@ export class NavComponent {
         });
     }
 
-    getPage() {
+    // set the page state based on the current route
+    ngOnInit(): void {
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd)
+        ).subscribe(() => {
+            let active = this.activatedRoute;
+
+            while (active.firstChild) {
+                active = active.firstChild;
+            }
+
+            const currentRoute = active.snapshot.url[0]?.path;
+
+            switch (currentRoute) {
+                case undefined:
+                    this.select("GROUPS");
+                    break;
+                case "about":
+                    this.select("ABOUT");
+                    break;
+                case "sources":
+                    this.select("SOURCES");
+                    break;
+            }
+        })
+    }
+
+    getPageToLowercase() {
         return this.page?.toLowerCase() ?? "";
     }
 
@@ -56,7 +87,7 @@ export class NavComponent {
     }
 
     ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+        this.destroyBreakpoints.next();
+        this.destroyBreakpoints.complete();
     }
 }

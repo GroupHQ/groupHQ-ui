@@ -9,9 +9,23 @@
     .site-name {
         caret-color: transparent;
 
-        &.groups { color: theme.$groupHQ-UI-groups; }
-        &.about { color: theme.$groupHQ-UI-about; }
-        &.sources { color: theme.$groupHQ-UI-sources; }
+        // default title style
+        a {
+            text-decoration: none;
+            color: theme.$groupHQ-UI-none;
+        }
+
+        &.groups {
+            a { color: theme.$groupHQ-UI-groups; }
+        }
+
+        &.about {
+            a { color: theme.$groupHQ-UI-about; }
+        }
+
+        &.sources {
+            a { color: theme.$groupHQ-UI-sources; }
+        }
     }
 
     display: flex;
@@ -24,6 +38,7 @@
     flex-flow: row wrap;
 
     a {
+        text-decoration: none;
         flex-grow: 1;
         flex-basis: 0;
         font-size: 14px;
@@ -49,6 +64,7 @@
     justify-content: start;
 
     .site-name {
+        a { color: white; }
         color: var(--shades-white, #FFF);
         font-size: 20px;
         font-style: normal;
@@ -73,6 +89,7 @@ mat-action-list {
         padding: 8px 0;
 
         a {
+            text-decoration: none;
             display: flex;
             align-content: center;
             border-radius: 56px;
@@ -104,7 +121,6 @@ mat-action-list {
     .site-name {
         font-size: 36px;
         font-weight: 700;
-        color: #4050B5;
     }
 
     gap: 32px;
