@@ -1,6 +1,7 @@
-@use '../../custom-theme' as theme;
+@use "../../custom-theme" as theme;
 
-h1, p {
+h1,
+p {
   color: white;
 }
 
@@ -26,7 +27,7 @@ h1, p {
 
     .about-page-title {
       margin: 64px 240px;
-      color: #FFF;
+      color: #fff;
       text-align: center;
       position: absolute;
       text-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
@@ -49,14 +50,16 @@ h1, p {
   .about-page-title-container::before {
     content: "";
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: url('../../assets/Crazy Nodes.png') no-repeat 50%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("../../assets/Crazy Nodes.png") no-repeat 50%;
     filter: brightness(0%);
   }
 
   .about-page-content-container {
-    background: #3E3426;
+    background: #3e3426;
 
     flex-grow: 1;
     padding: 64px 240px;
@@ -83,4 +86,3 @@ h1, p {
     }
   }
 }
-

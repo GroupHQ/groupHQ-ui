@@ -1,7 +1,6 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -15,23 +14,25 @@
 $groupHQ-UI-primary: mat.define-palette(mat.$indigo-palette);
 $groupHQ-UI-accent: mat.define-palette(mat.$cyan-palette, 700, 500, 900);
 
-$groupHQ-UI-groups: #2B40B1;
-$groupHQ-UI-about: #A06101;
-$groupHQ-UI-sources: #B510AE;
-$groupHQ-UI-none: #9396A2;
+$groupHQ-UI-groups: #2b40b1;
+$groupHQ-UI-about: #a06101;
+$groupHQ-UI-sources: #b510ae;
+$groupHQ-UI-none: #9396a2;
 
 // The warn palette is optional (defaults to red).
 $groupHQ-UI-warn: mat.define-palette(mat.$red-palette, 700, 500, 900);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$groupHQ-UI-theme: mat.define-light-theme((
-  color: (
-    primary: $groupHQ-UI-primary,
-    accent: $groupHQ-UI-accent,
-    warn: $groupHQ-UI-warn,
+$groupHQ-UI-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $groupHQ-UI-primary,
+      accent: $groupHQ-UI-accent,
+      warn: $groupHQ-UI-warn,
+    ),
   )
-));
+);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component

@@ -1,4 +1,4 @@
-@use '../../../custom-theme' as theme;
+@use "../../../custom-theme" as theme;
 
 .group-input-name-dialog {
   caret-color: transparent;
@@ -17,12 +17,14 @@
     font-weight: 700;
     line-height: normal;
 
-    &.group-title-handset { font-size: 24px; }
+    &.group-title-handset {
+      font-size: 24px;
+    }
   }
 
   .quote-block {
-
-    .quote, .author {
+    .quote,
+    .author {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -32,8 +34,12 @@
       color: theme.$groupHQ-UI-none;
     }
 
-    .quote { justify-content: center }
-    .author { justify-content: flex-end; }
+    .quote {
+      justify-content: center;
+    }
+    .author {
+      justify-content: flex-end;
+    }
   }
 
   .input-name-field {
@@ -57,7 +63,9 @@
       flex-direction: column-reverse;
       align-items: stretch;
 
-      button { height: 52px; }
+      button {
+        height: 52px;
+      }
     }
 
     button {
@@ -66,7 +74,7 @@
       border-radius: 4px;
       min-width: 200px;
 
-      color: var(--shades-white, #FFF);
+      color: var(--shades-white, #fff);
       text-align: center;
 
       /* v-text/button */

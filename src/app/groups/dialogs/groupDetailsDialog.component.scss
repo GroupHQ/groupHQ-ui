@@ -1,4 +1,4 @@
-@use '../../../custom-theme' as theme;
+@use "../../../custom-theme" as theme;
 
 .group-details-dialog {
   caret-color: transparent;
@@ -29,7 +29,7 @@
     flex-grow: 1;
 
     border-radius: 12px;
-    background: #FFF;
+    background: #fff;
     box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
 
     display: flex;
@@ -76,22 +76,25 @@
             line-height: normal;
           }
 
-          p { margin: 0; }
+          p {
+            margin: 0;
+          }
         }
       }
     }
 
     .member-list-subheader {
-      padding: calc((3rem - 1.5rem)/2) 16px;
+      padding: calc((3rem - 1.5rem) / 2) 16px;
       margin: 0;
 
-      color: var(--black-06, rgba(0, 0, 0, 0.60));
+      color: var(--black-06, rgba(0, 0, 0, 0.6));
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.5px;
     }
 
-    .member-list-subheader, .member-list-item {
+    .member-list-subheader,
+    .member-list-item {
       border-top: 1px solid rgba(0, 0, 0, 0.25);
     }
 
@@ -106,7 +109,9 @@
         flex-direction: column-reverse;
         align-items: stretch;
 
-        button { height: 52px; }
+        button {
+          height: 52px;
+        }
       }
 
       button {
@@ -115,7 +120,7 @@
         border-radius: 44px;
         min-width: 200px;
 
-        color: var(--shades-white, #FFF);
+        color: var(--shades-white, #fff);
         text-align: center;
 
         /* v-text/button */

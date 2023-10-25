@@ -1,10 +1,10 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 :host ::ng-deep .utilityBar {
   @include mat.form-field-density(-4);
   caret-color: transparent;
 
-  background-color: #0D3168;
+  background-color: #0d3168;
   height: fit-content;
   padding: 16px;
 
@@ -14,7 +14,7 @@
   gap: 8px 16px;
 
   mat-label {
-    color: #FFF;
+    color: #fff;
     font-size: 20px;
     font-style: normal;
     font-weight: 700;
