@@ -5,20 +5,10 @@
   display: flex;
   flex-direction: column;
 
-  &.group-details-dialog-handset {
-    height: 100vh;
-    border-radius: 0;
-
-    .group-details {
-      max-height: inherit;
-    }
-  }
-
   .group-title {
     align-self: stretch;
     flex-shrink: 0;
-
-    color: theme.$groupHQ-UI-groups;
+    color: theme.$grouphq-ui-groups;
     font-size: 32px;
     font-style: normal;
     font-weight: 700;
@@ -27,11 +17,9 @@
 
   .group-details {
     flex-grow: 1;
-
     border-radius: 12px;
     background: #fff;
-    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.25);
-
+    box-shadow: 0 0 6px 0 rgb(0 0 0 / 25%);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -45,7 +33,6 @@
       .group-description {
         height: 19px;
         align-self: stretch;
-
         color: #000;
         font-size: 16px;
         font-style: normal;
@@ -69,7 +56,7 @@
           gap: 32px;
 
           .detail-title {
-            color: theme.$groupHQ-UI-groups;
+            color: theme.$grouphq-ui-groups;
             font-size: 24px;
             font-style: normal;
             font-weight: 700;
@@ -86,8 +73,7 @@
     .member-list-subheader {
       padding: calc((3rem - 1.5rem) / 2) 16px;
       margin: 0;
-
-      color: var(--black-06, rgba(0, 0, 0, 0.6));
+      color: var(--black-06, rgb(0 0 0 / 60%));
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.5px;
@@ -95,7 +81,7 @@
 
     .member-list-subheader,
     .member-list-item {
-      border-top: 1px solid rgba(0, 0, 0, 0.25);
+      border-top: 1px solid rgb(0 0 0 / 25%);
     }
 
     .group-actions {
@@ -104,22 +90,11 @@
       flex-flow: row;
       gap: 16px;
 
-      &.group-actions-handset {
-        // Reverse the order so that the primary action is on top
-        flex-direction: column-reverse;
-        align-items: stretch;
-
-        button {
-          height: 52px;
-        }
-      }
-
       button {
         margin: 0;
         flex-grow: 1;
         border-radius: 44px;
         min-width: 200px;
-
         color: var(--shades-white, #fff);
         text-align: center;
 
@@ -131,6 +106,25 @@
         letter-spacing: 1.25px;
         text-transform: uppercase;
       }
+
+      &.group-actions-handset {
+        // Reverse the order so that the primary action is on top
+        flex-direction: column-reverse;
+        align-items: stretch;
+
+        button {
+          height: 52px;
+        }
+      }
+    }
+  }
+
+  &.group-details-dialog-handset {
+    height: 100vh;
+    border-radius: 0;
+
+    .group-details {
+      max-height: inherit;
     }
   }
 }

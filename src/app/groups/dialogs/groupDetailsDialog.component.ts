@@ -16,9 +16,8 @@ export class GroupDetailsDialogComponent {
   constructor(
     private _snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<GroupDetailsDialogComponent>,
-    public dialog: MatDialog,
-  ) // @Inject(MAT_DIALOG_DATA) public data: DialogData
-  {}
+    public dialog: MatDialog, // @Inject(MAT_DIALOG_DATA) public data: DialogData
+  ) {}
 
   openInputNameDialog(): void {
     const dialogRef = this.dialog.open(GroupInputNameDialogComponent);

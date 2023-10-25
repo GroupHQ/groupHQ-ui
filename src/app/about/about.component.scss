@@ -9,19 +9,15 @@ p {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-
   flex-grow: 1;
-
   margin-bottom: auto;
-
   color: white;
-  background: theme.$groupHQ-UI-about;
+  background: theme.$grouphq-ui-about;
 
   .about-page-title-container {
     display: flex;
     justify-content: center;
     align-items: center;
-
     height: 324px;
     position: relative;
 
@@ -30,7 +26,7 @@ p {
       color: #fff;
       text-align: center;
       position: absolute;
-      text-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+      text-shadow: 0 0 25px rgb(0 0 0 / 25%);
       font-size: 36px;
       font-style: normal;
       font-weight: 700;
@@ -60,15 +56,12 @@ p {
 
   .about-page-content-container {
     background: #3e3426;
-
     flex-grow: 1;
     padding: 64px 240px;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 32px;
-
     text-align: center;
 
     &.about-page-content-container-tablet {

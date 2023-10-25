@@ -7,8 +7,9 @@ p {
 
 a {
   color: white;
+
   &:hover {
-    color: theme.$groupHQ-UI-about;
+    color: theme.$grouphq-ui-about;
     text-decoration: underline;
   }
 }
@@ -17,13 +18,10 @@ a {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-
   flex-grow: 1;
-
   margin-bottom: auto;
-
   color: white;
-  background: theme.$groupHQ-UI-sources;
+  background: theme.$grouphq-ui-sources;
 
   .sources-page-title-container {
     height: 160px;
@@ -31,11 +29,10 @@ a {
 
     .sources-page-title {
       margin: 64px 240px;
-
       color: #fff;
       text-align: left;
       position: absolute;
-      text-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+      text-shadow: 0 0 25px rgb(0 0 0 / 25%);
       font-size: 36px;
       font-style: normal;
       font-weight: 700;
@@ -64,15 +61,12 @@ a {
 
   .sources-page-content-container {
     background: #3e3426;
-
     flex-grow: 1;
     padding: 64px 240px;
-
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 32px;
-
     text-align: left;
 
     &.sources-page-content-container-tablet {

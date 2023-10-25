@@ -8,82 +8,86 @@
 
   .site-name {
     caret-color: transparent;
+    display: flex;
+    align-items: center;
 
     // default title style
-    a {
+    #logo-link {
       text-decoration: none;
-      color: theme.$groupHQ-UI-none;
+      color: theme.$grouphq-ui-none;
     }
 
     &.groups {
-      a {
-        color: theme.$groupHQ-UI-groups;
+      #logo-link {
+        color: theme.$grouphq-ui-groups;
       }
     }
 
     &.about {
-      a {
-        color: theme.$groupHQ-UI-about;
+      #logo-link {
+        color: theme.$grouphq-ui-about;
       }
     }
 
     &.sources {
-      a {
-        color: theme.$groupHQ-UI-sources;
+      #logo-link {
+        color: theme.$grouphq-ui-sources;
       }
     }
   }
 
-  display: flex;
-  align-items: center;
-}
+  .button-tabs {
+    width: 518px;
+    display: flex;
+    flex-flow: row wrap;
 
-.button-tabs {
-  width: 518px;
-  display: flex;
-  flex-flow: row wrap;
+    .tab {
+      text-decoration: none;
+      flex-grow: 1;
+      flex-basis: 0;
+      font-size: 14px;
+      font-weight: 500;
+      height: 44px;
 
-  a {
-    text-decoration: none;
-    flex-grow: 1;
-    flex-basis: 0;
-    font-size: 14px;
-    font-weight: 500;
-    height: 44px;
+      &#about-tab.active {
+        background-color: theme.$grouphq-ui-about;
+      }
 
-    &.about-tab.active {
-      background-color: theme.$groupHQ-UI-about;
-    }
-    &.sources-tab.active {
-      background-color: theme.$groupHQ-UI-sources;
+      &#sources-tab.active {
+        background-color: theme.$grouphq-ui-sources;
+      }
     }
   }
 }
 
 .nav-row-tablet,
 .nav-row-handset {
-  background-color: theme.$groupHQ-UI-none;
-  &.groups {
-    background-color: theme.$groupHQ-UI-groups;
-  }
-  &.about {
-    background-color: theme.$groupHQ-UI-about;
-  }
-  &.sources {
-    background-color: theme.$groupHQ-UI-sources;
-  }
-  font-size: 20px;
+  background-color: theme.$grouphq-ui-none;
 
+  &.groups {
+    background-color: theme.$grouphq-ui-groups;
+  }
+
+  &.about {
+    background-color: theme.$grouphq-ui-about;
+  }
+
+  &.sources {
+    background-color: theme.$grouphq-ui-sources;
+  }
+
+  font-size: 20px;
   margin: 0;
   padding: 4px;
-
   flex-flow: row nowrap;
   justify-content: start;
 
   .site-name {
-    a {
+    #logo-link-tablet-mobile {
       color: white;
+      text-decoration: none;
     }
+
     color: var(--shades-white, #fff);
     font-size: 20px;
     font-style: normal;
@@ -95,7 +99,7 @@
   gap: 16px;
 }
 
-mat-action-list {
+.dropdown-tab-list {
   padding: 0 8px;
   overflow: hidden;
   height: fit-content;
@@ -103,11 +107,10 @@ mat-action-list {
   .button-tabs-list {
     display: flex;
     flex-flow: column nowrap;
-    justify-items: center;
-    align-items: center;
+    place-items: center center;
     padding: 8px 0;
 
-    a {
+    .tab {
       text-decoration: none;
       display: flex;
       align-content: center;
@@ -118,14 +121,16 @@ mat-action-list {
       min-height: 56px;
       letter-spacing: 0.5px;
 
-      &.groups-tab.active {
-        background-color: rgba(theme.$groupHQ-UI-groups, 0.12);
+      &#dropdown-groups-tab.active {
+        background-color: rgba(theme.$grouphq-ui-groups, 0.12);
       }
-      &.about-tab.active {
-        background-color: rgba(theme.$groupHQ-UI-about, 0.12);
+
+      &#dropdown-about-tab.active {
+        background-color: rgba(theme.$grouphq-ui-about, 0.12);
       }
-      &.sources-tab.active {
-        background-color: rgba(theme.$groupHQ-UI-sources, 0.12);
+
+      &#dropdown-sources-tab.active {
+        background-color: rgba(theme.$grouphq-ui-sources, 0.12);
       }
     }
   }
@@ -137,9 +142,7 @@ mat-action-list {
 
 .nav-row-web {
   background-color: white;
-
   margin: 32px 160px;
-
   flex-flow: row wrap;
   justify-content: space-between;
 
