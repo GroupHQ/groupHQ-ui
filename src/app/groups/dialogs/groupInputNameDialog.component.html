@@ -1,5 +1,5 @@
 <div class="group-input-name-dialog">
-    <p ghq-media ghq-media-base-class="group-title" mat-dialog-title>What's your name?</p>
+    <p appMedia app-media-base-class="group-title" mat-dialog-title>What's your name?</p>
     <div class="quote-block">
         <p class="quote">
             "Words have meaning, and names have power."
@@ -21,7 +21,7 @@
         </mat-error>
     </mat-form-field>
 
-    <div ghq-media ghq-media-base-class="group-actions">
+    <div appMedia app-media-base-class="group-actions">
         <button mat-raised-button color="accent" mat-dialog-close tabindex="-1" (click)="onNoClick()">Close</button>
         <button type="submit" [disabled]="nameField.invalid" mat-raised-button color="primary" tabindex="-1" (click)="joinGroup()">Join</button>
     </div>

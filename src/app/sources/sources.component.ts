@@ -1,9 +1,10 @@
-import {Component} from "@angular/core";
+import {Component, HostBinding} from "@angular/core";
 
 @Component({
     selector: "app-sources",
     templateUrl: "sources.component.html",
-    styleUrls: ["sources.component.scss"],
-    host: {'class': 'component-container'}
+    styleUrls: ["sources.component.scss"]
 })
-export class SourcesComponent {}
+export class SourcesComponent {
+    @HostBinding('class') classes = 'component-container';
+}

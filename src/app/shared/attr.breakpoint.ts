@@ -1,11 +1,11 @@
-import {Attribute, Directive, ElementRef} from "@angular/core";
+import {Attribute, Directive, ElementRef, OnDestroy} from "@angular/core";
 import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 import {Subject, takeUntil} from "rxjs";
 
 @Directive({
-    selector: "[ghq-media]"
+    selector: "[appMedia]"
 })
-export class GhqMediaBreakpointDirective {
+export class GhqMediaBreakpointDirective implements OnDestroy {
 
     private readonly screenTypesMap : Map<string, string> = new Map([
         [Breakpoints.Web, "web"],
@@ -18,7 +18,7 @@ export class GhqMediaBreakpointDirective {
     private readonly destroy$ = new Subject<void>();
 
     constructor(private readonly element: ElementRef,
-                @Attribute("ghq-media-base-class") private baseClass: string,
+                @Attribute("app-media-base-class") private baseClass: string,
                 private readonly breakpoints$ : BreakpointObserver
     ) {
         element.nativeElement.classList.add(baseClass);
@@ -34,8 +34,6 @@ export class GhqMediaBreakpointDirective {
                         this.currentDeviceClass = deviceClass;
                     }
                 });
-        }, (error : any) => {
-            console.error('Error observing breakpoints:', error);
         });
     }
 

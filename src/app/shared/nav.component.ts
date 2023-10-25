@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 import {filter, Subject, takeUntil} from "rxjs";
 import {ExtensionAnimation} from "./nav.animations";
@@ -10,10 +10,10 @@ import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
     styleUrls: ["nav.component.scss"],
     animations: [ExtensionAnimation]
 })
-export class NavComponent {
+export class NavComponent implements OnInit, OnDestroy {
     page: string | undefined = "GROUPS";
-    navType: string = "web"
-    showMenu: boolean = false;
+    navType = "web"
+    showMenu = false;
 
     select(page?: string) {
         this.page = page;
@@ -39,8 +39,6 @@ export class NavComponent {
                         this.updateNav(screenType);
                     }
                 });
-        }, (error : any) => {
-            console.error('Error observing breakpoints:', error);
         });
     }
 

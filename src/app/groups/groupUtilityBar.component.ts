@@ -6,5 +6,5 @@ import {Component} from "@angular/core";
     styleUrls: ["groupUtilityBar.component.scss"]
 })
 export class GroupUtilityBarComponent {
-    selected: string = "Oldest";
+    selected = "Oldest";
 }

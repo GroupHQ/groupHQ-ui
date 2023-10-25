@@ -35,7 +35,7 @@ export class GroupCardComponent {
             });
 
         dialogRef.afterClosed().subscribe(result => {
-            console.log("The dialog was closed")
+            console.log("The dialog was closed. Result:", result);
             this.destroy$.next();
             this.destroy$.complete();
         })
