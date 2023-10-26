@@ -39,7 +39,7 @@ jobs:
         run: npx prettier . --check
       - name: Checking code quality
         run: |
-          ng lint
+          npx ng lint
           npx stylelint "**/*.css"
           npx stylelint "**/*.scss"
   package:
