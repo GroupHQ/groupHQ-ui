@@ -1,49 +1,159 @@
-.header-row {
-    .site-name {
-        font-size: 36px;
-        font-weight: 700;
-        color: #4050B5;
-        caret-color: transparent;
+@use "../../custom-theme-colors" as theme;
+
+.nav-row {
+  margin: 16px;
+  padding: 0;
+  width: auto;
+  height: fit-content;
+
+  .site-name {
+    caret-color: transparent;
+    display: flex;
+    align-items: center;
+
+    // default title style
+    #logo-link {
+      text-decoration: none;
+      color: theme.$grouphq-ui-none;
     }
 
-    display: flex;
-    flex-flow: row wrap;
-    align-items: center;
-    margin: 16px;
-    justify-content: space-between;
-    gap: 32px;
-}
+    &.groups {
+      #logo-link {
+        color: theme.$grouphq-ui-groups;
+      }
+    }
 
-.button-tabs {
+    &.about {
+      #logo-link {
+        color: theme.$grouphq-ui-about;
+      }
+    }
+
+    &.sources {
+      #logo-link {
+        color: theme.$grouphq-ui-sources;
+      }
+    }
+  }
+
+  .button-tabs {
     width: 518px;
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
 
-    a {
-        flex-grow: 1;
-        flex-basis: 0;
-        font-size: 14px;
-        font-weight: 500;
-        height: 44px;
-    }
+    .tab {
+      text-decoration: none;
+      flex-grow: 1;
+      flex-basis: 0;
+      font-size: 14px;
+      font-weight: 500;
+      height: 44px;
 
-    a.about-tab.active {
-        background-color: #A06101;
-    }
+      &#about-tab.active {
+        background-color: theme.$grouphq-ui-about;
+      }
 
-    a.sources-tab.active {
-        background-color: #B510AE;
+      &#sources-tab.active {
+        background-color: theme.$grouphq-ui-sources;
+      }
     }
+  }
 }
 
-@media (min-width: 744px) {
-    .header-row {
-        margin: 32px 32px;
+.nav-row-tablet,
+.nav-row-handset {
+  background-color: theme.$grouphq-ui-none;
+
+  &.groups {
+    background-color: theme.$grouphq-ui-groups;
+  }
+
+  &.about {
+    background-color: theme.$grouphq-ui-about;
+  }
+
+  &.sources {
+    background-color: theme.$grouphq-ui-sources;
+  }
+
+  font-size: 20px;
+  margin: 0;
+  padding: 4px;
+  flex-flow: row nowrap;
+  justify-content: start;
+
+  .site-name {
+    #logo-link-tablet-mobile {
+      color: white;
+      text-decoration: none;
     }
+
+    color: var(--shades-white, #fff);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px; /* 160% */
+    letter-spacing: 0.25px;
+  }
+
+  gap: 16px;
 }
 
-@media (min-width: 1280px) {
-    .header-row {
-        margin: 32px 160px;
+.dropdown-tab-list {
+  padding: 0 8px;
+  overflow: hidden;
+  height: fit-content;
+
+  .button-tabs-list {
+    display: flex;
+    flex-flow: column nowrap;
+    place-items: center center;
+    padding: 8px 0;
+
+    .tab {
+      text-decoration: none;
+      display: flex;
+      align-content: center;
+      border-radius: 56px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 500;
+      min-height: 56px;
+      letter-spacing: 0.5px;
+
+      &#dropdown-groups-tab.active {
+        background-color: rgba(theme.$grouphq-ui-groups, 0.12);
+      }
+
+      &#dropdown-about-tab.active {
+        background-color: rgba(theme.$grouphq-ui-about, 0.12);
+      }
+
+      &#dropdown-sources-tab.active {
+        background-color: rgba(theme.$grouphq-ui-sources, 0.12);
+      }
     }
+  }
+}
+
+.nav-row-tablet {
+  padding: 16px;
+}
+
+.nav-row-web {
+  background-color: white;
+  margin: 32px 160px;
+  flex-flow: row wrap;
+  justify-content: space-between;
+
+  .site-name {
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  gap: 32px;
+}
+
+.menu-icon {
+  color: white;
 }

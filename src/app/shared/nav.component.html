@@ -1,8 +1,96 @@
-<nav class="header-row">
-  <div class="site-name">GroupHQ Demo</div>
-  <div class="button-tabs">
-    <a mat-flat-button [color]="page === 'GROUPS' ? 'primary' : undefined"  (click)="select('GROUPS')">GROUPS</a>
-    <a class="about-tab" [class.active]="page=='ABOUT'" mat-flat-button [color]="page === 'ABOUT' ? 'primary' : undefined"  (click)="select('ABOUT')">ABOUT</a>
-    <a class="sources-tab" [class.active]="page=='SOURCES'" mat-flat-button [color]="page === 'SOURCES' ? 'primary' : undefined"  (click)="select('SOURCES')">SOURCES</a>
-  </div>
+<nav [ngSwitch]="navType">
+  <mat-toolbar class="nav-row nav-row-web" *ngSwitchCase="'web'">
+    <div class="site-name" [ngClass]="getPageToLowercase()">
+      <a id="logo-link" routerLink="/" href="/">GroupHQ Demo</a>
+    </div>
+    <div class="button-tabs">
+      <a
+        id="groups-tab"
+        class="tab"
+        mat-flat-button
+        [color]="page === 'GROUPS' ? 'primary' : undefined"
+        routerLink="/"
+        href="/"
+        >GROUPS</a
+      >
+
+      <a
+        id="about-tab"
+        class="tab"
+        [class.active]="page === 'ABOUT'"
+        mat-flat-button
+        [color]="page === 'ABOUT' ? 'primary' : undefined"
+        routerLink="/about"
+        href="/about"
+        >ABOUT</a
+      >
+
+      <a
+        id="sources-tab"
+        class="tab"
+        [class.active]="page === 'SOURCES'"
+        mat-flat-button
+        [color]="page === 'SOURCES' ? 'primary' : undefined"
+        routerLink="/sources"
+        href="/sources"
+        >SOURCES</a
+      >
+    </div>
+  </mat-toolbar>
+
+  <ng-container *ngSwitchCase="'tablet | handset'">
+    <mat-toolbar
+      appMedia
+      app-media-base-class="nav-row"
+      [ngClass]="getPageToLowercase()"
+    >
+      <button mat-icon-button aria-label="Toggle menu" (click)="toggleMenu()">
+        <mat-icon class="menu-icon">menu</mat-icon>
+      </button>
+      <div class="site-name">
+        <a
+          id="logo-link-tablet-mobile"
+          routerLink="/"
+          href="/"
+          (click)="select('GROUPS')"
+          >GroupHQ Demo</a
+        >
+      </div>
+    </mat-toolbar>
+    <mat-action-list
+      class="dropdown-tab-list"
+      *ngIf="showMenu"
+      [@extensionAnimation]="'visible'"
+    >
+      <div class="button-tabs-list">
+        <a
+          id="dropdown-groups-tab"
+          class="tab"
+          mat-list-item
+          [class.active]="page === 'GROUPS'"
+          routerLink="/"
+          href="/"
+          >Groups</a
+        >
+        <a
+          id="dropdown-about-tab"
+          class="tab"
+          mat-list-item
+          [class.active]="page === 'ABOUT'"
+          routerLink="/about"
+          href="/about"
+          >About</a
+        >
+        <a
+          id="dropdown-sources-tab"
+          class="tab"
+          mat-list-item
+          [class.active]="page === 'SOURCES'"
+          routerLink="/sources"
+          href="/sources"
+          >Sources</a
+        >
+      </div>
+    </mat-action-list>
+  </ng-container>
 </nav>

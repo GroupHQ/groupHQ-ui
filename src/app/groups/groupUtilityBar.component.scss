@@ -1,21 +1,18 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
-:host ::ng-deep .utilityBar {
-  @include mat.form-field-density(-4);
+.utility-bar {
   caret-color: transparent;
-
-  background-color: #0D3168;
-  //width: 100%;
+  background-color: #0d3168;
   height: fit-content;
   padding: 16px;
-
   display: flex;
+  flex-flow: row wrap;
   align-items: center;
-  gap: 8px 32px;
+  gap: 8px 16px;
 
-  mat-label {
-    color: #FFF;
-    font-size: 24px;
+  .sort-selector-label {
+    color: #fff;
+    font-size: 20px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -30,14 +27,19 @@
   }
 }
 
-@media (min-width: 744px) {
-  .utilityBar {
-    padding: 16px 32px;
+:host ::ng-deep .utility-bar {
+  @include mat.form-field-density(-4);
+}
+
+.utility-bar-web {
+  padding: 16px 160px;
+  gap: 8px 32px;
+
+  .sort-selector-label {
+    font-size: 24px;
   }
 }
 
-@media (min-width: 1280px) {
-  .utilityBar {
-    padding: 16px 160px;
-  }
+.utility-bar-tablet {
+  padding: 16px 32px;
 }

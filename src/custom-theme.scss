@@ -1,34 +1,33 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+// Palettes are defined in a separate file so they can be reused in other files without including mat.core below.
+@use "custom-theme-colors" as theme;
+
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat.core();
-
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$groupHQ-UI-primary: mat.define-palette(mat.$indigo-palette);
-$groupHQ-UI-accent: mat.define-palette(mat.$cyan-palette, 700, 500, 900);
-
-// The warn palette is optional (defaults to red).
-$groupHQ-UI-warn: mat.define-palette(mat.$red-palette, 700, 500, 900);
+@include mat.core;
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$groupHQ-UI-theme: mat.define-light-theme((
-  color: (
-    primary: $groupHQ-UI-primary,
-    accent: $groupHQ-UI-accent,
-    warn: $groupHQ-UI-warn,
+$grouphq-ui-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: theme.$grouphq-ui-primary,
+      accent: theme.$grouphq-ui-accent,
+      warn: theme.$grouphq-ui-warn,
+    ),
   )
-));
+);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include mat.all-component-themes($groupHQ-UI-theme);
+@include mat.all-component-themes($grouphq-ui-theme);

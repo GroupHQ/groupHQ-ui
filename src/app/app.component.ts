@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, HostBinding } from "@angular/core";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
 })
 export class AppComponent {
-  title = 'groupHQ-UI';
+  title = "groupHQ-UI";
+  @HostBinding("class") classes = "page-container";
 }

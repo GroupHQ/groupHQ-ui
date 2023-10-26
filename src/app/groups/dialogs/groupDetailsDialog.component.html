@@ -1,0 +1,55 @@
+<div appMedia app-media-base-class="group-details-dialog">
+  <p class="group-title" mat-dialog-title>Farming For Gold</p>
+  <div class="group-details" mat-dialog-content>
+    <div class="group-info">
+      <p class="group-description">
+        Let's meet at the Dwarven Mines south entrance.
+      </p>
+      <div class="group-extra-info">
+        <div class="group-detail">
+          <p class="detail-title">Created</p>
+          <p>10 minutes ago</p>
+        </div>
+        <div class="group-detail">
+          <p class="detail-title">Last Activity</p>
+          <p>5 minutes ago</p>
+        </div>
+        <div class="group-detail">
+          <p class="detail-title">Members</p>
+          <p>3 / 6</p>
+        </div>
+      </div>
+    </div>
+
+    <mat-list class="group-member-list">
+      <h3 matSubheader class="member-list-subheader">Members</h3>
+      <ng-container *ngFor="let n of numbers">
+        <mat-list-item class="member-list-item">
+          <mat-icon
+            matListItemIcon
+            aria-hidden="false"
+            aria-label="Default profile icon"
+            fontIcon="account_box"
+            >member</mat-icon
+          >
+          <h4 matListItemTitle>Brooks Foley</h4>
+          <p matListItemLine>Joined 5 minutes ago</p>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
+
+    <div appMedia app-media-base-class="group-actions">
+      <button mat-raised-button color="accent" mat-dialog-close tabindex="-1">
+        Close
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        tabindex="-1"
+        (click)="openInputNameDialog()"
+      >
+        Join
+      </button>
+    </div>
+  </div>
+</div>

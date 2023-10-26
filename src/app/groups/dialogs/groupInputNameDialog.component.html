@@ -1,0 +1,45 @@
+<div class="group-input-name-dialog">
+  <p appMedia app-media-base-class="group-title" mat-dialog-title>
+    What's your name?
+  </p>
+  <div class="quote-block">
+    <p class="quote">"Words have meaning, and names have power."</p>
+    <p class="author">- Anonymous</p>
+  </div>
+
+  <mat-form-field class="input-name-field">
+    <mat-label>Enter a name</mat-label>
+    <input
+      name="name"
+      [formControl]="nameField"
+      required
+      matInput
+      placeholder="Ex. Brooks Foley"
+    />
+    <mat-error *ngIf="nameField.hasError('required')">
+      Name is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+
+  <div appMedia app-media-base-class="group-actions">
+    <button
+      mat-raised-button
+      color="accent"
+      mat-dialog-close
+      tabindex="-1"
+      (click)="onNoClick()"
+    >
+      Close
+    </button>
+    <button
+      type="submit"
+      [disabled]="nameField.invalid"
+      mat-raised-button
+      color="primary"
+      tabindex="-1"
+      (click)="joinGroup()"
+    >
+      Join
+    </button>
+  </div>
+</div>
