@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grouphq-ui
+  labels:
+    app: grouphq-ui
+spec:
+  type: ClusterIP
+  selector:
+    app: grouphq-ui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9004
