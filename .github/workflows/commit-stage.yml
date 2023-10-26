@@ -36,7 +36,7 @@ jobs:
       - name: Dependency vulnerability scanning
         run: npm audit --audit-level high
       - name: Checking code style
-        run: prettier . --check
+        run: npx prettier . --check
       - name: Checking code quality
         run: |
           ng lint
