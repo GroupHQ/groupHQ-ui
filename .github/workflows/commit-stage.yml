@@ -3,7 +3,7 @@ on: push
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: grouphq/group-ui
+  IMAGE_NAME: grouphq/grouphq-ui
   VERSION: ${{ github.sha }}
 
 jobs:
@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          npm-version: "10.x"
       - name: Cache Node modules
         uses: actions/cache@v2
         with:
@@ -61,7 +60,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          npm-version: "10.x"
       - name: Cache Node modules
         uses: actions/cache@v2
         with:
