@@ -70,7 +70,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Build Angular App
-        run: npm run build -- --configuration production
+        run: npm run build -- --configuration production && cp -r ./nginx/* ./dist/
       - name: Set up Pack CLI
         uses: buildpacks/github-actions/setup-pack@v4.4.0
       - name: Package SPA
