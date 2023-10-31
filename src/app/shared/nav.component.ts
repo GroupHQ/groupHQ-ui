@@ -11,9 +11,9 @@ import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
   animations: [ExtensionAnimation],
 })
 export class NavComponent implements OnInit, OnDestroy {
-  page: string | undefined = "GROUPS";
-  navType = "web";
-  showMenu = false;
+  public page: string | undefined = "GROUPS";
+  public navType = "web";
+  public showMenu = false;
 
   select(page?: string) {
     this.page = page;

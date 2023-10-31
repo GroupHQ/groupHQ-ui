@@ -5,7 +5,7 @@ import { Subject, takeUntil } from "rxjs";
 @Directive({
   selector: "[appMedia]",
 })
-export class GhqMediaBreakpointDirective implements OnDestroy {
+export class AppMediaBreakpointDirective implements OnDestroy {
   private readonly screenTypesMap: Map<string, string> = new Map([
     [Breakpoints.Web, "web"],
     [Breakpoints.Tablet, "tablet"],
@@ -16,28 +16,43 @@ export class GhqMediaBreakpointDirective implements OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
+  private readonly element: ElementRef;
+  private readonly baseClass: string;
+  private readonly breakpoints$: BreakpointObserver;
+
   constructor(
-    private readonly element: ElementRef,
-    @Attribute("app-media-base-class") private baseClass: string,
-    private readonly breakpoints$: BreakpointObserver,
+    element: ElementRef,
+    @Attribute("app-media-base-class") baseClass: string,
+    breakpoints$: BreakpointObserver,
   ) {
-    element.nativeElement.classList.add(baseClass);
+    this.element = element;
+    this.baseClass = baseClass;
+    this.breakpoints$ = breakpoints$;
+    this.setupBreakpointSubscription();
+  }
+
+  setupBreakpointSubscription() {
+    this.element.nativeElement.classList.add(this.baseClass);
 
     Array.from(this.screenTypesMap.keys()).forEach((screenType) => {
-      breakpoints$
+      this.breakpoints$
         .observe(screenType)
         .pipe(takeUntil(this.destroy$))
         .subscribe((result) => {
           if (result.matches) {
-            const deviceClass: string =
-              baseClass + "-" + this.screenTypesMap.get(screenType) ?? "web";
-            if (this.currentDeviceClass)
-              element.nativeElement.classList.remove(this.currentDeviceClass);
-            element.nativeElement.classList.add(deviceClass);
-            this.currentDeviceClass = deviceClass;
+            this.updateElementClassList(screenType);
           }
         });
     });
+  }
+
+  updateElementClassList(screenType: string) {
+    const deviceClass: string =
+      this.baseClass + "-" + this.screenTypesMap.get(screenType) ?? "web";
+    if (this.currentDeviceClass)
+      this.element.nativeElement.classList.remove(this.currentDeviceClass);
+    this.element.nativeElement.classList.add(deviceClass);
+    this.currentDeviceClass = deviceClass;
   }
 
   ngOnDestroy() {

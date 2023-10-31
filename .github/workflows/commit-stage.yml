@@ -14,11 +14,13 @@ jobs:
       contents: read
       security-events: write
     strategy:
+      fail-fast: false # https://github.com/cypress-io/github-action/issues/48
       matrix:
+        containers: [1, 2]
         node-version: [18.x]
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -41,6 +43,46 @@ jobs:
           npx ng lint
           npx stylelint "**/*.css"
           npx stylelint "**/*.scss"
+      - name: Run Component Tests
+        uses: cypress-io/github-action@v6
+        with:
+          start: ng serve
+          wait-on: http://localhost:4200
+          component: true
+          browser: chrome
+          record: true
+          parallel: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          if-no-files-found: warn
+      #      - name: Run E2E tests
+      #        uses: cypress-io/github-action@v6
+      #        with:
+      #          install: false
+      - name: Code vulnerability scanning
+        uses: anchore/scan-action@v3
+        id: scan
+        with:
+          path: "${{ github.workspace }}"
+          fail-build: false
+          severity-cutoff: high
+      #      - name: Upload vulnerability report
+      #        uses: github/codeql-action/upload-sarif@v2
+      #        if: success() || failure()
+      #        with:
+      #          sarif_file: ${{ steps.scan.outputs.sarif }}
       - name: Setup arkade
         uses: alexellis/setup-arkade@v3
       - name: Validate Kubernetes manifests
@@ -93,6 +135,11 @@ jobs:
           fail-build: false
           severity-cutoff: high
           acs-report-enable: true
+      #      - name: Upload vulnerability report
+      #        uses: github/codeql-action/upload-sarif@v2
+      #        if: success() || failure()
+      #        with:
+      #          sarif_file: ${{ steps.scan.outputs.sarif }}
       - name: Log into container registry
         uses: docker/login-action@v2
         with:

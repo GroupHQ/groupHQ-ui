@@ -15,9 +15,10 @@
       required
       matInput
       placeholder="Ex. Brooks Foley"
+      data-cy="member-name-input"
     />
-    <mat-error *ngIf="nameField.hasError('required')">
-      Name is <strong>required</strong>
+    <mat-error *ngIf="nameField.hasError('required')" data-cy="name-input-error"
+      >Name is <strong>required</strong>
     </mat-error>
   </mat-form-field>
 
@@ -28,6 +29,7 @@
       mat-dialog-close
       tabindex="-1"
       (click)="onNoClick()"
+      data-cy="close-dialog-button"
     >
       Close
     </button>
@@ -38,6 +40,7 @@
       color="primary"
       tabindex="-1"
       (click)="joinGroup()"
+      data-cy="join-group-button"
     >
       Join
     </button>
