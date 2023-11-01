@@ -12,7 +12,8 @@
     "ci:start-server": "angular-http-server --path ./dist/group-hq-ui -p 4200",
     "cy:run-component": "cypress run --component",
     "ci:cy-run-component": "start-server-and-test ci:start-server http://localhost:4200 cy:run-component",
-    "cy:run-e2e": "cypress run --e2e"
+    "cy:run-e2e": "cypress run --e2e",
+    "ci:cy-run-e2e": "start-server-and-test ci:start-server http://localhost:4200 cy:run-e2e"
   },
   "private": true,
   "dependencies": {
