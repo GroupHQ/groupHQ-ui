@@ -61,6 +61,8 @@ jobs:
         run: npm run build -- --configuration production && cp -r ./nginx/* ./dist/
       - name: Run Component Tests
         run: npm run ci:cy-run-component
+      - name: Run E2E Tests
+        run: npm run ci:cy-run-e2e
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
