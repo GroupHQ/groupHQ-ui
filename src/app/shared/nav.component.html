@@ -1,11 +1,19 @@
 <nav [ngSwitch]="navType">
-  <mat-toolbar class="nav-row nav-row-web" *ngSwitchCase="'web'">
+  <mat-toolbar
+    id="nav-default"
+    data-cy="nav-default"
+    class="nav-row nav-row-web"
+    *ngSwitchCase="'web'"
+  >
     <div class="site-name" [ngClass]="getPageToLowercase()">
-      <a id="logo-link" routerLink="/" href="/">GroupHQ Demo</a>
+      <a id="logo-link" routerLink="/" href="/" data-cy="site-title-default"
+        >GroupHQ Demo</a
+      >
     </div>
     <div class="button-tabs">
       <a
         id="groups-tab"
+        data-cy="groups-tab-default"
         class="tab"
         mat-flat-button
         [color]="page === 'GROUPS' ? 'primary' : undefined"
@@ -16,6 +24,7 @@
 
       <a
         id="about-tab"
+        data-cy="about-tab-default"
         class="tab"
         [class.active]="page === 'ABOUT'"
         mat-flat-button
@@ -27,6 +36,7 @@
 
       <a
         id="sources-tab"
+        data-cy="sources-tab-default"
         class="tab"
         [class.active]="page === 'SOURCES'"
         mat-flat-button
@@ -40,14 +50,16 @@
 
   <ng-container *ngSwitchCase="'tablet | handset'">
     <mat-toolbar
+      id="nav-compact"
+      data-cy="nav-compact"
       appMedia
       app-media-base-class="nav-row"
       [ngClass]="getPageToLowercase()"
     >
       <button mat-icon-button aria-label="Toggle menu" (click)="toggleMenu()">
-        <mat-icon class="menu-icon">menu</mat-icon>
+        <mat-icon class="menu-icon" data-cy="menu-icon">menu</mat-icon>
       </button>
-      <div class="site-name">
+      <div class="site-name" data-cy="site-title-compact">
         <a
           id="logo-link-tablet-mobile"
           routerLink="/"
@@ -59,12 +71,14 @@
     </mat-toolbar>
     <mat-action-list
       class="dropdown-tab-list"
+      data-cy="dropdown-tab-list"
       *ngIf="showMenu"
       [@extensionAnimation]="'visible'"
     >
       <div class="button-tabs-list">
         <a
           id="dropdown-groups-tab"
+          data-cy="groups-tab-compact"
           class="tab"
           mat-list-item
           [class.active]="page === 'GROUPS'"
@@ -74,6 +88,7 @@
         >
         <a
           id="dropdown-about-tab"
+          data-cy="about-tab-compact"
           class="tab"
           mat-list-item
           [class.active]="page === 'ABOUT'"
@@ -83,6 +98,7 @@
         >
         <a
           id="dropdown-sources-tab"
+          data-cy="sources-tab-compact"
           class="tab"
           mat-list-item
           [class.active]="page === 'SOURCES'"

@@ -9,7 +9,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   styleUrls: ["groupDetailsDialog.component.scss"],
 })
 export class GroupDetailsDialogComponent {
-  numbers: number[] = Array(7)
+  numbers: number[] = Array(3)
     .fill(0)
     .map((x, i) => i);
 

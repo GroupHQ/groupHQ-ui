@@ -5,9 +5,11 @@
     class="sort-selector"
     subscriptSizing="dynamic"
   >
-    <mat-select [(value)]="selected" panelClass="example-panel-red">
+    <mat-select [(value)]="selected" data-cy="group-utility-bar-select">
       <mat-option value="Oldest">Oldest</mat-option>
-      <mat-option value="Newest">Newest</mat-option>
+      <mat-option data-cy="group-utility-bar-select-option" value="Newest"
+        >Newest</mat-option
+      >
       <mat-option value="Most members">Most members</mat-option>
       <mat-option value="Least members">Least members</mat-option>
     </mat-select>
