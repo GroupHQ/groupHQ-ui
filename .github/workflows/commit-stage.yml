@@ -34,8 +34,8 @@ jobs:
             ${{ runner.os }}-node-
       - name: Install Dependencies
         run: npm install
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
+      # - name: Install Angular CLI Globally # Uncomment this step if you uncomment out the Run Component Tests step with the Cypress GitHub Action
+      #   run: npm install -g @angular/cli
       - name: Dependency vulnerability scanning
         run: npm audit --audit-level high
       - name: Checking code style
@@ -45,7 +45,7 @@ jobs:
           npx ng lint
           npx stylelint "**/*.css"
           npx stylelint "**/*.scss"
-      #      - name: Run Component Tests # Uncomment this step to upload test results to Cypress Cloud
+      #      - name: Run Component Tests # Uncomment this step (and Install Angular CLI step above) to upload test results to Cypress Cloud
       #        uses: cypress-io/github-action@v6
       #        with:
       #          start: ng serve
