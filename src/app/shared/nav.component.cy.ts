@@ -82,23 +82,20 @@ describe("NavComponent", () => {
     it("should navigate to the home page when the logo is clicked", () => {
       cy.viewport("macbook-15", "landscape");
 
-      cy.get("[data-cy='site-title-default']")
-        .click()
-        .then(() => {
-          expect(TestBed.inject(Router).url).to.be.equal("/");
-        });
+      cy.get("[data-cy='site-title-default']").click();
+      cy.get("[data-cy='site-title-default']").then(() => {
+        expect(TestBed.inject(Router).url).to.be.equal("/");
+      });
 
-      cy.get("[data-cy='about-tab-default']")
-        .click()
-        .then(() => {
-          expect(TestBed.inject(Router).url).to.be.equal("/about");
-        });
+      cy.get("[data-cy='about-tab-default']").click();
+      cy.get("[data-cy='about-tab-default']").then(() => {
+        expect(TestBed.inject(Router).url).to.be.equal("/about");
+      });
 
-      cy.get("[data-cy='site-title-default']")
-        .click()
-        .then(() => {
-          expect(TestBed.inject(Router).url).to.be.equal("/");
-        });
+      cy.get("[data-cy='site-title-default']").click();
+      cy.get("[data-cy='site-title-default']").then(() => {
+        expect(TestBed.inject(Router).url).to.be.equal("/");
+      });
     });
   });
 
@@ -112,97 +109,91 @@ describe("NavComponent", () => {
       });
 
       it("should navigate to the correct page when a tab is clicked on", () => {
-        cy.get("[data-cy='groups-tab-default']")
-          .click()
-          .then((groupsTab) => {
-            expect(groupsTab).to.have.class("mat-primary");
-            cy.get("[data-cy='about-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='sources-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
+        cy.get("[data-cy='groups-tab-default']").click();
+        cy.get("[data-cy='groups-tab-default']").then((groupsTab) => {
+          expect(groupsTab).to.have.class("mat-primary");
+          cy.get("[data-cy='about-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='sources-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
 
-            expect(TestBed.inject(Router).url).to.be.equal("/");
-          });
+          expect(TestBed.inject(Router).url).to.be.equal("/");
+        });
 
-        cy.get("[data-cy='about-tab-default']")
-          .click()
-          .then((aboutTab) => {
-            expect(aboutTab).to.have.class("active");
-            cy.get("[data-cy='sources-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='groups-tab-default']").should(
-              "not.have.class",
-              "mat-active",
-            );
+        cy.get("[data-cy='about-tab-default']").click();
+        cy.get("[data-cy='about-tab-default']").then((aboutTab) => {
+          expect(aboutTab).to.have.class("active");
+          cy.get("[data-cy='sources-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='groups-tab-default']").should(
+            "not.have.class",
+            "mat-active",
+          );
 
-            expect(TestBed.inject(Router).url).to.be.equal("/about");
-          });
+          expect(TestBed.inject(Router).url).to.be.equal("/about");
+        });
 
-        cy.get("[data-cy='sources-tab-default']")
-          .click()
-          .then((sourcesTab) => {
-            expect(sourcesTab).to.have.class("active");
-            cy.get("[data-cy='groups-tab-default']").should(
-              "not.have.class",
-              "mat-active",
-            );
-            cy.get("[data-cy='about-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
+        cy.get("[data-cy='sources-tab-default']").click();
+        cy.get("[data-cy='sources-tab-default']").then((sourcesTab) => {
+          expect(sourcesTab).to.have.class("active");
+          cy.get("[data-cy='groups-tab-default']").should(
+            "not.have.class",
+            "mat-active",
+          );
+          cy.get("[data-cy='about-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
 
-            expect(TestBed.inject(Router).url).to.be.equal("/sources");
-          });
+          expect(TestBed.inject(Router).url).to.be.equal("/sources");
+        });
       });
 
       it("should highlight only the most recent clicked tab", () => {
-        cy.get("[data-cy='about-tab-default']")
-          .click()
-          .then((aboutTab) => {
-            expect(aboutTab).to.have.class("active");
-            cy.get("[data-cy='groups-tab-default']").should(
-              "not.have.class",
-              "mat-primary",
-            );
-            cy.get("[data-cy='sources-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
-          });
+        cy.get("[data-cy='about-tab-default']").click();
+        cy.get("[data-cy='about-tab-default']").then((aboutTab) => {
+          expect(aboutTab).to.have.class("active");
+          cy.get("[data-cy='groups-tab-default']").should(
+            "not.have.class",
+            "mat-primary",
+          );
+          cy.get("[data-cy='sources-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
+        });
 
-        cy.get("[data-cy='sources-tab-default']")
-          .click()
-          .then((sourcesTab) => {
-            expect(sourcesTab).to.have.class("active");
-            cy.get("[data-cy='groups-tab-default']").should(
-              "not.have.class",
-              "mat-primary",
-            );
-            cy.get("[data-cy='about-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
-          });
+        cy.get("[data-cy='sources-tab-default']").click();
+        cy.get("[data-cy='sources-tab-default']").then((sourcesTab) => {
+          expect(sourcesTab).to.have.class("active");
+          cy.get("[data-cy='groups-tab-default']").should(
+            "not.have.class",
+            "mat-primary",
+          );
+          cy.get("[data-cy='about-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
+        });
 
-        cy.get("[data-cy='groups-tab-default']")
-          .click()
-          .then((groupsTab) => {
-            expect(groupsTab).to.have.class("mat-primary");
-            cy.get("[data-cy='about-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='sources-tab-default']").should(
-              "not.have.class",
-              "active",
-            );
-          });
+        cy.get("[data-cy='groups-tab-default']").click();
+        cy.get("[data-cy='groups-tab-default']").then((groupsTab) => {
+          expect(groupsTab).to.have.class("mat-primary");
+          cy.get("[data-cy='about-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='sources-tab-default']").should(
+            "not.have.class",
+            "active",
+          );
+        });
       });
     });
 
@@ -219,97 +210,91 @@ describe("NavComponent", () => {
       });
 
       it("should navigate to the correct page when a tab is clicked on", () => {
-        cy.get("[data-cy='groups-tab-compact']")
-          .click()
-          .then((groupsTab) => {
-            expect(groupsTab).to.have.class("active");
-            cy.get("[data-cy='about-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='sources-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
+        cy.get("[data-cy='groups-tab-compact']").click();
+        cy.get("[data-cy='groups-tab-compact']").then((groupsTab) => {
+          expect(groupsTab).to.have.class("active");
+          cy.get("[data-cy='about-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='sources-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
 
-            expect(TestBed.inject(Router).url).to.be.equal("/");
-          });
+          expect(TestBed.inject(Router).url).to.be.equal("/");
+        });
 
-        cy.get("[data-cy='about-tab-compact']")
-          .click()
-          .then((aboutTab) => {
-            expect(aboutTab).to.have.class("active");
-            cy.get("[data-cy='sources-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='groups-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
+        cy.get("[data-cy='about-tab-compact']").click();
+        cy.get("[data-cy='about-tab-compact']").then((aboutTab) => {
+          expect(aboutTab).to.have.class("active");
+          cy.get("[data-cy='sources-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='groups-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
 
-            expect(TestBed.inject(Router).url).to.be.equal("/about");
-          });
+          expect(TestBed.inject(Router).url).to.be.equal("/about");
+        });
 
-        cy.get("[data-cy='sources-tab-compact']")
-          .click()
-          .then((sourcesTab) => {
-            expect(sourcesTab).to.have.class("active");
-            cy.get("[data-cy='groups-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='about-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
+        cy.get("[data-cy='sources-tab-compact']").click();
+        cy.get("[data-cy='sources-tab-compact']").then((sourcesTab) => {
+          expect(sourcesTab).to.have.class("active");
+          cy.get("[data-cy='groups-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='about-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
 
-            expect(TestBed.inject(Router).url).to.be.equal("/sources");
-          });
+          expect(TestBed.inject(Router).url).to.be.equal("/sources");
+        });
       });
 
       it("should highlight only the most recent clicked tab", () => {
-        cy.get("[data-cy='about-tab-compact']")
-          .click()
-          .then((aboutTab) => {
-            expect(aboutTab).to.have.class("active");
-            cy.get("[data-cy='groups-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='sources-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-          });
+        cy.get("[data-cy='about-tab-compact']").click();
+        cy.get("[data-cy='about-tab-compact']").then((aboutTab) => {
+          expect(aboutTab).to.have.class("active");
+          cy.get("[data-cy='groups-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='sources-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+        });
 
-        cy.get("[data-cy='sources-tab-compact']")
-          .click()
-          .then((sourcesTab) => {
-            expect(sourcesTab).to.have.class("active");
-            cy.get("[data-cy='groups-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='about-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-          });
+        cy.get("[data-cy='sources-tab-compact']").click();
+        cy.get("[data-cy='sources-tab-compact']").then((sourcesTab) => {
+          expect(sourcesTab).to.have.class("active");
+          cy.get("[data-cy='groups-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='about-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+        });
 
-        cy.get("[data-cy='groups-tab-compact']")
-          .click()
-          .then((groupsTab) => {
-            expect(groupsTab).to.have.class("active");
-            cy.get("[data-cy='about-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-            cy.get("[data-cy='sources-tab-compact']").should(
-              "not.have.class",
-              "active",
-            );
-          });
+        cy.get("[data-cy='groups-tab-compact']").click();
+        cy.get("[data-cy='groups-tab-compact']").then((groupsTab) => {
+          expect(groupsTab).to.have.class("active");
+          cy.get("[data-cy='about-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+          cy.get("[data-cy='sources-tab-compact']").should(
+            "not.have.class",
+            "active",
+          );
+        });
       });
     });
   });
