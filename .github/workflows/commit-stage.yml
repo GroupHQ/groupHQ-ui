@@ -57,6 +57,8 @@ jobs:
       #        env:
       #          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       #          GITHUB_TOKEN: ${{ secrets.CYPRESS_ACTION_SECRET }}
+      - name: Build Angular App
+        run: npm run build -- --configuration production && cp -r ./nginx/* ./dist/
       - name: Run Component Tests
         run: npm run ci:cy-run-component
       - uses: actions/upload-artifact@v3
