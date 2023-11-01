@@ -45,18 +45,20 @@ jobs:
           npx ng lint
           npx stylelint "**/*.css"
           npx stylelint "**/*.scss"
+      #      - name: Run Component Tests # Uncomment this step to upload test results to Cypress Cloud
+      #        uses: cypress-io/github-action@v6
+      #        with:
+      #          start: ng serve
+      #          wait-on: http://localhost:4200
+      #          component: true
+      #          browser: chrome
+      #          record: true
+      #          parallel: true
+      #        env:
+      #          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      #          GITHUB_TOKEN: ${{ secrets.CYPRESS_ACTION_SECRET }}
       - name: Run Component Tests
-        uses: cypress-io/github-action@v6
-        with:
-          start: ng serve
-          wait-on: http://localhost:4200
-          component: true
-          browser: chrome
-          record: true
-          parallel: true
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.CYPRESS_ACTION_SECRET }}
+        run: npm run ci:cy-run-component
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
