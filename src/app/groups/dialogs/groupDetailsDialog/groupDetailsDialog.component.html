@@ -1,0 +1,72 @@
+<div
+  appMedia
+  app-media-base-class="group-details-dialog"
+  data-test="group-details-dialog"
+>
+  <p class="group-title" mat-dialog-title data-test="group-title">
+    {{ group.title }}
+  </p>
+  <div class="group-details" mat-dialog-content>
+    <div class="group-info">
+      <p class="group-description" data-test="group-description">
+        {{ group.description }}
+      </p>
+      <div class="group-extra-info">
+        <div class="group-detail" data-test="group-creation-time">
+          <p class="detail-title">Created</p>
+          <p>{{ timeSince(group.createdDate) }}</p>
+        </div>
+        <div class="group-detail" data-test="group-last-activity">
+          <p class="detail-title">Last Activity</p>
+          <p>{{ timeSince(group.lastActive) }}</p>
+        </div>
+        <div class="group-detail" data-test="group-members-count">
+          <p class="detail-title">Members</p>
+          <p>{{ group.currentGroupSize }} / {{ group.maxGroupSize }}</p>
+        </div>
+      </div>
+    </div>
+
+    <mat-list class="group-member-list">
+      <h3 matSubheader class="member-list-subheader">Members</h3>
+      <ng-container *ngFor="let member of members">
+        <mat-list-item class="member-list-item" data-test="group-member">
+          <mat-icon
+            matListItemIcon
+            aria-hidden="false"
+            aria-label="Default profile icon"
+            fontIcon="account_box"
+            >member</mat-icon
+          >
+          <h4 matListItemTitle>{{ member.username }}</h4>
+          <p matListItemLine>Joined {{ timeSince(member.joinedDate) }}</p>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
+
+    <div
+      appMedia
+      app-media-base-class="group-actions"
+      data-test="group-actions"
+    >
+      <button
+        mat-raised-button
+        color="accent"
+        mat-dialog-close
+        tabindex="-1"
+        data-test="close-group-details-dialog-button"
+      >
+        Close
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        tabindex="-1"
+        (click)="openInputNameDialog()"
+        data-test="group-details-join-dialog-button"
+      >
+        Join
+      </button>
+    </div>
+  </div>
+</div>

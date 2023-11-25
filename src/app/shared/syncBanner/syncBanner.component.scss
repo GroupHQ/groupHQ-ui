@@ -1,0 +1,17 @@
+@use "../../../custom-theme-colors" as theme;
+
+.sync-banner {
+  background-color: theme.$grouphq-ui-warn-default;
+  position: relative;
+  caret-color: transparent;
+  overflow: hidden;
+
+  .sync-banner-text {
+    margin: 0;
+    padding: 8px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "api": {
+    "host": "localhost",
+    "port": 9000,
+    "endpoint": "",
+    "protocol": "http"
+  },
+  "rsocket": {
+    "host": "localhost",
+    "port": 9000,
+    "endpoint": "rsocket",
+    "keepAlive": 5,
+    "lifetime": 30,
+    "minimumDisconnectRetryTime": 5,
+    "maximumDisconnectRetryTime": 10
+  },
+  "retryServices": {
+    "retryDefault": {
+      "MAX_RETRY_ATTEMPTS": 2,
+      "MIN_RETRY_INTERVAL": 3,
+      "MAX_RETRY_INTERVAL": 60
+    },
+    "retryForeverConstant": {
+      "MAX_RETRY_ATTEMPTS": -1,
+      "MIN_RETRY_INTERVAL": 5,
+      "MAX_RETRY_INTERVAL": -1
+    }
+  },
+  "groupBoardComponent": {
+    "loadingDelaySeconds": 1
+  }
+}

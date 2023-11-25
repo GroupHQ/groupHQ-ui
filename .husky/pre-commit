@@ -6,4 +6,3 @@ npx stylelint "**/*.css"
 npx stylelint "**/*.scss"
 npx prettier . --check # Replace --check with --write to apply changes
 npm audit --audit-level high
-# cypress run --component

@@ -1,0 +1,23 @@
+<mat-card
+  matRipple
+  class="group-card"
+  [ngClass]="{
+    'group-card--full': group.currentGroupSize >= group.maxGroupSize
+  }"
+  (click)="openDialog()"
+  data-test="group-card"
+>
+  <div class="title-container">
+    <p class="title" data-test="title">{{ group.title }}</p>
+  </div>
+
+  <div class="member-count-container">
+    <p class="member-count" data-test="member-count">
+      {{ group.currentGroupSize }} / {{ group.maxGroupSize }} members
+    </p>
+  </div>
+
+  <div class="description-container">
+    <p class="description" data-test="description">{{ group.description }}</p>
+  </div>
+</mat-card>

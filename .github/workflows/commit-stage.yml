@@ -13,11 +13,6 @@ jobs:
     permissions:
       contents: read
       security-events: write
-    strategy:
-      fail-fast: false # https://github.com/cypress-io/github-action/issues/48
-      matrix:
-        containers: [1]
-        node-version: [18.x]
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -34,8 +29,6 @@ jobs:
             ${{ runner.os }}-node-
       - name: Install Dependencies
         run: npm install
-      # - name: Install Angular CLI Globally # Uncomment this step if you uncomment out the Run Component Tests step with the Cypress GitHub Action
-      #   run: npm install -g @angular/cli
       - name: Dependency vulnerability scanning
         run: npm audit --audit-level high
       - name: Checking code style
@@ -45,40 +38,10 @@ jobs:
           npx ng lint
           npx stylelint "**/*.css"
           npx stylelint "**/*.scss"
-      #      - name: Run Component Tests # Uncomment this step (and Install Angular CLI step above) to upload test results to Cypress Cloud
-      #        uses: cypress-io/github-action@v6
-      #        with:
-      #          start: ng serve
-      #          wait-on: http://localhost:4200
-      #          component: true
-      #          browser: chrome
-      #          record: true
-      #          parallel: true
-      #        env:
-      #          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      #          GITHUB_TOKEN: ${{ secrets.CYPRESS_ACTION_SECRET }}
       - name: Build Angular App
         run: npm run build -- --configuration production && cp -r ./nginx/* ./dist/
-      - name: Run Component Tests
-        run: npm run ci:cy-run-component
-      - name: Run E2E Tests
-        run: npm run ci:cy-run-e2e
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-          if-no-files-found: warn
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-videos
-          path: cypress/videos
-          if-no-files-found: warn
-      #      - name: Run E2E tests
-      #        uses: cypress-io/github-action@v6
-      #        with:
-      #          install: false
+      - name: Run Tests
+        run: npm run ci:test
       - name: Code vulnerability scanning
         uses: anchore/scan-action@v3
         id: scan

@@ -1,0 +1,44 @@
+<ng-container>
+  <app-sync-banner
+    @groupChildAnimationEnabler
+    *ngIf="!isGroupsSynced && isGroupsLoaded"
+    [syncedTextState]="syncedText"
+    data-test="sync-banner-component"
+  ></app-sync-banner>
+
+  <ng-container [ngSwitch]="componentState">
+    <ng-container *ngSwitchCase="StatesEnum.LOADING">
+      <app-loading
+        @groupChildAnimationEnabler
+        [nextRetry]="nextRetry"
+        [minimumLoadingTimeSeconds]="minimumLoadingTimeSeconds"
+        [retryFunction]="loadGroups.bind(this)"
+        [itemName]="'groups'"
+        [loading]="true"
+        data-test="loading-component__loading"
+      ></app-loading>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="StatesEnum.READY">
+      <app-group-cards
+        @groupChildAnimationEnabler
+        [groups]="groups"
+        [isGroupsSynced]="isGroupsSynced"
+        (groupCards)="setCardComponents($event)"
+        data-test="group-cards-component__ready"
+      ></app-group-cards>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="StatesEnum.HTTP_INTERNAL_SERVER_ERROR">
+      <app-loading
+        @groupChildAnimationEnabler
+        [nextRetry]="nextRetry"
+        [minimumLoadingTimeSeconds]="minimumLoadingTimeSeconds"
+        [retryFunction]="loadGroups.bind(this)"
+        [itemName]="'groups'"
+        [loading]="false"
+        data-test="loading-component__http-internal-server-error"
+      ></app-loading>
+    </ng-container>
+  </ng-container>
+</ng-container>

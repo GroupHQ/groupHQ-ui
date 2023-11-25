@@ -1,0 +1,39 @@
+<div appMedia app-media-base-class="utility-bar">
+  <mat-label
+    class="sort-selector-label"
+    data-test="group-utility-bar-select-label"
+    >Sort By</mat-label
+  >
+  <mat-form-field
+    appearance="outline"
+    class="sort-selector"
+    subscriptSizing="dynamic"
+  >
+    <mat-select
+      [(value)]="selected"
+      (selectionChange)="onSortChange()"
+      data-test="group-utility-bar-select"
+    >
+      <mat-option
+        data-test="group-utility-bar-select-option"
+        [value]="GroupSortEnum.OLDEST"
+        >Oldest</mat-option
+      >
+      <mat-option
+        data-test="group-utility-bar-select-option"
+        [value]="GroupSortEnum.NEWEST"
+        >Newest</mat-option
+      >
+      <mat-option
+        data-test="group-utility-bar-select-option"
+        [value]="GroupSortEnum.MOST_MEMBERS"
+        >Most members</mat-option
+      >
+      <mat-option
+        data-test="group-utility-bar-select-option"
+        [value]="GroupSortEnum.LEAST_MEMBERS"
+        >Least members</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+</div>

@@ -1,0 +1,46 @@
+.loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px;
+  width: 250px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 50%;
+
+  .spinner {
+    position: absolute;
+  }
+
+  .loading-text {
+    margin: 0 0 32px;
+    color: #2a40b0;
+    font-weight: bold;
+    font-size: 24px;
+    text-align: center;
+  }
+}
+
+.loading-tablet {
+  width: 400px;
+  height: 400px;
+
+  .loading-text {
+    font-size: 32px;
+  }
+}
+
+.loading-web {
+  padding: 32px;
+  width: 400px;
+  height: 400px;
+
+  .loading-text {
+    font-size: 32px;
+  }
+}

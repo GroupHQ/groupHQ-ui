@@ -1,0 +1,61 @@
+<div
+  appMedia
+  app-media-base-class="loading"
+  [@loadingAnimation]="{
+    value: '',
+    params: {
+      animationTimeSeconds: minimumLoadingTimeSeconds
+    }
+  }"
+  data-test="loading__component"
+>
+  <ng-container *ngIf="loading; else tryAgain">
+    <p
+      *ngIf="nextRetry === null; else retrying"
+      class="loading-text"
+      data-test="loading__text"
+    >
+      <ng-container *ngIf="itemName === null; else withItemName">
+        Loading...
+      </ng-container>
+
+      <ng-template #withItemName> Loading {{ itemName }}... </ng-template>
+    </p>
+    <ng-template #retrying>
+      <div data-test="loading__retrying-failure-text">
+        <p
+          *ngIf="nextRetry && nextRetry > 0; else retryingNow"
+          class="loading-text"
+        >
+          Failed to load groups<br />Retrying in {{ nextRetry }} seconds...
+        </p>
+      </div>
+
+      <ng-template #retryingNow>
+        <p class="loading-text" data-test="loading__retrying-text">
+          Retrying...
+        </p>
+      </ng-template>
+    </ng-template>
+    <mat-progress-bar
+      *ngIf="nextRetry === null || nextRetry <= 0"
+      mode="buffer"
+      data-test="loading__progress-bar"
+    ></mat-progress-bar>
+  </ng-container>
+  <ng-template #tryAgain>
+    <p class="loading-text" data-test="loading__failure-text">
+      Failed to load{{ itemName ? " " + itemName : "" }}.<br />Try again?
+    </p>
+  </ng-template>
+
+  <button
+    *ngIf="retryFunction !== null && shouldShowRetryButton"
+    mat-flat-button
+    color="primary"
+    (click)="retryFunction()"
+    data-test="loading__retry-button"
+  >
+    Retry Now
+  </button>
+</div>

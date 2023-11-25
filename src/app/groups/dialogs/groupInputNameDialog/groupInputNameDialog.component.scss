@@ -1,0 +1,86 @@
+@use "../../../../custom-theme-colors" as theme;
+
+.group-input-name-dialog {
+  caret-color: transparent;
+  display: flex;
+  flex-direction: column;
+  margin: 32px;
+
+  .group-title {
+    align-self: stretch;
+    flex-shrink: 0;
+    padding: 0;
+    color: theme.$grouphq-ui-groups;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+
+    &.group-title-handset {
+      font-size: 24px;
+    }
+  }
+
+  .quote-block {
+    .quote,
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      align-self: stretch;
+      font-style: italic;
+      color: theme.$grouphq-ui-none;
+    }
+
+    .quote {
+      justify-content: center;
+    }
+
+    .author {
+      justify-content: flex-end;
+    }
+  }
+
+  .input-name-field {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    height: fit-content;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .group-actions {
+    margin-top: auto;
+    display: flex;
+    flex-flow: row;
+    gap: 16px;
+
+    button {
+      margin: 0;
+      flex-grow: 1;
+      border-radius: 4px;
+      min-width: 200px;
+      color: var(--shades-white, #fff);
+      text-align: center;
+
+      /* v-text/button */
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 36px; /* 257.143% */
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+    }
+
+    &.group-actions-handset {
+      // Reverse the order so that the primary action is on top
+      flex-direction: column-reverse;
+      align-items: stretch;
+
+      button {
+        height: 52px;
+      }
+    }
+  }
+}
