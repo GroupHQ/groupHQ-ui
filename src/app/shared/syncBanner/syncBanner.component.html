@@ -1,17 +1,12 @@
 <div @syncBanner class="sync-banner" data-test="sync-banner">
-  <p
-    *ngIf="!syncedTextState"
-    class="sync-banner-text"
-    data-test="sync-banner__error-message"
-  >
+  @if (!syncedTextState) {
+  <p class="sync-banner-text" data-test="sync-banner__error-message">
     Uh oh! We're having trouble syncing you with the latest group info. To get
     the latest info, try refreshing the page.
   </p>
-  <p
-    *ngIf="syncedTextState"
-    class="sync-banner-text"
-    data-test="sync-banner__synced-message"
-  >
+  } @else {
+  <p class="sync-banner-text" data-test="sync-banner__synced-message">
     You're now synced with the latest group info!
   </p>
+  }
 </div>

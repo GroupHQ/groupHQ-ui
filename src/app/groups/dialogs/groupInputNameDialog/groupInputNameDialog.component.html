@@ -6,7 +6,6 @@
     <p class="quote">"Words have meaning, and names have power."</p>
     <p class="author">- Anonymous</p>
   </div>
-
   <mat-form-field class="input-name-field">
     <mat-label>Enter a name</mat-label>
     <input
@@ -17,13 +16,12 @@
       placeholder="Ex. Brooks Foley"
       data-test="member-name-input"
     />
-    <mat-error
-      *ngIf="nameField.hasError('required')"
-      data-test="name-input-error"
+    @if (nameField.hasError('required')) {
+    <mat-error data-test="name-input-error"
       >Name is <strong>required</strong>
     </mat-error>
+    }
   </mat-form-field>
-
   <div appMedia app-media-base-class="group-actions">
     <button
       mat-raised-button

@@ -1,9 +1,9 @@
-<nav [ngSwitch]="navType">
+<nav>
+  @switch (navType) { @case ('web') {
   <mat-toolbar
     id="nav-default"
     data-test="nav-default"
     class="nav-row nav-row-web"
-    *ngSwitchCase="'web'"
   >
     <div class="site-name" [ngClass]="getPageToLowercase()">
       <a id="logo-link" routerLink="/" href="/" data-test="site-title-default"
@@ -21,7 +21,6 @@
         href="/"
         >GROUPS</a
       >
-
       <a
         id="about-tab"
         data-test="about-tab-default"
@@ -33,7 +32,6 @@
         href="/about"
         >ABOUT</a
       >
-
       <a
         id="sources-tab"
         data-test="sources-tab-default"
@@ -47,67 +45,66 @@
       >
     </div>
   </mat-toolbar>
-
-  <ng-container *ngSwitchCase="'tablet | handset'">
-    <mat-toolbar
-      id="nav-compact"
-      data-test="nav-compact"
-      appMedia
-      app-media-base-class="nav-row"
-      [ngClass]="getPageToLowercase()"
-    >
-      <button mat-icon-button aria-label="Toggle menu" (click)="toggleMenu()">
-        <mat-icon class="menu-icon" data-test="menu-icon">menu</mat-icon>
-      </button>
-      <div class="site-name">
-        <a
-          id="logo-link-tablet-mobile"
-          routerLink="/"
-          href="/"
-          data-test="site-title-compact"
-          (click)="select('GROUPS')"
-          >GroupHQ Demo</a
-        >
-      </div>
-    </mat-toolbar>
-    <mat-action-list
-      class="dropdown-tab-list"
-      data-test="dropdown-tab-list"
-      *ngIf="showMenu"
-      [@extensionAnimation]="'visible'"
-    >
-      <div class="button-tabs-list">
-        <a
-          id="dropdown-groups-tab"
-          data-test="groups-tab-compact"
-          class="tab"
-          mat-list-item
-          [class.active]="page === 'GROUPS'"
-          routerLink="/"
-          href="/"
-          >Groups</a
-        >
-        <a
-          id="dropdown-about-tab"
-          data-test="about-tab-compact"
-          class="tab"
-          mat-list-item
-          [class.active]="page === 'ABOUT'"
-          routerLink="/about"
-          href="/about"
-          >About</a
-        >
-        <a
-          id="dropdown-sources-tab"
-          data-test="sources-tab-compact"
-          class="tab"
-          mat-list-item
-          [class.active]="page === 'SOURCES'"
-          routerLink="/sources"
-          href="/sources"
-          >Sources</a
-        >
-      </div>
-    </mat-action-list>
-  </ng-container>
+  } @case ('tablet | handset') {
+  <mat-toolbar
+    id="nav-compact"
+    data-test="nav-compact"
+    appMedia
+    app-media-base-class="nav-row"
+    [ngClass]="getPageToLowercase()"
+  >
+    <button mat-icon-button aria-label="Toggle menu" (click)="toggleMenu()">
+      <mat-icon class="menu-icon" data-test="menu-icon">menu</mat-icon>
+    </button>
+    <div class="site-name">
+      <a
+        id="logo-link-tablet-mobile"
+        routerLink="/"
+        href="/"
+        data-test="site-title-compact"
+        (click)="select('GROUPS')"
+        >GroupHQ Demo</a
+      >
+    </div>
+  </mat-toolbar>
+  @if (showMenu) {
+  <mat-action-list
+    class="dropdown-tab-list"
+    data-test="dropdown-tab-list"
+    [@extensionAnimation]="'visible'"
+  >
+    <div class="button-tabs-list">
+      <a
+        id="dropdown-groups-tab"
+        data-test="groups-tab-compact"
+        class="tab"
+        mat-list-item
+        [class.active]="page === 'GROUPS'"
+        routerLink="/"
+        href="/"
+        >Groups</a
+      >
+      <a
+        id="dropdown-about-tab"
+        data-test="about-tab-compact"
+        class="tab"
+        mat-list-item
+        [class.active]="page === 'ABOUT'"
+        routerLink="/about"
+        href="/about"
+        >About</a
+      >
+      <a
+        id="dropdown-sources-tab"
+        data-test="sources-tab-compact"
+        class="tab"
+        mat-list-item
+        [class.active]="page === 'SOURCES'"
+        routerLink="/sources"
+        href="/sources"
+        >Sources</a
+      >
+    </div>
+  </mat-action-list>
+  } } }
 </nav>
