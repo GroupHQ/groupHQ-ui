@@ -9,8 +9,7 @@
         "plugin:@typescript-eslint/recommended",
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates",
-        "prettier",
-        "plugin:cypress/recommended"
+        "prettier"
       ],
       "rules": {
         "@angular-eslint/directive-selector": [
@@ -39,6 +38,21 @@
         "prettier"
       ],
       "rules": {}
+    },
+    {
+      "files": ["*.spec.ts"],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "prettier"
+      ],
+      "rules": {
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
+      }
     }
   ]
 }

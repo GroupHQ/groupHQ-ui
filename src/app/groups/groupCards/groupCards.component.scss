@@ -1,0 +1,55 @@
+.group-cards {
+  position: relative;
+  display: grid;
+  padding: 16px 0;
+  margin: 0 16px;
+  grid-template-columns: repeat(auto-fill, minmax(256px, 1fr));
+  place-content: start center;
+  gap: 16px;
+}
+
+.group-cards-tablet {
+  padding: 32px 0;
+  margin: 0 32px;
+  gap: 16px 32px;
+}
+
+.group-cards-web {
+  filter: none;
+  padding: 32px 0;
+  margin: 0 160px;
+  gap: 32px;
+}
+
+.no-groups-message {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px;
+  width: 75%;
+
+  .no-groups-message-text {
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    text-align: center;
+  }
+
+  border-radius: 16px;
+  backdrop-filter: brightness(95%);
+}
+
+.no-groups-message-tablet {
+  .no-groups-message-text {
+    font-size: 32px;
+  }
+}
+
+.no-groups-message-web {
+  top: 25%;
+
+  .no-groups-message-text {
+    font-size: 32px;
+  }
+}
