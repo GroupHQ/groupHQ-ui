@@ -4,11 +4,16 @@ import { GroupDetailsDialogComponent } from "../dialogs/groupDetailsDialog/group
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { Subject, takeUntil } from "rxjs";
 import { GroupModel } from "../../model/group.model";
+import { NgClass } from "@angular/common";
+import { MatRippleModule } from "@angular/material/core";
+import { MatCardModule } from "@angular/material/card";
 
 @Component({
   selector: "app-group-card",
   templateUrl: "groupCard.component.html",
   styleUrls: ["groupCard.component.scss"],
+  standalone: true,
+  imports: [MatCardModule, MatRippleModule, NgClass],
 })
 export class GroupCardComponent {
   @Input() group!: GroupModel;

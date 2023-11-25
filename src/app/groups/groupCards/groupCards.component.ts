@@ -10,12 +10,15 @@ import {
 import { GroupBoardAnimation } from "./groupCards.animation";
 import { GroupModel } from "../../model/group.model";
 import { GroupCardComponent } from "../groupCard/groupCard.component";
+import { AppMediaBreakpointDirective } from "../../shared/directives/attr.breakpoint";
 
 @Component({
   selector: "app-group-cards",
   templateUrl: "./groupCards.component.html",
   styleUrls: ["./groupCards.component.scss"],
   animations: [GroupBoardAnimation],
+  standalone: true,
+  imports: [AppMediaBreakpointDirective, GroupCardComponent],
 })
 export class GroupCardsComponent implements AfterViewInit {
   @ViewChildren(GroupCardComponent)

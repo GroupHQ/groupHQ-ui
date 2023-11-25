@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AppComponent } from "./app.component";
-import { SharedModule } from "./shared/shared.module";
 import { RouterTestingModule } from "@angular/router/testing";
+import { NavComponent } from "./shared/nav/nav.component";
+import { FooterComponent } from "./shared/footer/footer.component";
 
 describe("AppComponent", () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -9,8 +10,12 @@ describe("AppComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, SharedModule],
-      declarations: [AppComponent],
+      imports: [
+        RouterTestingModule,
+        NavComponent,
+        FooterComponent,
+        AppComponent,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
@@ -24,12 +29,4 @@ describe("AppComponent", () => {
   it(`should have as title 'groupHQ-UI'`, () => {
     expect(appComponentInstance.title).toEqual("groupHQ-UI");
   });
-
-  // it("should render title", () => {
-  //   fixture.detectChanges();
-  //   const compiled = fixture.nativeElement;
-  //   expect(
-  //     compiled.querySelector('[data-test="site-title-default"]').textContent,
-  //   ).toContain("GroupHQ Demo");
-  // });
 });

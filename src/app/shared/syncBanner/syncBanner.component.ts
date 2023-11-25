@@ -6,6 +6,7 @@ import { SyncBannerAnimation } from "./syncBanner.animations";
   templateUrl: "./syncBanner.component.html",
   styleUrls: ["./syncBanner.component.scss"],
   animations: [SyncBannerAnimation],
+  standalone: true,
 })
 export class SyncBannerComponent {
   @Input()

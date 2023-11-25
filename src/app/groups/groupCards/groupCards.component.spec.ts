@@ -4,6 +4,7 @@ import { GroupCardsComponent } from "./groupCards.component";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { GroupModel } from "../../model/group.model";
 import { trigger } from "@angular/animations";
+import { AppMediaBreakpointDirective } from "../../shared/directives/attr.breakpoint";
 
 @Component({
   standalone: true,
@@ -20,6 +21,8 @@ class GroupCardStubComponent {
     [isGroupsSynced]="isGroupsSynced"
     (groupCards)="setCards()"
   ></app-group-cards>`,
+  standalone: true,
+  imports: [GroupCardStubComponent, GroupCardsComponent],
 })
 class TestHostComponent {
   groups: GroupModel[] = [
@@ -64,11 +67,11 @@ describe("GroupCardsComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule, GroupCardStubComponent],
-      declarations: [TestHostComponent, GroupCardsComponent],
+      imports: [NoopAnimationsModule, TestHostComponent, GroupCardsComponent],
     })
       .overrideComponent(GroupCardsComponent, {
         set: {
+          imports: [GroupCardStubComponent, AppMediaBreakpointDirective],
           animations: [
             trigger("groupBoardAnimation", []),
             trigger("groupBoardNoGroupsMessage", []),

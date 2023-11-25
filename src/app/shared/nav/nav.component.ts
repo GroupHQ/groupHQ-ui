@@ -2,13 +2,34 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { filter, Subject, takeUntil } from "rxjs";
 import { ExtensionAnimation } from "./nav.animations";
-import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+} from "@angular/router";
+import { MatListModule } from "@angular/material/list";
+import { MatIconModule } from "@angular/material/icon";
+import { AppMediaBreakpointDirective } from "../directives/attr.breakpoint";
+import { MatButtonModule } from "@angular/material/button";
+import { NgClass } from "@angular/common";
+import { MatToolbarModule } from "@angular/material/toolbar";
 
 @Component({
   selector: "app-nav",
   templateUrl: "nav.component.html",
   styleUrls: ["nav.component.scss"],
   animations: [ExtensionAnimation],
+  standalone: true,
+  imports: [
+    MatToolbarModule,
+    NgClass,
+    RouterLink,
+    MatButtonModule,
+    AppMediaBreakpointDirective,
+    MatIconModule,
+    MatListModule,
+  ],
 })
 export class NavComponent implements OnInit, OnDestroy {
   public page: string | undefined = "GROUPS";

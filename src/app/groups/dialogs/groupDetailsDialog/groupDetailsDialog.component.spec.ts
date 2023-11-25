@@ -34,8 +34,8 @@ describe("GroupDetailsDialogComponent", () => {
         MatSnackBarModule,
         MatDialogModule,
         MatListModule,
+        GroupDetailsDialogComponent,
       ],
-      declarations: [GroupDetailsDialogComponent],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: {} },

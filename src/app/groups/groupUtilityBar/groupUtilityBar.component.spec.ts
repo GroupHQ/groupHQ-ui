@@ -15,8 +15,12 @@ describe("GroupUtilityBarComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule, MatFormFieldModule, MatSelectModule],
-      declarations: [GroupUtilityBarComponent],
+      imports: [
+        NoopAnimationsModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        GroupUtilityBarComponent,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupUtilityBarComponent);

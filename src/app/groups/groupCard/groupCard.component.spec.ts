@@ -7,6 +7,8 @@ import { GroupModel } from "../../model/group.model";
 
 @Component({
   template: `<app-group-card [group]="group"></app-group-card>`,
+  standalone: true,
+  imports: [GroupCardComponent],
 })
 class TestHostComponent {
   group: GroupModel = {
@@ -33,7 +35,7 @@ describe("GroupCardComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [GroupCardComponent, TestHostComponent],
+      imports: [GroupCardComponent, TestHostComponent],
       providers: [
         {
           provide: MatDialog,
