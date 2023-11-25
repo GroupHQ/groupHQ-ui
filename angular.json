@@ -53,10 +53,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "groupHQ-UI:build:production"
+              "buildTarget": "groupHQ-UI:build:production"
             },
             "development": {
-              "browserTarget": "groupHQ-UI:build:development"
+              "buildTarget": "groupHQ-UI:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -64,7 +64,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "groupHQ-UI:build"
+            "buildTarget": "groupHQ-UI:build"
           }
         },
         "test": {
