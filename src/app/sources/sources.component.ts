@@ -4,7 +4,7 @@ import { AppMediaBreakpointDirective } from "../shared/directives/attr.breakpoin
 @Component({
   selector: "app-sources",
   templateUrl: "sources.component.html",
-  styleUrls: ["sources.component.scss"],
+  styleUrl: "sources.component.scss",
   standalone: true,
   imports: [AppMediaBreakpointDirective],
 })

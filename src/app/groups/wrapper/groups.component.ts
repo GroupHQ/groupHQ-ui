@@ -5,7 +5,7 @@ import { GroupUtilityBarComponent } from "../groupUtilityBar/groupUtilityBar.com
 @Component({
   selector: "app-groups",
   templateUrl: "groups.component.html",
-  styleUrls: ["groups.component.scss"],
+  styleUrl: "groups.component.scss",
   standalone: true,
   imports: [GroupUtilityBarComponent, GroupBoardComponent],
 })

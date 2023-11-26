@@ -18,7 +18,7 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 @Component({
   selector: "app-nav",
   templateUrl: "nav.component.html",
-  styleUrls: ["nav.component.scss"],
+  styleUrl: "nav.component.scss",
   animations: [ExtensionAnimation],
   standalone: true,
   imports: [

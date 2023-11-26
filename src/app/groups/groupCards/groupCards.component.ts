@@ -15,7 +15,7 @@ import { AppMediaBreakpointDirective } from "../../shared/directives/attr.breakp
 @Component({
   selector: "app-group-cards",
   templateUrl: "./groupCards.component.html",
-  styleUrls: ["./groupCards.component.scss"],
+  styleUrl: "groupCards.component.scss",
   animations: [GroupBoardAnimation],
   standalone: true,
   imports: [AppMediaBreakpointDirective, GroupCardComponent],

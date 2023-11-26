@@ -11,7 +11,7 @@ import { MatCardModule } from "@angular/material/card";
 @Component({
   selector: "app-group-card",
   templateUrl: "groupCard.component.html",
-  styleUrls: ["groupCard.component.scss"],
+  styleUrl: "groupCard.component.scss",
   standalone: true,
   imports: [MatCardModule, MatRippleModule, NgClass],
 })

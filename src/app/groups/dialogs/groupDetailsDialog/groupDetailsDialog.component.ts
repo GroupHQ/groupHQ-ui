@@ -22,7 +22,7 @@ import { AppMediaBreakpointDirective } from "../../../shared/directives/attr.bre
 @Component({
   selector: "app-group-details-dialog",
   templateUrl: "groupDetailsDialog.component.html",
-  styleUrls: ["groupDetailsDialog.component.scss"],
+  styleUrl: "groupDetailsDialog.component.scss",
   standalone: true,
   imports: [
     AppMediaBreakpointDirective,

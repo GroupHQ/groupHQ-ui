@@ -7,7 +7,7 @@ import { AppMediaBreakpointDirective } from "../directives/attr.breakpoint";
 @Component({
   selector: "app-loading",
   templateUrl: "./loading.component.html",
-  styleUrls: ["./loading.component.scss"],
+  styleUrl: "loading.component.scss",
   animations: [AppLoadingAnimation],
   standalone: true,
   imports: [AppMediaBreakpointDirective, MatProgressBarModule, MatButtonModule],

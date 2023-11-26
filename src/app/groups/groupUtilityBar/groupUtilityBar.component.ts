@@ -9,7 +9,7 @@ import { AppMediaBreakpointDirective } from "../../shared/directives/attr.breakp
 @Component({
   selector: "app-group-utility-bar",
   templateUrl: "groupUtilityBar.component.html",
-  styleUrls: ["groupUtilityBar.component.scss"],
+  styleUrl: "groupUtilityBar.component.scss",
   standalone: true,
   imports: [
     AppMediaBreakpointDirective,

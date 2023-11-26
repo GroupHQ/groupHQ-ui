@@ -18,7 +18,7 @@ import { AppMediaBreakpointDirective } from "../../../shared/directives/attr.bre
 @Component({
   selector: "app-group-input-name-modal",
   templateUrl: "groupInputNameDialog.component.html",
-  styleUrls: ["groupInputNameDialog.component.scss"],
+  styleUrl: "groupInputNameDialog.component.scss",
   standalone: true,
   imports: [
     AppMediaBreakpointDirective,
