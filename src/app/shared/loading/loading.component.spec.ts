@@ -14,6 +14,8 @@ import { MatButtonModule } from "@angular/material/button";
     [retryFunction]="retryFunction"
     [loading]="loading"
   ></app-loading>`,
+  standalone: true,
+  imports: [MatProgressBarModule, MatButtonModule, LoadingComponent],
 })
 class TestHostComponent {
   itemName: string | null = null;
@@ -30,8 +32,13 @@ describe("LoadingComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule, MatProgressBarModule, MatButtonModule],
-      declarations: [LoadingComponent, TestHostComponent],
+      imports: [
+        NoopAnimationsModule,
+        MatProgressBarModule,
+        MatButtonModule,
+        LoadingComponent,
+        TestHostComponent,
+      ],
     })
       .overrideComponent(LoadingComponent, {
         set: {

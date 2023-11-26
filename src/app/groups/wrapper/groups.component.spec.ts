@@ -2,15 +2,18 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { GroupsComponent } from "./groups.component";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { Component } from "@angular/core";
+
 @Component({
   selector: "app-group-utility-bar",
   template: "",
+  standalone: true,
 })
 class GroupUtilityBarStubComponent {}
 
 @Component({
   selector: "app-group-board",
   template: "",
+  standalone: true,
 })
 class GroupBoardStubComponent {}
 
@@ -20,13 +23,14 @@ describe("GroupsComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
-      declarations: [
-        GroupsComponent,
-        GroupUtilityBarStubComponent,
-        GroupBoardStubComponent,
-      ],
-    }).compileComponents();
+      imports: [NoopAnimationsModule, GroupsComponent],
+    })
+      .overrideComponent(GroupsComponent, {
+        set: {
+          imports: [GroupUtilityBarStubComponent, GroupBoardStubComponent],
+        },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(GroupsComponent);
     groupsComponent = fixture.componentInstance;

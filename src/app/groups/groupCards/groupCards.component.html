@@ -1,34 +1,32 @@
+@if (groups.length > 0) {
 <div
-  *ngIf="groups.length > 0; else noGroupsMessage"
   appMedia
   app-media-base-class="group-cards"
   data-test="group-cards"
   @groupBoardAnimation
 >
+  @for (group of groups; track trackByItems($index, group)) {
   <app-group-card
-    *ngFor="let group of groups; trackBy: trackByItems"
     [group]="group"
     [attr.data-group-id]="group.id"
     data-test="group-cards--group-card"
   ></app-group-card>
+  }
 </div>
-
-<ng-template #noGroupsMessage>
-  <div
-    appMedia
-    app-media-base-class="no-groups-message"
-    @groupBoardNoGroupsMessage
-    data-test="group-cards--no-groups-message"
-  >
-    <p class="no-groups-message-text" data-test="no-groups-message__text">
-      Aw shucks! There aren't any groups active!
-    </p>
-    <p
-      *ngIf="isGroupsSynced"
-      class="no-groups-message-text"
-      data-test="no-groups-message__sync-text"
-    >
-      Don't worry, we'll show you them as soon as they're ready!
-    </p>
-  </div>
-</ng-template>
+} @else {
+<div
+  appMedia
+  app-media-base-class="no-groups-message"
+  @groupBoardNoGroupsMessage
+  data-test="group-cards--no-groups-message"
+>
+  <p class="no-groups-message-text" data-test="no-groups-message__text">
+    Aw shucks! There aren't any groups active!
+  </p>
+  @if (isGroupsSynced) {
+  <p class="no-groups-message-text" data-test="no-groups-message__sync-text">
+    Don't worry, we'll show you them as soon as they're ready!
+  </p>
+  }
+</div>
+}

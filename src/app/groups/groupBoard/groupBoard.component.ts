@@ -23,6 +23,10 @@ import { IdentificationService } from "../../services/user/identification.servic
 import { AbstractRetryService } from "../../services/retry/abstractRetry.service";
 import { Subscription } from "rxjs";
 import { RsocketPublicUpdateStreamService } from "../../services/network/rsocket/rsocketPublicUpdateStream.service";
+import { GroupCardsComponent } from "../groupCards/groupCards.component";
+import { LoadingComponent } from "../../shared/loading/loading.component";
+import { SyncBannerComponent } from "../../shared/syncBanner/syncBanner.component";
+import { RetryDefaultService } from "../../services/retry/retryDefault.service";
 
 @Component({
   selector: "app-group-board",
@@ -32,7 +36,10 @@ import { RsocketPublicUpdateStreamService } from "../../services/network/rsocket
     FlipService,
     { provide: ID_ATTRIBUTE_TOKEN, useValue: "data-group-id" },
     StateTransitionService,
+    { provide: AbstractRetryService, useClass: RetryDefaultService },
   ],
+  standalone: true,
+  imports: [SyncBannerComponent, LoadingComponent, GroupCardsComponent],
 })
 export class GroupBoardComponent implements OnInit {
   public componentState: StatesEnum = StatesEnum.LOADING;
@@ -60,15 +67,6 @@ export class GroupBoardComponent implements OnInit {
   ngOnInit() {
     this.rsocketPublicUpdateStreamService.isPublicUpdatesStreamReady$.subscribe(
       (isReady) => {
-        if (isReady) {
-          this.rsocketPublicUpdateStreamService.publicUpdatesStream$
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((event) => {
-              this.groupManagerService.handleUpdates(event);
-              console.log("EVENT", event);
-            });
-        }
-
         const wasSynced = this.syncedText;
 
         this.syncedText = isReady;
@@ -81,6 +79,13 @@ export class GroupBoardComponent implements OnInit {
         }
       },
     );
+
+    this.rsocketPublicUpdateStreamService.publicUpdatesStream$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        this.groupManagerService.handleUpdates(event);
+        console.log("EVENT", event);
+      });
 
     console.log("nextRetry", this.retryDefaultService.nextRetryInSeconds$);
     this.retryDefaultService.nextRetryInSeconds$

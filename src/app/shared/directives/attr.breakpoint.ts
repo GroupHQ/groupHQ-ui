@@ -4,6 +4,7 @@ import { Subject, takeUntil } from "rxjs";
 
 @Directive({
   selector: "[appMedia]",
+  standalone: true,
 })
 export class AppMediaBreakpointDirective implements OnDestroy {
   private readonly screenTypesMap: Map<string, string> = new Map([

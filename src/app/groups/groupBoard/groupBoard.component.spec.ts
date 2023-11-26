@@ -28,6 +28,7 @@ import { RsocketPublicUpdateStreamService } from "../../services/network/rsocket
 @Component({
   selector: "app-sync-banner",
   template: "",
+  standalone: true,
 })
 class SyncBannerStubComponent {
   @Input()
@@ -43,6 +44,7 @@ class SyncBannerStubComponent {
 @Component({
   selector: "app-loading",
   template: "",
+  standalone: true,
 })
 class LoadingStubComponent {
   @Input()
@@ -64,6 +66,7 @@ class LoadingStubComponent {
 @Component({
   selector: "app-group-cards",
   template: "",
+  standalone: true,
 })
 class GroupCardsStubComponent {
   @Output()
@@ -168,13 +171,7 @@ describe("GroupBoardComponent", () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
-      declarations: [
-        GroupBoardComponent,
-        SyncBannerStubComponent,
-        LoadingStubComponent,
-        GroupCardsStubComponent,
-      ],
+      imports: [NoopAnimationsModule, GroupBoardComponent],
       providers: [
         { provide: FlipService, useValue: flipServiceStub },
         {
@@ -194,6 +191,11 @@ describe("GroupBoardComponent", () => {
     })
       .overrideComponent(GroupBoardComponent, {
         set: {
+          imports: [
+            SyncBannerStubComponent,
+            LoadingStubComponent,
+            GroupCardsStubComponent,
+          ],
           providers: [],
           animations: [trigger("groupChildAnimationEnabler", [])],
         },

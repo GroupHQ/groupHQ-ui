@@ -23,9 +23,9 @@ describe("NavComponent", () => {
         MatButtonModule,
         MatIconModule,
         RouterLink,
+        NavComponent,
       ],
       providers: [provideRouter([{ path: "**", component: NavComponent }])],
-      declarations: [NavComponent],
     })
       .overrideComponent(NavComponent, {
         set: {

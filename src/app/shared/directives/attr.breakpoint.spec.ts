@@ -12,6 +12,8 @@ import { AppMediaBreakpointDirective } from "./attr.breakpoint";
 
 @Component({
   template: `<div appMedia app-media-base-class="test-class"></div>`,
+  standalone: true,
+  imports: [LayoutModule, AppMediaBreakpointDirective],
 })
 class TestComponent {}
 
@@ -44,14 +46,13 @@ describe("AppMediaBreakpointDirective", () => {
     };
 
     TestBed.configureTestingModule({
-      declarations: [TestComponent, AppMediaBreakpointDirective],
       providers: [
         {
           provide: BreakpointObserver,
           useValue: { observe: breakpointObserverMock },
         },
       ],
-      imports: [LayoutModule],
+      imports: [LayoutModule, TestComponent, AppMediaBreakpointDirective],
     });
 
     fixture = TestBed.createComponent(TestComponent);

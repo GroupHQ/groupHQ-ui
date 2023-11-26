@@ -5,9 +5,11 @@ import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { trigger } from "@angular/animations";
 
 @Component({
-  template: `<app-sync-banner
+  template: ` <app-sync-banner
     [syncedTextState]="toggleSyncedTextState"
   ></app-sync-banner>`,
+  standalone: true,
+  imports: [SyncBannerComponent],
 })
 class TestHostComponent {
   toggleSyncedTextState = false;
@@ -20,8 +22,7 @@ describe("SyncBannerComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
-      declarations: [SyncBannerComponent, TestHostComponent],
+      imports: [NoopAnimationsModule, SyncBannerComponent, TestHostComponent],
     })
       .overrideComponent(SyncBannerComponent, {
         set: {

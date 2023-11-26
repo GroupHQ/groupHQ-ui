@@ -3,6 +3,9 @@ import {
   MAT_DIALOG_DATA,
   MatDialog,
   MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogClose,
 } from "@angular/material/dialog";
 import { GroupInputNameDialogComponent } from "../groupInputNameDialog/groupInputNameDialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -11,11 +14,25 @@ import { HttpService } from "../../../services/network/http.service";
 import { MemberModel } from "../../../model/member.model";
 import { Subscription } from "rxjs";
 import { IdentificationService } from "../../../services/user/identification.service";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatListModule } from "@angular/material/list";
+import { AppMediaBreakpointDirective } from "../../../shared/directives/attr.breakpoint";
 
 @Component({
   selector: "app-group-details-dialog",
   templateUrl: "groupDetailsDialog.component.html",
-  styleUrls: ["groupDetailsDialog.component.scss"],
+  styleUrl: "groupDetailsDialog.component.scss",
+  standalone: true,
+  imports: [
+    AppMediaBreakpointDirective,
+    MatDialogTitle,
+    MatDialogContent,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDialogClose,
+  ],
 })
 export class GroupDetailsDialogComponent implements OnDestroy {
   members: MemberModel[] = [];

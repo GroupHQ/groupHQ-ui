@@ -30,12 +30,10 @@ export class RsocketPublicUpdateStreamService {
   ) {
     this.rsocketService.rsocketConnection$.subscribe((rsocket) => {
       if (rsocket) {
-        this._publicUpdatesStream$ = new Subject<PublicEventModel>();
         this.createPublicUpdateStream(rsocket);
         this._isPublicUpdatesStreamReady$.next(true);
       } else {
         this._isPublicUpdatesStreamReady$.next(false);
-        this._publicUpdatesStream$?.complete();
       }
     });
   }

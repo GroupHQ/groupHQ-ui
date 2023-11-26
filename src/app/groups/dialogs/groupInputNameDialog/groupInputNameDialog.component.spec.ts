@@ -12,8 +12,7 @@ describe("GroupInputNameDialogComponent", () => {
     dialogRefSpy = jasmine.createSpyObj("MatDialogRef", ["close"]);
 
     await TestBed.configureTestingModule({
-      imports: [MatFormFieldModule],
-      declarations: [GroupInputNameDialogComponent],
+      imports: [MatFormFieldModule, GroupInputNameDialogComponent],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: {} },

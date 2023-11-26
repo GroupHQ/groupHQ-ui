@@ -9,48 +9,49 @@
   }"
   data-test="loading__component"
 >
-  <ng-container *ngIf="loading; else tryAgain">
-    <p
-      *ngIf="nextRetry === null; else retrying"
-      class="loading-text"
-      data-test="loading__text"
-    >
-      <ng-container *ngIf="itemName === null; else withItemName">
-        Loading...
-      </ng-container>
-
-      <ng-template #withItemName> Loading {{ itemName }}... </ng-template>
+  @if (loading) { @if (nextRetry === null) {
+  <p class="loading-text" data-test="loading__text">
+    @if (itemName === null) { Loading... } @else { Loading {{ itemName }}... }
+  </p>
+  } @else {
+  <div data-test="loading__retrying-failure-text">
+    @if (nextRetry && nextRetry > 0) {
+    <p class="loading-text">
+      Failed to load groups<br />Retrying in {{ nextRetry }} seconds...
     </p>
-    <ng-template #retrying>
-      <div data-test="loading__retrying-failure-text">
-        <p
-          *ngIf="nextRetry && nextRetry > 0; else retryingNow"
-          class="loading-text"
-        >
-          Failed to load groups<br />Retrying in {{ nextRetry }} seconds...
-        </p>
-      </div>
-
-      <ng-template #retryingNow>
-        <p class="loading-text" data-test="loading__retrying-text">
-          Retrying...
-        </p>
-      </ng-template>
-    </ng-template>
-    <mat-progress-bar
-      *ngIf="nextRetry === null || nextRetry <= 0"
-      mode="buffer"
-      data-test="loading__progress-bar"
-    ></mat-progress-bar>
-  </ng-container>
-  <ng-template #tryAgain>
-    <p class="loading-text" data-test="loading__failure-text">
-      Failed to load{{ itemName ? " " + itemName : "" }}.<br />Try again?
-    </p>
+    } @else {
+    <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
+    }
+  </div>
+  <ng-template #retryingNow>
+    <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
   </ng-template>
-
+  }
+  <ng-template #retrying>
+    <div data-test="loading__retrying-failure-text">
+      @if (nextRetry && nextRetry > 0) {
+      <p class="loading-text">
+        Failed to load groups<br />Retrying in {{ nextRetry }} seconds...
+      </p>
+      } @else {
+      <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
+      }
+    </div>
+    <ng-template #retryingNow>
+      <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
+    </ng-template>
+  </ng-template>
+  @if (nextRetry === null || nextRetry <= 0) {
+  <mat-progress-bar
+    mode="buffer"
+    data-test="loading__progress-bar"
+  ></mat-progress-bar>
+  } } @else {
+  <p class="loading-text" data-test="loading__failure-text">
+    Failed to load{{ itemName ? " " + itemName : "" }}.<br />Try again?
+  </p>
+  } @if (retryFunction !== null && shouldShowRetryButton) {
   <button
-    *ngIf="retryFunction !== null && shouldShowRetryButton"
     mat-flat-button
     color="primary"
     (click)="retryFunction()"
@@ -58,4 +59,5 @@
   >
     Retry Now
   </button>
+  }
 </div>

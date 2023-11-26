@@ -1,11 +1,35 @@
 import { Component } from "@angular/core";
-import { MatDialogRef } from "@angular/material/dialog";
-import { FormControl, Validators } from "@angular/forms";
+import {
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogClose,
+} from "@angular/material/dialog";
+import {
+  FormControl,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule,
+} from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { AppMediaBreakpointDirective } from "../../../shared/directives/attr.breakpoint";
 
 @Component({
   selector: "app-group-input-name-modal",
   templateUrl: "groupInputNameDialog.component.html",
-  styleUrls: ["groupInputNameDialog.component.scss"],
+  styleUrl: "groupInputNameDialog.component.scss",
+  standalone: true,
+  imports: [
+    AppMediaBreakpointDirective,
+    MatDialogTitle,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDialogClose,
+  ],
 })
 export class GroupInputNameDialogComponent {
   nameField: FormControl = new FormControl("", {
