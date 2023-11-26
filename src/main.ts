@@ -11,7 +11,7 @@ import { RetryForeverConstantService } from "./app/services/retry/retryForeverCo
 import { RetryDefaultService } from "./app/services/retry/retryDefault.service";
 import { RETRY_DEFAULT, RETRY_FOREVER } from "./app/app-tokens";
 import { APP_CONFIG } from "./app/config/config";
-import { provideRouter, withViewTransitions } from "@angular/router";
+import { provideRouter } from "@angular/router";
 
 fetch("./config/config.json")
   .then((response) => response.json())
@@ -24,7 +24,7 @@ fetch("./config/config.json")
         { provide: RETRY_FOREVER, useClass: RetryForeverConstantService },
         provideAnimations(),
         provideHttpClient(withInterceptorsFromDi()),
-        provideRouter(AppRoutes, withViewTransitions()),
+        provideRouter(AppRoutes),
       ],
     }).catch((err) => console.error(err));
   });
