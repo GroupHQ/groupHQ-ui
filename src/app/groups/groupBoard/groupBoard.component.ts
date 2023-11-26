@@ -67,15 +67,6 @@ export class GroupBoardComponent implements OnInit {
   ngOnInit() {
     this.rsocketPublicUpdateStreamService.isPublicUpdatesStreamReady$.subscribe(
       (isReady) => {
-        if (isReady) {
-          this.rsocketPublicUpdateStreamService.publicUpdatesStream$
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((event) => {
-              this.groupManagerService.handleUpdates(event);
-              console.log("EVENT", event);
-            });
-        }
-
         const wasSynced = this.syncedText;
 
         this.syncedText = isReady;
@@ -88,6 +79,13 @@ export class GroupBoardComponent implements OnInit {
         }
       },
     );
+
+    this.rsocketPublicUpdateStreamService.publicUpdatesStream$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        this.groupManagerService.handleUpdates(event);
+        console.log("EVENT", event);
+      });
 
     console.log("nextRetry", this.retryDefaultService.nextRetryInSeconds$);
     this.retryDefaultService.nextRetryInSeconds$
