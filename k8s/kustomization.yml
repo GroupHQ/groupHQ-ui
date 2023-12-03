@@ -4,3 +4,11 @@ kind: Kustomization
 resources:
   - deployment.yml
   - service.yml
+
+configMapGenerator:
+  - name: grouphq-ui-config
+    files:
+      - config.json
+    options:
+      labels:
+        app: grouphq-ui
