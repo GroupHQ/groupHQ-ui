@@ -23,25 +23,7 @@
     <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
     }
   </div>
-  <ng-template #retryingNow>
-    <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
-  </ng-template>
-  }
-  <ng-template #retrying>
-    <div data-test="loading__retrying-failure-text">
-      @if (nextRetry && nextRetry > 0) {
-      <p class="loading-text">
-        Failed to load groups<br />Retrying in {{ nextRetry }} seconds...
-      </p>
-      } @else {
-      <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
-      }
-    </div>
-    <ng-template #retryingNow>
-      <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
-    </ng-template>
-  </ng-template>
-  @if (nextRetry === null || nextRetry <= 0) {
+  } @if (nextRetry === null || nextRetry <= 0) {
   <mat-progress-bar
     mode="buffer"
     data-test="loading__progress-bar"

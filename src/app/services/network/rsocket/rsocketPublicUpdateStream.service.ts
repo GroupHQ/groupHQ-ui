@@ -8,7 +8,7 @@ import {
 } from "rsocket-core";
 import { Buffer } from "buffer";
 import { PublicEventModel } from "../../../model/publicEvent.model";
-import { BehaviorSubject, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { RsocketMetadataService } from "./rsocketMetadata.service";
 import { RsocketService } from "./rsocket.service";
 
@@ -17,9 +17,7 @@ import { RsocketService } from "./rsocket.service";
 })
 export class RsocketPublicUpdateStreamService {
   private _publicUpdatesStream$ = new Subject<PublicEventModel>();
-  private readonly _isPublicUpdatesStreamReady$ = new BehaviorSubject<boolean>(
-    false,
-  );
+  private readonly _isPublicUpdatesStreamReady$ = new Subject<boolean>();
   private _publicUpdatesStream:
     | (Requestable & Cancellable & OnExtensionSubscriber)
     | null = null;
@@ -30,6 +28,7 @@ export class RsocketPublicUpdateStreamService {
   ) {
     this.rsocketService.rsocketConnection$.subscribe((rsocket) => {
       if (rsocket) {
+        console.log("RSocket is ready. Creating public update stream");
         this.createPublicUpdateStream(rsocket);
         this._isPublicUpdatesStreamReady$.next(true);
       } else {
@@ -55,7 +54,6 @@ export class RsocketPublicUpdateStreamService {
       throw new Error("RSocket is not initialized");
     }
 
-    this._isPublicUpdatesStreamReady$.next(true);
     console.log("Establishing Public Update Stream");
     const PUBLIC_UPDATES_ROUTES = "groups.updates.all";
     const metadata = this.rsocketMetadataService.getMetadata(

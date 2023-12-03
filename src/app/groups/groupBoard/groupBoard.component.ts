@@ -67,6 +67,7 @@ export class GroupBoardComponent implements OnInit {
   ngOnInit() {
     this.rsocketPublicUpdateStreamService.isPublicUpdatesStreamReady$.subscribe(
       (isReady) => {
+        console.log("isReady", isReady);
         const wasSynced = this.syncedText;
 
         this.syncedText = isReady;
@@ -75,6 +76,8 @@ export class GroupBoardComponent implements OnInit {
 
         if (!wasSynced && isReady) {
           this.stateTransitionService.transitionTo(StatesEnum.NEUTRAL);
+          this.loadGroups();
+        } else if (!this.isGroupsLoaded) {
           this.loadGroups();
         }
       },
@@ -100,7 +103,6 @@ export class GroupBoardComponent implements OnInit {
         console.log("Transitioning to state: " + state);
         this.componentState = state;
       });
-    console.log("state stub", this.stateTransitionService);
 
     this.groupManagerService.groupUpdateActions$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -123,8 +125,6 @@ export class GroupBoardComponent implements OnInit {
           );
         }
       });
-
-    this.loadGroups();
   }
 
   get minimumLoadingTimeSeconds() {
@@ -135,7 +135,6 @@ export class GroupBoardComponent implements OnInit {
     this.subscription?.unsubscribe();
     this.nextRetry = null;
     this.transitionState(StatesEnum.LOADING);
-    console.log("http stub", this.httpService);
     const username = this.idService.uuid;
     const getGroupsWithRetry = this.retryDefaultService.addRetryLogic(
       this.httpService.getGroups(username),
