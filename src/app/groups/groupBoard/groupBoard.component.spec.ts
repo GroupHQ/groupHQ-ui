@@ -227,6 +227,16 @@ describe("GroupBoardComponent", () => {
   }
 
   describe("initialization", () => {
+    beforeEach(() => {
+      Object.defineProperty(
+        rsocketPublicUpdateStreamService,
+        "isPublicUpdatesStreamReady$",
+        {
+          get: () => of(true),
+        },
+      );
+    });
+
     it("should load groups", () => {
       const groupsObservable = cold("a|", { a: mockGroups });
       httpServiceStub.getGroups.and.callFake(() => groupsObservable);
@@ -457,6 +467,16 @@ describe("GroupBoardComponent", () => {
   });
 
   describe("ready state", () => {
+    beforeEach(() => {
+      Object.defineProperty(
+        rsocketPublicUpdateStreamService,
+        "isPublicUpdatesStreamReady$",
+        {
+          get: () => of(true),
+        },
+      );
+    });
+
     it("render the group cards container", () => {
       const groupsObservable = cold("a|", { a: mockGroups });
       httpServiceStub.getGroups.and.callFake(() => groupsObservable);
@@ -483,6 +503,16 @@ describe("GroupBoardComponent", () => {
   });
 
   describe("failure states", () => {
+    beforeEach(() => {
+      Object.defineProperty(
+        rsocketPublicUpdateStreamService,
+        "isPublicUpdatesStreamReady$",
+        {
+          get: () => of(true),
+        },
+      );
+    });
+
     it("should show the loading failed state when loading fails", () => {
       const groupsObservable = cold("#");
       httpServiceStub.getGroups.and.callFake(() => groupsObservable);
@@ -523,6 +553,10 @@ describe("GroupBoardComponent", () => {
       subject.next(false);
       fixture.detectChanges();
 
+      getTestScheduler().flush();
+      fixture.detectChanges();
+
+      console.log(component);
       expect(page.isSyncBannerComponentVisible).toBeTrue();
     });
 
@@ -555,6 +589,7 @@ describe("GroupBoardComponent", () => {
       subject.next(false);
       fixture.detectChanges();
 
+      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
       expect(page.isSyncBannerComponentVisible).toBeFalse();
     });
 
@@ -575,6 +610,7 @@ describe("GroupBoardComponent", () => {
       fixture.detectChanges();
       getTestScheduler().flush();
 
+      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
       expect(component.componentState).toBe(StatesEnum.READY);
       expect(page.isInactiveLoadingComponentVisible).toBeFalse();
     });
@@ -608,6 +644,7 @@ describe("GroupBoardComponent", () => {
       subject.next(true);
       fixture.detectChanges();
 
+      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
       expect(page.isSyncBannerComponentVisible).toBeFalse();
     });
 
@@ -643,6 +680,7 @@ describe("GroupBoardComponent", () => {
       subject.next(false);
       fixture.detectChanges();
 
+      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
       expect(page.isSyncBannerComponentVisible).toBeTrue();
     });
 
@@ -714,6 +752,7 @@ describe("GroupBoardComponent", () => {
       subject.next(true);
       fixture.detectChanges();
 
+      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(2);
       expect(page.isSyncBannerComponentVisible).toBeFalse();
     });
 
@@ -746,6 +785,10 @@ describe("GroupBoardComponent", () => {
       subject.next(false);
       fixture.detectChanges();
 
+      getTestScheduler().flush();
+      fixture.detectChanges();
+
+      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
       expect(page.isSyncBannerComponentVisible).toBeTrue();
     });
   });
@@ -809,6 +852,7 @@ describe("GroupBoardComponent", () => {
         updateFunction(),
       );
 
+      fixture.detectChanges();
       fixture.detectChanges();
       getTestScheduler().flush();
 
