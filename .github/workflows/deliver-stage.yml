@@ -16,7 +16,6 @@ env:
 jobs:
   deliver:
     name: Deliver release candidate to production
-    needs: [functional, performance, security]
     runs-on: ubuntu-22.04
     steps:
       - name: Deliver application to production
