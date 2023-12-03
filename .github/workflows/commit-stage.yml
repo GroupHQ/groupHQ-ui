@@ -39,7 +39,7 @@ jobs:
           npx stylelint "**/*.css"
           npx stylelint "**/*.scss"
       - name: Build Angular App
-        run: npm run build -- --configuration production && cp -r ./nginx/* ./dist/
+        run: npm run build
       - name: Run Tests
         run: npm run ci:test
       - name: Code vulnerability scanning
