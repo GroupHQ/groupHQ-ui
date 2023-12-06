@@ -3,7 +3,7 @@
 
 npm run build
 
-pack build "$EXPECTED_REF" \
+pack build "grouphq-ui" \
   --buildpack gcr.io/paketo-buildpacks/nginx \
   --builder paketobuildpacks/builder:base \
   -p dist
