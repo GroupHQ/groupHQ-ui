@@ -27,6 +27,10 @@ export class ConfigService {
     return this.config.rsocket.endpoint;
   }
 
+  public get rsocketProtocol() {
+    return this.config.rsocket.protocol;
+  }
+
   public get rsocketKeepAlive() {
     return this.config.rsocket.keepAlive;
   }

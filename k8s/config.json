@@ -1,14 +1,15 @@
 {
   "api": {
-    "port": 80,
-    "host": "127.0.0.1",
+    "port": 443,
+    "host": "localhost",
     "endpoint": "",
-    "protocol": "http"
+    "protocol": "https"
   },
   "rsocket": {
-    "host": "127.0.0.1",
-    "port": 80,
+    "host": "localhost",
+    "port": 443,
     "endpoint": "rsocket",
+    "protocol": "wss",
     "keepAlive": 5,
     "lifetime": 30,
     "minimumDisconnectRetryTime": 5,

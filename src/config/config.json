@@ -9,6 +9,7 @@
     "host": "localhost",
     "port": 9000,
     "endpoint": "rsocket",
+    "protocol": "ws",
     "keepAlive": 5,
     "lifetime": 30,
     "minimumDisconnectRetryTime": 5,

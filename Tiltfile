@@ -3,7 +3,7 @@ custom_build(
     # Name of the container image
     ref = 'grouphq-ui',
     # Command to build the container image
-    command = 'packApp.sh',
+    command = 'packAppTilt.sh',
     # Files to watch that trigger a new build
     deps = ['angular.json', 'src']
 )

@@ -13,6 +13,7 @@ export class RsocketConnectorService {
   private readonly HOST: string = "localhost";
   private readonly PORT: number = 9000;
   private readonly ENDPOINT: string = "rsocket";
+  private readonly PROTOCOL: string = "ws";
   private readonly KEEP_ALIVE: number = 5;
   private readonly LIFETIME: number = 30;
 
@@ -24,6 +25,7 @@ export class RsocketConnectorService {
       this.HOST = configService.rsocketHost ?? this.HOST;
       this.PORT = configService.rsocketPort ?? this.PORT;
       this.ENDPOINT = configService.rsocketEndpoint ?? this.ENDPOINT;
+      this.PROTOCOL = configService.rsocketProtocol ?? this.PROTOCOL;
       this.KEEP_ALIVE = configService.rsocketKeepAlive ?? this.KEEP_ALIVE;
       this.LIFETIME = configService.rsocketLifetime ?? this.LIFETIME;
     }
@@ -73,7 +75,7 @@ export class RsocketConnectorService {
         lifetime: this.getLifetimeTimeMilliseconds(), // time (ms) since last keep-alive acknowledgement that the connection will be considered dead
       },
       transport: new WebsocketClientTransport({
-        url: `ws://${this.HOST}:${this.PORT}/${this.ENDPOINT}`,
+        url: `${this.PROTOCOL}://${this.HOST}:${this.PORT}/${this.ENDPOINT}`,
         wsCreator: (url: string) => {
           return new WebSocket(url) as WebSocket;
         },

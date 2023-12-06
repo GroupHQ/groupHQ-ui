@@ -12,6 +12,7 @@ export type Config = {
     host: string;
     port: number;
     endpoint: string;
+    protocol: string;
     keepAlive: number;
     lifetime: number;
     minimumDisconnectRetryTime: number;
