@@ -2,13 +2,13 @@
   "api": {
     "host": "localhost",
     "port": 9000,
-    "endpoint": "",
+    "endpoint": "/api",
     "protocol": "http"
   },
   "rsocket": {
     "host": "localhost",
     "port": 9000,
-    "endpoint": "rsocket",
+    "endpoint": "api/rsocket",
     "protocol": "ws",
     "keepAlive": 5,
     "lifetime": 30,
