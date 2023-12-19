@@ -1,3 +1,4 @@
+# By default, build image locally unless env variable is set to false
 build_locally = os.getenv('TILT_BUILD_GROUPHQ_UI_LOCALLY', 'true').lower() == 'true'
 
 # Build
