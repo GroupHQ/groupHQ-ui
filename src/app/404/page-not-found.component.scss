@@ -1,0 +1,49 @@
+@use "../../custom-theme-colors" as theme;
+
+.page-not-found-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background-color: theme.$grouphq-ui-not-found;
+  position: relative;
+}
+
+.page-not-found-title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 324px;
+  position: relative;
+
+  .page-not-found-title {
+    margin: 64px 240px;
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    text-shadow: 0 0 25px rgb(0 0 0 / 25%);
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+
+    &.page-not-found-title-tablet {
+      margin: 120px 32px;
+    }
+
+    &.page-not-found-title-handset {
+      margin: 120px 16px;
+      font-size: 20px;
+    }
+  }
+}
+
+.page-not-found-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("../../assets/Crazy Nodes.png") repeat 50%;
+  filter: brightness(50%) saturate(0%);
+}

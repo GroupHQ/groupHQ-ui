@@ -88,6 +88,9 @@ export class NavComponent implements OnInit, OnDestroy {
           case "sources":
             this.select("SOURCES");
             break;
+          default:
+            this.select(undefined);
+            break;
         }
       });
   }

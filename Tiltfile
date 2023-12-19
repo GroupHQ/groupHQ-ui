@@ -12,7 +12,6 @@ if build_locally:
         deps = ['angular.json', 'src']
     )
 
-
 # Deploy
 k8s_yaml(kustomize('k8s'))
 
