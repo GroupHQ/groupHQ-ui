@@ -3,8 +3,8 @@ import { GroupsService } from "./groups.service";
 import { PublicEventModel } from "../../model/publicEvent.model";
 import { GroupModel } from "../../model/group.model";
 import { EventTypeEnum } from "../../model/enums/eventType.enum";
-import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
-import { Subject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
+import { MemberModel } from "../../model/member.model";
 
 export interface GroupUpdate {
   updateFunction: () => void;
@@ -17,13 +17,17 @@ export interface GroupUpdate {
 })
 export class GroupManagerService {
   private _groupUpdateActions$ = new Subject<GroupUpdate>();
-  public groups: GroupModel[] = [];
+  public readonly groups = new BehaviorSubject<GroupModel[]>([]);
 
   constructor(private readonly groupService: GroupsService) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.groupService.currentSort.subscribe((_) => {
       this.triggerSort();
     });
+  }
+
+  get groups$() {
+    return this.groups.asObservable();
   }
 
   get groupUpdateActions$() {
@@ -40,27 +44,25 @@ export class GroupManagerService {
       case EventTypeEnum.GROUP_CREATED:
         this.addGroup(group);
         break;
-      case EventTypeEnum.GROUP_STATUS_UPDATED:
-        this.updateGroupStatus(publicEvent.aggregateId, group);
+      case EventTypeEnum.GROUP_UPDATED:
+        this.updateGroup(group);
         break;
       case EventTypeEnum.MEMBER_JOINED: {
-        const groupJoined = this.groups.find(
-          (group) => group.id === publicEvent.aggregateId,
-        );
+        const groupJoined = this.groups
+          .getValue()
+          .find((group) => group.id === publicEvent.aggregateId);
         if (!groupJoined) return;
-        this.updateGroupSize(publicEvent.aggregateId, {
-          currentGroupSize: groupJoined.currentGroupSize + 1,
-        });
+        const member = JSON.parse(publicEvent.eventData) as MemberModel;
+        this.updateGroupSize(member, groupJoined, EventTypeEnum.MEMBER_JOINED);
         break;
       }
       case EventTypeEnum.MEMBER_LEFT: {
-        const groupLeft = this.groups.find(
-          (group) => group.id === publicEvent.aggregateId,
-        );
+        const groupLeft = this.groups
+          .getValue()
+          .find((group) => group.id === publicEvent.aggregateId);
         if (!groupLeft) return;
-        this.updateGroupSize(publicEvent.aggregateId, {
-          currentGroupSize: groupLeft.currentGroupSize - 1,
-        });
+        const member = JSON.parse(publicEvent.eventData) as MemberModel;
+        this.updateGroupSize(member, groupLeft, EventTypeEnum.MEMBER_LEFT);
         break;
       }
       default:
@@ -76,44 +78,40 @@ export class GroupManagerService {
 
     this._groupUpdateActions$.next({
       updateFunction: () => {
-        this.groupService.insertGroup(groupToAdd, this.groups);
+        this.groupService.insertGroup(groupToAdd, this.groups.getValue());
       },
       eventType: EventTypeEnum.GROUP_CREATED,
       groupId: groupToAdd.id,
     });
   }
 
-  private updateGroupStatus(groupId: number, updatedGroupInfo: GroupModel) {
-    const updatedGroup = this.groupService.updateGroup(
-      groupId,
-      updatedGroupInfo,
-      this.groups,
+  private updateGroup(updatedGroup: GroupModel) {
+    this.groups.next(
+      this.groupService.updateGroup(updatedGroup, this.groups.getValue()),
     );
-    if (updatedGroup && updatedGroup.status !== GroupStatusEnum.ACTIVE) {
-      this.removeGroup(groupId);
+  }
+
+  private updateGroupSize(
+    member: MemberModel,
+    group: GroupModel,
+    event: EventTypeEnum.MEMBER_JOINED | EventTypeEnum.MEMBER_LEFT,
+  ) {
+    let memberListUpdated;
+    if (event === EventTypeEnum.MEMBER_JOINED) {
+      memberListUpdated = this.groupService.addMember(member, group);
+    } else {
+      memberListUpdated = this.groupService.removeMember(member.id, group);
     }
-  }
 
-  private removeGroup(groupId: number) {
-    this._groupUpdateActions$.next({
-      updateFunction: () => this.groupService.removeGroup(groupId, this.groups),
-      eventType: EventTypeEnum.GROUP_DISBANDED,
-      groupId: groupId,
-    });
-  }
-
-  private updateGroupSize(groupId: number, change: Partial<GroupModel>) {
-    if (this.groupService.updateGroup(groupId, change, this.groups)) {
-      if (this.groupService.shouldResortAfterSizeChange()) {
-        this.triggerSort();
-      }
+    if (memberListUpdated && this.groupService.shouldResortAfterSizeChange()) {
+      this.triggerSort();
     }
   }
 
   triggerSort() {
     this._groupUpdateActions$.next({
       updateFunction: () =>
-        (this.groups = this.groupService.sortGroups(this.groups)),
+        this.groups.next(this.groupService.sortGroups(this.groups.getValue())),
       eventType: "SORT",
       groupId: -1,
     });

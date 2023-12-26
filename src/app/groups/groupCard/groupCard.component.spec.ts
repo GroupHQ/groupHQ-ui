@@ -4,6 +4,7 @@ import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { GroupDetailsDialogComponent } from "../dialogs/groupDetailsDialog/groupDetailsDialog.component";
 import { Component } from "@angular/core";
 import { GroupModel } from "../../model/group.model";
+import { MemberModel } from "../../model/member.model";
 
 @Component({
   template: `<app-group-card [group]="group"></app-group-card>`,
@@ -16,14 +17,17 @@ class TestHostComponent {
     title: "Group 1",
     description: "Group 1 description",
     status: "ACTIVE",
-    currentGroupSize: 5,
     maxGroupSize: 10,
-    lastActive: Date.now().toString(),
     lastModifiedDate: Date.now().toString(),
     lastModifiedBy: "Test User 1",
     createdDate: Date.now().toString(),
     createdBy: "Test User 1",
     version: 1,
+    members: [
+      new MemberModel(1, "Test User 1", "ACTIVE", Date.now().toString(), null),
+      new MemberModel(2, "Test User 2", "ACTIVE", Date.now().toString(), null),
+      new MemberModel(3, "Test User 3", "ACTIVE", Date.now().toString(), null),
+    ],
   };
 }
 
@@ -76,7 +80,7 @@ describe("GroupCardComponent", () => {
   it("has a group card with a current group size", () => {
     const element: HTMLElement | null = page.memberCountElement;
     expect(element).toBeTruthy();
-    expect(element!.textContent).toContain("5");
+    expect(element!.textContent).toContain("3");
   });
 
   it("has a group card with a max group size", () => {

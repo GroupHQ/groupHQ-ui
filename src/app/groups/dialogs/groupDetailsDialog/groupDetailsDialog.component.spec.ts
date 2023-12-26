@@ -5,28 +5,59 @@ import {
   MatDialogRef,
 } from "@angular/material/dialog";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { EMPTY, of } from "rxjs";
 import { GroupDetailsDialogComponent } from "./groupDetailsDialog.component";
-import { HttpService } from "../../../services/network/http.service";
-import { IdentificationService } from "../../../services/user/identification.service";
 import { MemberModel } from "../../../model/member.model";
 import { MemberStatusEnum } from "../../../model/enums/memberStatus.enum";
 import { GroupStatusEnum } from "../../../model/enums/groupStatus.enum";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatListModule } from "@angular/material/list";
+import { GroupManagerService } from "../../services/groupManager.service";
+import { GroupModel } from "../../../model/group.model";
 
 describe("GroupDetailsDialogComponent", () => {
   let component: GroupDetailsDialogComponent;
   let fixture: ComponentFixture<GroupDetailsDialogComponent>;
-  let dialogRefSpy: jasmine.SpyObj<MatDialogRef<GroupDetailsDialogComponent>>;
-  let httpServiceSpy: jasmine.SpyObj<HttpService>;
-  let idServiceSpy: jasmine.SpyObj<IdentificationService>;
+  let dialogRefStub: jasmine.SpyObj<MatDialogRef<GroupDetailsDialogComponent>>;
+
+  const members: MemberModel[] = [
+    new MemberModel(
+      1,
+      "Brooks Foley",
+      MemberStatusEnum.ACTIVE,
+      new Date().toISOString(),
+      null,
+    ),
+    new MemberModel(
+      2,
+      "Test User",
+      MemberStatusEnum.ACTIVE,
+      new Date().toISOString(),
+      null,
+    ),
+    new MemberModel(
+      3,
+      "Another User",
+      MemberStatusEnum.ACTIVE,
+      new Date().toISOString(),
+      null,
+    ),
+  ];
+  const group: GroupModel = new GroupModel(
+    1,
+    "Farming For Gold",
+    "Let's meet at the Dwarven Mines south entrance.",
+    6,
+    new Date().toISOString(),
+    new Date().toISOString(),
+    "Test User",
+    "Test User",
+    1,
+    GroupStatusEnum.ACTIVE,
+    members,
+  );
 
   beforeEach(async () => {
-    dialogRefSpy = jasmine.createSpyObj("MatDialogRef", ["close"]);
-    httpServiceSpy = jasmine.createSpyObj("HttpService", ["getGroupMembers"]);
-    httpServiceSpy.getGroupMembers.and.returnValue(EMPTY);
-    idServiceSpy = jasmine.createSpyObj("IdentificationService", ["uuid"]);
+    dialogRefStub = jasmine.createSpyObj("MatDialogRef", ["close"]);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -37,10 +68,9 @@ describe("GroupDetailsDialogComponent", () => {
         GroupDetailsDialogComponent,
       ],
       providers: [
-        { provide: MatDialogRef, useValue: dialogRefSpy },
-        { provide: MAT_DIALOG_DATA, useValue: {} },
-        { provide: HttpService, useValue: httpServiceSpy },
-        { provide: IdentificationService, useValue: idServiceSpy },
+        { provide: MatDialogRef, useValue: dialogRefStub },
+        { provide: MAT_DIALOG_DATA, useValue: group },
+        GroupManagerService,
       ],
     }).compileComponents();
   });
@@ -56,23 +86,6 @@ describe("GroupDetailsDialogComponent", () => {
     fixture = TestBed.createComponent(GroupDetailsDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-
-    component.group = {
-      id: 1,
-      title: "Farming For Gold",
-      description: "Let's meet at the Dwarven Mines south entrance.",
-      status: GroupStatusEnum.ACTIVE,
-      lastActive: new Date().toISOString(),
-      lastModifiedBy: "System",
-      lastModifiedDate: new Date().toISOString(),
-      createdDate: new Date().toISOString(),
-      createdBy: "System",
-      currentGroupSize: 3,
-      maxGroupSize: 6,
-      version: 1,
-    };
-    fixture.detectChanges();
-
     const compiled = fixture.nativeElement;
     expect(
       compiled.querySelector('[data-test="group-title"]').textContent,
@@ -91,39 +104,17 @@ describe("GroupDetailsDialogComponent", () => {
     fixture.detectChanges();
 
     component.onNoClick();
-    expect(dialogRefSpy.close.calls.count()).toBe(1);
+    expect(dialogRefStub.close.calls.count()).toBe(1);
   });
 
   it("should display all the group members", () => {
-    const members: MemberModel[] = [
-      {
-        id: 1,
-        username: "Brooks Foley",
-        memberStatus: MemberStatusEnum.ACTIVE,
-        joinedDate: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        username: "Test User",
-        memberStatus: MemberStatusEnum.ACTIVE,
-        joinedDate: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        username: "Another User",
-        memberStatus: MemberStatusEnum.ACTIVE,
-        joinedDate: new Date().toISOString(),
-      },
-    ];
-
-    httpServiceSpy.getGroupMembers.and.returnValue(of(members));
     fixture = TestBed.createComponent(GroupDetailsDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    expect(component.members.length).toBe(3);
-    expect(component.members[0].username).toBe("Brooks Foley");
-    expect(component.members[1].username).toBe("Test User");
-    expect(component.members[2].username).toBe("Another User");
+    expect(component.group.members.length).toBe(3);
+    expect(component.group.members[0].username).toBe("Brooks Foley");
+    expect(component.group.members[1].username).toBe("Test User");
+    expect(component.group.members[2].username).toBe("Another User");
   });
 });

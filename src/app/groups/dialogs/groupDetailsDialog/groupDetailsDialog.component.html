@@ -18,17 +18,20 @@
         </div>
         <div class="group-detail" data-test="group-last-activity">
           <p class="detail-title">Last Activity</p>
-          <p>{{ timeSince(group.lastActive) }}</p>
+          <p>{{ timeSince(group.lastModifiedDate) }}</p>
         </div>
         <div class="group-detail" data-test="group-members-count">
           <p class="detail-title">Members</p>
-          <p>{{ group.currentGroupSize }} / {{ group.maxGroupSize }}</p>
+          <p>
+            {{ group.members ? group.members.length : 0 }} /
+            {{ group.maxGroupSize }}
+          </p>
         </div>
       </div>
     </div>
     <mat-list class="group-member-list">
       <h3 matSubheader class="member-list-subheader">Members</h3>
-      @for (member of members; track member) {
+      @for (member of group.members; track member) {
       <mat-list-item class="member-list-item" data-test="group-member">
         <mat-icon
           matListItemIcon

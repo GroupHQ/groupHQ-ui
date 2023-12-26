@@ -2,7 +2,7 @@
   matRipple
   class="group-card"
   [ngClass]="{
-    'group-card--full': group.currentGroupSize >= group.maxGroupSize
+    'group-card--full': group.members.length >= group.maxGroupSize
   }"
   (click)="openDialog()"
   data-test="group-card"
@@ -13,7 +13,7 @@
 
   <div class="member-count-container">
     <p class="member-count" data-test="member-count">
-      {{ group.currentGroupSize }} / {{ group.maxGroupSize }} members
+      {{ group.members.length }} / {{ group.maxGroupSize }} members
     </p>
   </div>
 

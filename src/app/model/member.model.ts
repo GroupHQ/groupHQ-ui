@@ -4,6 +4,6 @@ export class MemberModel {
     public username: string,
     public memberStatus: string,
     public joinedDate: string,
-    public exitedDate?: string,
+    public exitedDate: string | null,
   ) {}
 }

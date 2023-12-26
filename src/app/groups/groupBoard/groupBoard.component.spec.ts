@@ -15,7 +15,7 @@ import { cold, getTestScheduler } from "jasmine-marbles";
 import { GroupManagerService } from "../services/groupManager.service";
 import { HttpService } from "../../services/network/http.service";
 import { IdentificationService } from "../../services/user/identification.service";
-import { NEVER, of, Subject } from "rxjs";
+import { BehaviorSubject, NEVER, of, Subject } from "rxjs";
 import { AbstractRetryService } from "../../services/retry/abstractRetry.service";
 import { ConfigService } from "../../config/config.service";
 import { GroupCardComponent } from "../groupCard/groupCard.component";
@@ -85,28 +85,26 @@ const mockGroups: GroupModel[] = [
     title: "Group 1",
     description: "Group 1 description",
     status: "ACTIVE",
-    currentGroupSize: 5,
     maxGroupSize: 10,
-    lastActive: Date.now().toString(),
     lastModifiedDate: Date.now().toString(),
     lastModifiedBy: "Test User 1",
     createdDate: Date.now().toString(),
     createdBy: "Test User 1",
     version: 1,
+    members: [],
   },
   {
     id: 2,
     title: "Group 2",
     description: "Group 2 description",
     status: "ACTIVE",
-    currentGroupSize: 5,
     maxGroupSize: 10,
-    lastActive: Date.now().toString(),
     lastModifiedDate: Date.now().toString(),
     lastModifiedBy: "Test User 2",
     createdDate: Date.now().toString(),
     createdBy: "Test User 2",
     version: 1,
+    members: [],
   },
 ];
 
@@ -146,6 +144,15 @@ describe("GroupBoardComponent", () => {
     groupManagerServiceStub.triggerSort.and.callFake(() => {});
     Object.defineProperty(groupManagerServiceStub, "groupUpdateActions$", {
       get: () => NEVER,
+      configurable: true,
+    });
+    const groupsManagerObservable = new BehaviorSubject<GroupModel[]>([]);
+    Object.defineProperty(groupManagerServiceStub, "groups", {
+      value: groupsManagerObservable,
+      writable: true,
+    });
+    Object.defineProperty(groupManagerServiceStub, "groups$", {
+      get: () => groupsManagerObservable.asObservable(),
       configurable: true,
     });
 
@@ -339,7 +346,6 @@ describe("GroupBoardComponent", () => {
     it("should load groups to the component", () => {
       const groupsObservable = cold("a|", { a: mockGroups });
       httpServiceStub.getGroups.and.callFake(() => groupsObservable);
-
       component.loadGroups();
       getTestScheduler().flush();
 
@@ -355,7 +361,7 @@ describe("GroupBoardComponent", () => {
       getTestScheduler().flush();
 
       expect(httpServiceStub.getGroups).toHaveBeenCalled();
-      expect(groupManagerServiceStub.groups).toEqual(mockGroups);
+      expect(groupManagerServiceStub.groups.getValue()).toEqual(mockGroups);
     });
 
     it("should set the component state to loading when loading groups", () => {
@@ -832,7 +838,7 @@ describe("GroupBoardComponent", () => {
           groupId: "2",
         },
         {
-          eventType: EventTypeEnum.GROUP_STATUS_UPDATED,
+          eventType: EventTypeEnum.GROUP_UPDATED,
           updateFunction: jasmine.createSpy("updateFunction3"),
           groupId: "3",
         },

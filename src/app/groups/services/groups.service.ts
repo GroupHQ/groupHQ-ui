@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { GroupModel } from "../../model/group.model";
 import { GroupSortEnum } from "../../model/enums/groupSort.enum";
+import { MemberModel } from "../../model/member.model";
+import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
 
 @Injectable({
   providedIn: "root",
@@ -54,25 +56,42 @@ export class GroupsService {
 
   private sortGroupsByCurrentGroupSize(groups: GroupModel[], reverse: boolean) {
     return groups.sort((a, b) => {
-      const order = b.currentGroupSize - a.currentGroupSize;
+      const order = b.members.length - a.members.length;
       return reverse ? -order : order;
     });
   }
 
-  updateGroup(
-    groupId: number,
-    updatedGroupInfo: Partial<GroupModel>,
-    groups: GroupModel[],
-  ): GroupModel | null {
-    const group = groups.find((g) => g.id === groupId);
-    if (group) {
-      group.status = updatedGroupInfo.status ?? group.status;
-      group.lastActive = updatedGroupInfo.lastActive ?? group.lastActive;
-      group.currentGroupSize =
-        updatedGroupInfo.currentGroupSize ?? group.currentGroupSize;
-      return group;
+  updateGroup(updatedGroup: GroupModel, groups: GroupModel[]): GroupModel[] {
+    if (updatedGroup.status !== GroupStatusEnum.ACTIVE) {
+      return groups.filter((group) => group.id !== updatedGroup.id);
+    } else {
+      return groups.map((group) =>
+        group.id === updatedGroup.id
+          ? { ...updatedGroup, members: group.members }
+          : group,
+      );
     }
-    return null;
+  }
+
+  addMember(member: MemberModel, group: GroupModel) {
+    const isMemberInGroup = group.members.find(
+      (memberInGroup) => memberInGroup.id === member.id,
+    );
+    if (isMemberInGroup) {
+      return false;
+    } else {
+      group.members.push(member);
+      return true;
+    }
+  }
+
+  removeMember(memberId: number, group: GroupModel) {
+    const index = group.members.findIndex((member) => member.id === memberId);
+    if (index !== -1) {
+      group.members.splice(index, 1);
+      return true;
+    }
+    return false;
   }
 
   shouldResortAfterSizeChange(): boolean {
@@ -112,7 +131,7 @@ export class GroupsService {
       case GroupSortEnum.LEAST_MEMBERS: {
         const largerGroupIndex = groups.findIndex(
           (groupInList) =>
-            groupInList.currentGroupSize > groupToAdd.currentGroupSize,
+            groupInList.members.length > groupToAdd.members.length,
         );
         console.log("largerGroupIndex: ", largerGroupIndex);
         this.insertUsingIndex(largerGroupIndex, groupToAdd, groups);
@@ -121,7 +140,7 @@ export class GroupsService {
       case GroupSortEnum.MOST_MEMBERS: {
         const smallerGroupIndex = groups.findIndex(
           (groupInList) =>
-            groupInList.currentGroupSize < groupToAdd.currentGroupSize,
+            groupInList.members.length < groupToAdd.members.length,
         );
         console.log("smallerGroupIndex: ", smallerGroupIndex);
         this.insertUsingIndex(smallerGroupIndex, groupToAdd, groups);
