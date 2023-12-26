@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -10,14 +10,12 @@ import {
 import { GroupInputNameDialogComponent } from "../groupInputNameDialog/groupInputNameDialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GroupModel } from "../../../model/group.model";
-import { HttpService } from "../../../services/network/http.service";
-import { MemberModel } from "../../../model/member.model";
 import { Subscription } from "rxjs";
-import { IdentificationService } from "../../../services/user/identification.service";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import { AppMediaBreakpointDirective } from "../../../shared/directives/attr.breakpoint";
+import { GroupManagerService } from "../../services/groupManager.service";
 
 @Component({
   selector: "app-group-details-dialog",
@@ -34,24 +32,27 @@ import { AppMediaBreakpointDirective } from "../../../shared/directives/attr.bre
     MatDialogClose,
   ],
 })
-export class GroupDetailsDialogComponent implements OnDestroy {
-  members: MemberModel[] = [];
-  subscription: Subscription;
+export class GroupDetailsDialogComponent implements OnInit, OnDestroy {
+  private subscriptions = new Subscription();
 
   constructor(
     private _snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<GroupDetailsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public group: GroupModel,
     public dialog: MatDialog,
-    public httpService: HttpService,
-    private idService: IdentificationService,
-  ) {
-    const username = this.idService.uuid;
-    this.subscription = httpService
-      .getGroupMembers(username, group.id)
-      .subscribe((members) => {
-        this.members = members;
-      });
+    private groupManagerService: GroupManagerService,
+  ) {}
+
+  ngOnInit() {
+    this.subscriptions.add(
+      this.groupManagerService.groups$.subscribe((groups) => {
+        // Update the group data
+        const updatedGroup = groups.find((g) => g.id === this.group.id);
+        if (updatedGroup) {
+          this.group = updatedGroup;
+        }
+      }),
+    );
   }
 
   openInputNameDialog(): void {
@@ -95,6 +96,6 @@ export class GroupDetailsDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 }

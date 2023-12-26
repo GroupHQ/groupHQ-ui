@@ -3,15 +3,16 @@ import { GroupsService } from "./groups.service";
 import { GroupModel } from "../../model/group.model";
 import { GroupSortEnum } from "../../model/enums/groupSort.enum";
 import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
+import { MemberModel } from "../../model/member.model";
 
 describe("GroupsService", () => {
   let service: GroupsService;
   let groups: GroupModel[] = [];
   const date = new Date(99, 0, 1, 0, 0, 0);
   const groupDates = [
-    new Date(date.getTime() + 1000).toString(),
-    new Date(date.getTime() + 2000).toString(),
-    new Date(date.getTime() + 3000).toString(),
+    new Date(date.getTime() - 3000).toString(),
+    new Date(date.getTime() - 2000).toString(),
+    new Date(date.getTime() - 1000).toString(),
   ];
 
   beforeEach(() => {
@@ -26,28 +27,56 @@ describe("GroupsService", () => {
         title: "Group 1",
         description: "Group 1 description",
         status: "ACTIVE",
-        currentGroupSize: 5,
         maxGroupSize: 10,
-        lastActive: groupDates[0],
         lastModifiedDate: groupDates[0],
         lastModifiedBy: "Test User 1",
         createdDate: groupDates[0],
         createdBy: "Test User 1",
         version: 1,
+        members: [
+          new MemberModel(
+            1,
+            "Test User 1",
+            "ACTIVE",
+            new Date().toString(),
+            null,
+          ),
+        ],
       },
       {
         id: 2,
         title: "Group 2",
         description: "Group 2 description",
         status: "ACTIVE",
-        currentGroupSize: 9,
         maxGroupSize: 10,
-        lastActive: groupDates[1],
         lastModifiedDate: groupDates[1],
         lastModifiedBy: "Test User 2",
         createdDate: groupDates[1],
         createdBy: "Test User 2",
         version: 1,
+        members: [
+          new MemberModel(
+            2,
+            "Test User 2",
+            "ACTIVE",
+            new Date().toString(),
+            null,
+          ),
+          new MemberModel(
+            3,
+            "Test User 3",
+            "ACTIVE",
+            new Date().toString(),
+            null,
+          ),
+          new MemberModel(
+            4,
+            "Test User 4",
+            "ACTIVE",
+            new Date().toString(),
+            null,
+          ),
+        ],
       },
     ];
   });
@@ -115,31 +144,55 @@ describe("GroupsService", () => {
   });
 
   describe("#updateGroup", () => {
-    it("should update group status", () => {
-      const updates: Partial<GroupModel> = {
+    it("should remove the group when its status becomes non-active", () => {
+      const updatedGroup: GroupModel = {
+        id: 1,
+        title: "Group 1",
+        description: "Group 1 description",
         status: GroupStatusEnum.AUTO_DISBANDED,
+        maxGroupSize: 10,
+        lastModifiedDate: new Date().toString(),
+        lastModifiedBy: "Test User 1",
+        createdDate: groupDates[0],
+        createdBy: "Test User 1",
+        version: 2,
+        members: [],
       };
-      service.updateGroup(groups[0].id, updates, groups);
+      service.updateGroup(updatedGroup, groups);
 
-      expect(groups[0].status).toBe(updates.status!);
+      expect(groups).not.toContain(updatedGroup);
     });
 
     it("should update group lastActive", () => {
-      const updates: Partial<GroupModel> = {
-        lastActive: new Date().toString(),
+      const updatedGroup: GroupModel = {
+        id: 1,
+        title: "Group 1",
+        description: "Group 1 description",
+        status: GroupStatusEnum.ACTIVE,
+        maxGroupSize: 10,
+        lastModifiedDate: new Date().toString(),
+        lastModifiedBy: "Test User 1",
+        createdDate: groupDates[0],
+        createdBy: "Test User 1",
+        version: 2,
+        members: [],
       };
-      service.updateGroup(groups[0].id, updates, groups);
+      groups = service.updateGroup(updatedGroup, groups);
 
-      expect(groups[0].lastActive).toBe(updates.lastActive!);
+      expect(groups[0].lastModifiedDate).toBe(updatedGroup.lastModifiedDate);
     });
 
     it("should update group currentGroupSize", () => {
-      const updates: Partial<GroupModel> = {
-        currentGroupSize: 8,
+      const member: MemberModel = {
+        id: 1,
+        username: "Test User 1",
+        memberStatus: "ACTIVE",
+        joinedDate: new Date().toString(),
+        exitedDate: null,
       };
-      service.updateGroup(groups[0].id, updates, groups);
+      service.addMember(member, groups[0]);
 
-      expect(groups[0].currentGroupSize).toBe(updates.currentGroupSize!);
+      expect(groups[0].members.length).toBe(1);
     });
   });
 
@@ -194,14 +247,28 @@ describe("GroupsService", () => {
         title: "Group 3",
         description: "Group 3 description",
         status: "ACTIVE",
-        currentGroupSize: 8,
         maxGroupSize: 10,
-        lastActive: new Date().toString(),
         lastModifiedDate: new Date().toString(),
         lastModifiedBy: "Test User 3",
         createdDate: new Date().toString(),
         createdBy: "Test User 3",
         version: 1,
+        members: [
+          new MemberModel(
+            5,
+            "Test User 5",
+            "ACTIVE",
+            new Date().toString(),
+            null,
+          ),
+          new MemberModel(
+            6,
+            "Test User 6",
+            "ACTIVE",
+            new Date().toString(),
+            null,
+          ),
+        ],
       };
     });
 
@@ -236,11 +303,10 @@ describe("GroupsService", () => {
       service.changeSort(GroupSortEnum.MOST_MEMBERS);
       service.sortGroups(groups);
       group.maxGroupSize = 15;
-      group.currentGroupSize = 11;
       service.insertGroup(group, groups);
 
       expect(groups.length).toBe(3);
-      expect(groups.map((group) => group.id)).toEqual([3, 2, 1]);
+      expect(groups.map((group) => group.id)).toEqual([2, 3, 1]);
     });
 
     it("should only insert group at end of list when sort is invalid", () => {

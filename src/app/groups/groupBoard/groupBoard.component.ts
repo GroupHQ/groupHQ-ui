@@ -111,7 +111,7 @@ export class GroupBoardComponent implements OnInit {
         if (this.componentState !== StatesEnum.READY) {
           return;
         }
-
+        this.changeDetectorRef.detectChanges();
         if (groupUpdate.eventType === EventTypeEnum.GROUP_DISBANDED) {
           this.flipService.animate(
             groupUpdate.updateFunction,
@@ -142,8 +142,10 @@ export class GroupBoardComponent implements OnInit {
     this.subscription = getGroupsWithRetry.subscribe({
       next: (groups) => {
         console.log("GOT GROUPS", groups);
-        this.groups = groups;
-        this.groupManagerService.groups = groups;
+        this.groupManagerService.groups.next(groups);
+        this.groupManagerService.groups$.subscribe(
+          (groups) => (this.groups = groups),
+        );
         this.transitionState(StatesEnum.READY);
       },
       error: (error) => {
