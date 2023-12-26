@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { GroupModel } from "../../model/group.model";
-import { MemberModel } from "../../model/member.model";
 import { ConfigService } from "../../config/config.service";
 
 @Injectable({
@@ -36,18 +35,6 @@ export class HttpService {
     return this.http.get<GroupModel[]>(this.getFullUrl("/groups"), {
       headers,
     });
-  }
-
-  getGroupMembers(
-    username: string,
-    groupId: number,
-  ): Observable<MemberModel[]> {
-    const headers =
-      this.buildNewHeaders().withAuthorizationHeader(username).headers;
-    return this.http.get<MemberModel[]>(
-      this.getFullUrl(`/groups/${groupId}/members`),
-      { headers },
-    );
   }
 
   public getFullUrl(endpoint: string): string {

@@ -1,9 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { HttpService } from "./http.service";
 import { ConfigService } from "../../config/config.service";
-import { MemberModel } from "../../model/member.model";
 import { GroupModel } from "../../model/group.model";
-import { MemberStatusEnum } from "../../model/enums/memberStatus.enum";
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -65,38 +63,6 @@ describe("HttpService", () => {
     expect(request.request.method).toEqual("GET");
 
     request.flush(expectedGroups);
-  });
-
-  it("should return expected members (HttpClient called once)", () => {
-    const expectedMembers: MemberModel[] = [
-      {
-        id: 1,
-        username: "Test User 1",
-        memberStatus: MemberStatusEnum.ACTIVE,
-        joinedDate: Date.now().toString(),
-        exitedDate: null,
-      },
-      {
-        id: 2,
-        username: "Test User 2",
-        memberStatus: MemberStatusEnum.ACTIVE,
-        joinedDate: Date.now().toString(),
-        exitedDate: null,
-      },
-    ];
-
-    service.getGroupMembers("username", 1).subscribe({
-      next: (members) => expect(members).toEqual(expectedMembers),
-      error: (err) => fail(`Should not return an error ${err}}`),
-    });
-
-    const request = httpTestingController.expectOne(
-      service.getFullUrl("/groups/1/members"),
-    );
-
-    expect(request.request.method).toEqual("GET");
-
-    request.flush(expectedMembers);
   });
 
   afterEach(() => {
