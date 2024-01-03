@@ -7,13 +7,15 @@ import { GroupModel } from "../../model/group.model";
 import { NgClass } from "@angular/common";
 import { MatRippleModule } from "@angular/material/core";
 import { MatCardModule } from "@angular/material/card";
+import { UserService } from "../../services/user/user.service";
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: "app-group-card",
   templateUrl: "groupCard.component.html",
   styleUrl: "groupCard.component.scss",
   standalone: true,
-  imports: [MatCardModule, MatRippleModule, NgClass],
+  imports: [MatCardModule, MatRippleModule, NgClass, MatIconModule],
 })
 export class GroupCardComponent {
   @Input() group!: GroupModel;
@@ -22,6 +24,7 @@ export class GroupCardComponent {
 
   constructor(
     public dialog: MatDialog,
+    public userService: UserService,
     private readonly breakpoints$: BreakpointObserver,
     private elementRef: ElementRef,
   ) {}

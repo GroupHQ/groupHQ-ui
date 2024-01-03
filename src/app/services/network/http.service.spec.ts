@@ -6,6 +6,7 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from "@angular/common/http/testing";
+import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
 
 describe("HttpService", () => {
   let service: HttpService;
@@ -27,7 +28,7 @@ describe("HttpService", () => {
         id: 1,
         title: "Group 1",
         description: "Group 1 description",
-        status: "ACTIVE",
+        status: GroupStatusEnum.ACTIVE,
         maxGroupSize: 10,
         lastModifiedDate: Date.now().toString(),
         lastModifiedBy: "Test User 1",
@@ -40,7 +41,7 @@ describe("HttpService", () => {
         id: 2,
         title: "Group 2",
         description: "Group 2 description",
-        status: "ACTIVE",
+        status: GroupStatusEnum.ACTIVE,
         maxGroupSize: 10,
         lastModifiedDate: Date.now().toString(),
         lastModifiedBy: "Test User 2",

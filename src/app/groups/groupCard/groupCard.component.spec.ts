@@ -5,6 +5,9 @@ import { GroupDetailsDialogComponent } from "../dialogs/groupDetailsDialog/group
 import { Component } from "@angular/core";
 import { GroupModel } from "../../model/group.model";
 import { MemberModel } from "../../model/member.model";
+import { UserService } from "../../services/user/user.service";
+import { MemberStatusEnum } from "../../model/enums/memberStatus.enum";
+import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
 
 @Component({
   template: `<app-group-card [group]="group"></app-group-card>`,
@@ -16,7 +19,7 @@ class TestHostComponent {
     id: 1,
     title: "Group 1",
     description: "Group 1 description",
-    status: "ACTIVE",
+    status: GroupStatusEnum.ACTIVE,
     maxGroupSize: 10,
     lastModifiedDate: Date.now().toString(),
     lastModifiedBy: "Test User 1",
@@ -24,9 +27,30 @@ class TestHostComponent {
     createdBy: "Test User 1",
     version: 1,
     members: [
-      new MemberModel(1, "Test User 1", "ACTIVE", Date.now().toString(), null),
-      new MemberModel(2, "Test User 2", "ACTIVE", Date.now().toString(), null),
-      new MemberModel(3, "Test User 3", "ACTIVE", Date.now().toString(), null),
+      new MemberModel(
+        1,
+        "Test User 1",
+        1,
+        MemberStatusEnum.ACTIVE,
+        Date.now().toString(),
+        null,
+      ),
+      new MemberModel(
+        2,
+        "Test User 2",
+        1,
+        MemberStatusEnum.ACTIVE,
+        Date.now().toString(),
+        null,
+      ),
+      new MemberModel(
+        3,
+        "Test User 3",
+        1,
+        MemberStatusEnum.ACTIVE,
+        Date.now().toString(),
+        null,
+      ),
     ],
   };
 }
@@ -36,11 +60,13 @@ describe("GroupCardComponent", () => {
   let testHost: TestHostComponent;
   let dialog: MatDialog;
   let page: GroupCardPage;
+  const userServiceStub: Partial<UserService> = {};
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [GroupCardComponent, TestHostComponent],
       providers: [
+        { provide: UserService, useValue: userServiceStub },
         {
           provide: MatDialog,
           useValue: {
@@ -100,6 +126,20 @@ describe("GroupCardComponent", () => {
       jasmine.any(MatDialogConfig),
     );
   });
+
+  it("shows the 'your group' icon when the user is a member of the group", () => {
+    userServiceStub.currentGroupId = 1;
+    fixture.detectChanges();
+
+    expect(page.isYourGroupIconVisible).toBeTrue();
+  });
+
+  it("does not show the 'your group' icon when the user is not a member of the group", () => {
+    userServiceStub.currentGroupId = null;
+    fixture.detectChanges();
+
+    expect(page.isYourGroupIconVisible).toBeFalse();
+  });
 });
 
 class GroupCardPage {
@@ -131,6 +171,14 @@ class GroupCardPage {
     return this._cardComponent.querySelector<HTMLElement>(
       '[data-test="member-count"]',
     );
+  }
+
+  get isYourGroupIconVisible(): boolean {
+    const element = this._cardComponent.querySelector<HTMLElement>(
+      '[data-test="your-group-icon"]',
+    );
+
+    return element !== null;
   }
 
   clickCard(): void {

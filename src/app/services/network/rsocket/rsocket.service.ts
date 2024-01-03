@@ -35,16 +35,26 @@ export class RsocketService {
         configService.rsocketMaximumDisconnectRetryTime ??
         this.MAXIMUM_DISCONNECT_RETRY_TIME;
     }
+  }
 
-    this.setupRsocketService();
+  public initializeRsocketConnection(username: string, password = "empty") {
+    this.setupRsocketService(username, password);
   }
 
   public get isConnectionReady$() {
     return this._isConnectionReady$.asObservable();
   }
 
+  public get isConnectionReady(): boolean {
+    return this._isConnectionReady$.getValue();
+  }
+
   public get rsocketConnection$() {
     return this._rsocketConnection$.asObservable();
+  }
+
+  public get rsocketConnection(): RSocket | null {
+    return this._rsocketConnection$.getValue();
   }
 
   /**
@@ -53,15 +63,17 @@ export class RsocketService {
    * to be COMPLETE. In this case, the RSocket's onClose handler calls this method to restart the subscription.
    * @private
    */
-  private setupRsocketService() {
+  private setupRsocketService(username: string, password = "empty") {
     const connectWithRetry = () => {
       return this.retryService
-        .addRetryLogic(this.rsocketConnectorService.connectToServer())
+        .addRetryLogic(
+          this.rsocketConnectorService.connectToServer(username, password),
+        )
         .pipe(
           tap((rsocket) => {
             console.log("RSocket object:", rsocket);
-            this._isConnectionReady$.next(true);
             this._rsocketConnection$.next(rsocket);
+            this._isConnectionReady$.next(true);
 
             // Setup onClose handler with delay
             rsocket.onClose((error) => {
@@ -72,7 +84,7 @@ export class RsocketService {
               // Use setTimeout to delay reconnection attempt
               setTimeout(() => {
                 console.log("Attempting to re-establish connection...");
-                this.setupRsocketService();
+                this.setupRsocketService(username, password);
               }, this.calculateRetryIntervalWithJitter());
             });
           }),

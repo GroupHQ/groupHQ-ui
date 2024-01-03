@@ -9,7 +9,6 @@ import { RsocketMetadataService } from "./rsocketMetadata.service";
   providedIn: "root",
 })
 export class RsocketConnectorService {
-  private readonly CONNECTOR;
   private readonly HOST: string = "localhost";
   private readonly PORT: number = 9000;
   private readonly ENDPOINT: string = "rsocket";
@@ -29,8 +28,6 @@ export class RsocketConnectorService {
       this.KEEP_ALIVE = configService.rsocketKeepAlive ?? this.KEEP_ALIVE;
       this.LIFETIME = configService.rsocketLifetime ?? this.LIFETIME;
     }
-
-    this.CONNECTOR = this.makeConnector();
   }
 
   /**
@@ -39,18 +36,25 @@ export class RsocketConnectorService {
    * This will NOT fail if an RSocket connection is established and then lost.
    * @private
    */
-  public connectToServer() {
-    return defer(() => from(this.CONNECTOR.connect())).pipe(
-      tap((rsocket) => {
-        console.log("Connected to server in RSocketConnectorService", rsocket);
-      }),
-      catchError((error) => {
-        console.log(
-          "Error connecting to server in RSocketConnector Service:",
-          error,
-        );
-        throw new Error("Failed to connect to server");
-      }),
+  public connectToServer(username: string, password = "empty") {
+    const rSocketConnector = this.createConnector(username, password);
+
+    return defer(() =>
+      from(rSocketConnector.connect()).pipe(
+        tap((rsocket) => {
+          console.log(
+            "Connected to server in RSocketConnectorService",
+            rsocket,
+          );
+        }),
+        catchError((error) => {
+          console.log(
+            "Error connecting to server in RSocketConnector Service:",
+            error,
+          );
+          throw new Error("Failed to connect to server");
+        }),
+      ),
     );
   }
 
@@ -62,14 +66,17 @@ export class RsocketConnectorService {
     return this.LIFETIME * 1000;
   }
 
-  private makeConnector() {
+  private createConnector(username = "user", password = "empty") {
     return new RSocketConnector({
       setup: {
         dataMimeType: "application/json",
         metadataMimeType: "message/x.rsocket.composite-metadata.v0",
         payload: {
           data: null,
-          metadata: this.rsocketMetadataService.getAuthMetadataOnly(),
+          metadata: this.rsocketMetadataService.authMetadata(
+            username,
+            password,
+          ),
         },
         keepAlive: this.getKeepAliveTimeMilliseconds(), // interval (ms) to send keep-alive frames
         lifetime: this.getLifetimeTimeMilliseconds(), // time (ms) since last keep-alive acknowledgement that the connection will be considered dead

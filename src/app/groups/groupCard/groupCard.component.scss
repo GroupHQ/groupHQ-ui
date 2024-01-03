@@ -97,4 +97,14 @@
       margin: 0;
     }
   }
+
+  .your-group-dot {
+    margin: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #21d31b;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #fff;
+  }
 }

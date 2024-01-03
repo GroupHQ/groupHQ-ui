@@ -1,4 +1,5 @@
 import { MemberModel } from "./member.model";
+import { GroupStatusEnum } from "./enums/groupStatus.enum";
 
 export class GroupModel {
   constructor(
@@ -11,7 +12,7 @@ export class GroupModel {
     public createdBy: string,
     public lastModifiedBy: string,
     public version: number,
-    public status: string,
+    public status: GroupStatusEnum,
     public members: MemberModel[],
   ) {}
 }

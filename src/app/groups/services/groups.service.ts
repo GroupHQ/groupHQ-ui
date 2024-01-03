@@ -86,8 +86,10 @@ export class GroupsService {
   }
 
   removeMember(memberId: number, group: GroupModel) {
+    console.log("Current members: ", group.members);
     const index = group.members.findIndex((member) => member.id === memberId);
     if (index !== -1) {
+      console.log("Removing member from group");
       group.members.splice(index, 1);
       return true;
     }

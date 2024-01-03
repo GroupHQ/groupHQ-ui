@@ -19,6 +19,14 @@
     &.group-title-handset {
       font-size: 24px;
     }
+
+    &.group-title-handset::before {
+      display: inline-block;
+      width: 0;
+      height: 40px;
+      content: unset;
+      vertical-align: 0;
+    }
   }
 
   .quote-block {
@@ -56,9 +64,11 @@
     flex-flow: row;
     gap: 16px;
 
-    button {
+    .dialog-actions {
+      display: flex;
+      align-items: center;
       margin: 0;
-      flex-grow: 1;
+      flex: 1;
       border-radius: 4px;
       min-width: 200px;
       color: var(--shades-white, #fff);

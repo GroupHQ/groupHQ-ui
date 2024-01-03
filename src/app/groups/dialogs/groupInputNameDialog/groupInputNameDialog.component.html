@@ -1,48 +1,79 @@
 <div class="group-input-name-dialog" data-test="group-input-name-dialog">
-  <p appMedia app-media-base-class="group-title" mat-dialog-title>
+  <p
+    appMedia
+    app-media-base-class="group-title"
+    mat-dialog-title
+    data-test="group-title"
+  >
     What's your name?
   </p>
-  <div class="quote-block">
+  <div class="quote-block" data-test="name-quote-block">
     <p class="quote">"Words have meaning, and names have power."</p>
     <p class="author">- Anonymous</p>
   </div>
-  <mat-form-field class="input-name-field">
-    <mat-label>Enter a name</mat-label>
-    <input
-      name="name"
-      [formControl]="nameField"
-      required
-      matInput
-      placeholder="Ex. Brooks Foley"
-      data-test="member-name-input"
-    />
-    @if (nameField.hasError('required')) {
-    <mat-error data-test="name-input-error"
-      >Name is <strong>required</strong>
-    </mat-error>
+  <form
+    [formGroup]="myFormGroup"
+    (ngSubmit)="joinGroup()"
+    data-test="join-group-form"
+  >
+    <mat-form-field class="input-name-field" data-test="member-name-form-field">
+      <mat-label data-test="member-name-label">Enter a name</mat-label>
+      <input
+        name="name"
+        [formControl]="nameField"
+        required
+        matInput
+        placeholder="Ex. Brooks Foley"
+        data-test="member-name-input"
+        autocomplete="nickname"
+      />
+      <mat-error data-test="member-name-required-error"
+        >Name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+
+    @if (!this.isPrivateUpdateStreamReady) {
+    <div data-test="stream-error">Error receiving messages from the server</div>
+    } @else if (errorJoiningGroup) {
+    <div data-test="server-unavailable-error">
+      Error joining group. Please try again
+    </div>
     }
-  </mat-form-field>
-  <div appMedia app-media-base-class="group-actions">
-    <button
-      mat-raised-button
-      color="accent"
-      mat-dialog-close
-      tabindex="-1"
-      (click)="onNoClick()"
-      data-test="close-dialog-button"
+
+    <div
+      appMedia
+      app-media-base-class="group-actions"
+      data-test="group-actions"
     >
-      Close
-    </button>
-    <button
-      type="submit"
-      [disabled]="nameField.invalid"
-      mat-raised-button
-      color="primary"
-      tabindex="-1"
-      (click)="joinGroup()"
-      data-test="join-group-button"
-    >
-      Join
-    </button>
-  </div>
+      <button
+        class="dialog-actions"
+        mat-raised-button
+        color="accent"
+        mat-dialog-close
+        (click)="onNoClick()"
+        data-test="close-dialog-button"
+      >
+        Close
+      </button>
+      @if (!userService.currentGroupId) { @if (loading) {
+      <div class="dialog-actions">
+        <mat-progress-bar
+          mode="buffer"
+          data-test="loading-progress-bar"
+        ></mat-progress-bar>
+      </div>
+      } @else {
+      <button
+        class="dialog-actions"
+        type="submit"
+        [disabled]="nameField.invalid || loading"
+        mat-raised-button
+        color="primary"
+        data-test="join-group-button"
+      >
+        Join Group
+      </button>
+      } }
+    </div>
+  </form>
 </div>
