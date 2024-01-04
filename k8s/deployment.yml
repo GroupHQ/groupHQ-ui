@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: grouphq-ui
-          image: ghcr.io/grouphq/grouphq-ui
+          image: ghcr.io/grouphq/grouphq-ui:latest
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
