@@ -5,7 +5,7 @@ import { AbstractRetryService } from "../../retry/abstractRetry.service";
 import { cold, getTestScheduler } from "jasmine-marbles";
 import { ConfigService } from "../../../config/config.service";
 import { RETRY_FOREVER } from "../../../app-tokens";
-import { RsocketPublicUpdateStreamService } from "./rsocketPublicUpdateStream.service";
+import { RsocketPublicUpdateStreamService } from "./streams/rsocketPublicUpdateStream.service";
 
 describe("RsocketService", () => {
   let service: RsocketService;
@@ -48,17 +48,16 @@ describe("RsocketService", () => {
         },
       ],
     };
+    TestBed.configureTestingModule(testModuleConfiguration);
+    service = TestBed.inject(RsocketService);
   });
 
   it("should create", () => {
-    TestBed.configureTestingModule(testModuleConfiguration);
-    service = TestBed.inject(RsocketService);
     expect(service).toBeTruthy();
   });
 
   it("should have attempted to connect to the server once", () => {
-    TestBed.configureTestingModule(testModuleConfiguration);
-    service = TestBed.inject(RsocketService);
+    service.initializeRsocketConnection("test", "test");
     getTestScheduler().flush();
     expect(rsocketConnectorStub.connectToServer).toHaveBeenCalledTimes(1);
   });
@@ -75,8 +74,8 @@ describe("RsocketService", () => {
     rsocketConnectorStub.connectToServer.and.returnValue(
       cold("a|", { a: rsocketMock }),
     );
-    TestBed.configureTestingModule(testModuleConfiguration);
-    service = TestBed.inject(RsocketService);
+
+    service.initializeRsocketConnection("test", "test");
 
     getTestScheduler().flush();
 

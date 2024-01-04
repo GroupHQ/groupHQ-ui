@@ -5,6 +5,7 @@ import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { GroupModel } from "../../model/group.model";
 import { trigger } from "@angular/animations";
 import { AppMediaBreakpointDirective } from "../../shared/directives/attr.breakpoint";
+import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
 
 @Component({
   standalone: true,
@@ -30,7 +31,7 @@ class TestHostComponent {
       id: 1,
       title: "Group 1",
       description: "Group 1 description",
-      status: "ACTIVE",
+      status: GroupStatusEnum.ACTIVE,
       maxGroupSize: 10,
       lastModifiedDate: Date.now().toString(),
       lastModifiedBy: "Test User 1",
@@ -43,7 +44,7 @@ class TestHostComponent {
       id: 2,
       title: "Group 2",
       description: "Group 2 description",
-      status: "ACTIVE",
+      status: GroupStatusEnum.ACTIVE,
       maxGroupSize: 10,
       lastModifiedDate: Date.now().toString(),
       lastModifiedBy: "Test User 2",

@@ -19,10 +19,10 @@ import { StateTransitionService } from "../../services/miscellaneous/stateTransi
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GroupManagerService } from "../services/groupManager.service";
 import { HttpService } from "../../services/network/http.service";
-import { IdentificationService } from "../../services/user/identification.service";
+import { UserService } from "../../services/user/user.service";
 import { AbstractRetryService } from "../../services/retry/abstractRetry.service";
 import { Subscription } from "rxjs";
-import { RsocketPublicUpdateStreamService } from "../../services/network/rsocket/rsocketPublicUpdateStream.service";
+import { RsocketPublicUpdateStreamService } from "../../services/network/rsocket/streams/rsocketPublicUpdateStream.service";
 import { GroupCardsComponent } from "../groupCards/groupCards.component";
 import { LoadingComponent } from "../../shared/loading/loading.component";
 import { SyncBannerComponent } from "../../shared/syncBanner/syncBanner.component";
@@ -58,11 +58,15 @@ export class GroupBoardComponent implements OnInit {
     private readonly stateTransitionService: StateTransitionService,
     private readonly groupManagerService: GroupManagerService,
     private readonly httpService: HttpService,
-    private readonly idService: IdentificationService,
+    private readonly userService: UserService,
     private readonly rsocketPublicUpdateStreamService: RsocketPublicUpdateStreamService,
     private readonly retryDefaultService: AbstractRetryService,
     private readonly configService?: ConfigService,
-  ) {}
+  ) {
+    this.rsocketPublicUpdateStreamService.initializePublicUpdateStream(
+      this.userService.uuid,
+    );
+  }
 
   ngOnInit() {
     this.rsocketPublicUpdateStreamService.isPublicUpdatesStreamReady$.subscribe(
@@ -135,7 +139,7 @@ export class GroupBoardComponent implements OnInit {
     this.subscription?.unsubscribe();
     this.nextRetry = null;
     this.transitionState(StatesEnum.LOADING);
-    const username = this.idService.uuid;
+    const username = this.userService.uuid;
     const getGroupsWithRetry = this.retryDefaultService.addRetryLogic(
       this.httpService.getGroups(username),
     );

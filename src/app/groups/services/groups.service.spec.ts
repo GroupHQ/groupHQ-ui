@@ -4,6 +4,7 @@ import { GroupModel } from "../../model/group.model";
 import { GroupSortEnum } from "../../model/enums/groupSort.enum";
 import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
 import { MemberModel } from "../../model/member.model";
+import { MemberStatusEnum } from "../../model/enums/memberStatus.enum";
 
 describe("GroupsService", () => {
   let service: GroupsService;
@@ -26,7 +27,7 @@ describe("GroupsService", () => {
         id: 1,
         title: "Group 1",
         description: "Group 1 description",
-        status: "ACTIVE",
+        status: GroupStatusEnum.ACTIVE,
         maxGroupSize: 10,
         lastModifiedDate: groupDates[0],
         lastModifiedBy: "Test User 1",
@@ -37,7 +38,8 @@ describe("GroupsService", () => {
           new MemberModel(
             1,
             "Test User 1",
-            "ACTIVE",
+            1,
+            MemberStatusEnum.ACTIVE,
             new Date().toString(),
             null,
           ),
@@ -47,7 +49,7 @@ describe("GroupsService", () => {
         id: 2,
         title: "Group 2",
         description: "Group 2 description",
-        status: "ACTIVE",
+        status: GroupStatusEnum.ACTIVE,
         maxGroupSize: 10,
         lastModifiedDate: groupDates[1],
         lastModifiedBy: "Test User 2",
@@ -58,21 +60,24 @@ describe("GroupsService", () => {
           new MemberModel(
             2,
             "Test User 2",
-            "ACTIVE",
+            2,
+            MemberStatusEnum.ACTIVE,
             new Date().toString(),
             null,
           ),
           new MemberModel(
             3,
             "Test User 3",
-            "ACTIVE",
+            2,
+            MemberStatusEnum.ACTIVE,
             new Date().toString(),
             null,
           ),
           new MemberModel(
             4,
             "Test User 4",
-            "ACTIVE",
+            2,
+            MemberStatusEnum.ACTIVE,
             new Date().toString(),
             null,
           ),
@@ -186,7 +191,8 @@ describe("GroupsService", () => {
       const member: MemberModel = {
         id: 1,
         username: "Test User 1",
-        memberStatus: "ACTIVE",
+        groupId: 1,
+        memberStatus: MemberStatusEnum.ACTIVE,
         joinedDate: new Date().toString(),
         exitedDate: null,
       };
@@ -246,7 +252,7 @@ describe("GroupsService", () => {
         id: 3,
         title: "Group 3",
         description: "Group 3 description",
-        status: "ACTIVE",
+        status: GroupStatusEnum.ACTIVE,
         maxGroupSize: 10,
         lastModifiedDate: new Date().toString(),
         lastModifiedBy: "Test User 3",
@@ -257,14 +263,16 @@ describe("GroupsService", () => {
           new MemberModel(
             5,
             "Test User 5",
-            "ACTIVE",
+            3,
+            MemberStatusEnum.ACTIVE,
             new Date().toString(),
             null,
           ),
           new MemberModel(
             6,
             "Test User 6",
-            "ACTIVE",
+            3,
+            MemberStatusEnum.ACTIVE,
             new Date().toString(),
             null,
           ),

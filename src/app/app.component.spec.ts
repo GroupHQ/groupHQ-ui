@@ -3,6 +3,7 @@ import { AppComponent } from "./app.component";
 import { RouterTestingModule } from "@angular/router/testing";
 import { NavComponent } from "./shared/nav/nav.component";
 import { FooterComponent } from "./shared/footer/footer.component";
+import { NotificationService } from "./services/user/notification.service";
 
 describe("AppComponent", () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -16,6 +17,7 @@ describe("AppComponent", () => {
         FooterComponent,
         AppComponent,
       ],
+      providers: [{ provide: NotificationService, useValue: {} }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);

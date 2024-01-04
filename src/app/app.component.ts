@@ -2,6 +2,7 @@ import { Component, HostBinding } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { NavComponent } from "./shared/nav/nav.component";
 import { FooterComponent } from "./shared/footer/footer.component";
+import { NotificationService } from "./services/user/notification.service";
 
 @Component({
   selector: "app-root",
@@ -12,4 +13,6 @@ import { FooterComponent } from "./shared/footer/footer.component";
 export class AppComponent {
   title = "groupHQ-UI";
   @HostBinding("class") classes = "page-container";
+
+  constructor(readonly notificationService: NotificationService) {}
 }

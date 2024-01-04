@@ -54,7 +54,12 @@
     [ngClass]="getPageToLowercase()"
   >
     <button mat-icon-button aria-label="Toggle menu" (click)="toggleMenu()">
-      <mat-icon class="menu-icon" data-test="menu-icon">menu</mat-icon>
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        class="menu-icon"
+        data-test="menu-icon"
+        >menu</mat-icon
+      >
     </button>
     <div class="site-name">
       <a

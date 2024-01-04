@@ -14,7 +14,7 @@ import { StateTransitionService } from "../../services/miscellaneous/stateTransi
 import { cold, getTestScheduler } from "jasmine-marbles";
 import { GroupManagerService } from "../services/groupManager.service";
 import { HttpService } from "../../services/network/http.service";
-import { IdentificationService } from "../../services/user/identification.service";
+import { UserService } from "../../services/user/user.service";
 import { BehaviorSubject, NEVER, of, Subject } from "rxjs";
 import { AbstractRetryService } from "../../services/retry/abstractRetry.service";
 import { ConfigService } from "../../config/config.service";
@@ -23,7 +23,8 @@ import { GroupModel } from "../../model/group.model";
 import { StatesEnum } from "../../model/enums/states.enum";
 import { PublicEventModel } from "../../model/publicEvent.model";
 import { EventTypeEnum } from "../../model/enums/eventType.enum";
-import { RsocketPublicUpdateStreamService } from "../../services/network/rsocket/rsocketPublicUpdateStream.service";
+import { RsocketPublicUpdateStreamService } from "../../services/network/rsocket/streams/rsocketPublicUpdateStream.service";
+import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
 
 @Component({
   selector: "app-sync-banner",
@@ -84,7 +85,7 @@ const mockGroups: GroupModel[] = [
     id: 1,
     title: "Group 1",
     description: "Group 1 description",
-    status: "ACTIVE",
+    status: GroupStatusEnum.ACTIVE,
     maxGroupSize: 10,
     lastModifiedDate: Date.now().toString(),
     lastModifiedBy: "Test User 1",
@@ -97,7 +98,7 @@ const mockGroups: GroupModel[] = [
     id: 2,
     title: "Group 2",
     description: "Group 2 description",
-    status: "ACTIVE",
+    status: GroupStatusEnum.ACTIVE,
     maxGroupSize: 10,
     lastModifiedDate: Date.now().toString(),
     lastModifiedBy: "Test User 2",
@@ -116,7 +117,7 @@ describe("GroupBoardComponent", () => {
   let stateTransitionServiceStub: jasmine.SpyObj<StateTransitionService>;
   let groupManagerServiceStub: jasmine.SpyObj<GroupManagerService>;
   let httpServiceStub: jasmine.SpyObj<HttpService>;
-  let rsocketPublicUpdateStreamService: any;
+  let rsocketPublicUpdateStreamServiceSpy: jasmine.SpyObj<RsocketPublicUpdateStreamService>;
   let retryDefaultServiceStub: jasmine.SpyObj<AbstractRetryService>;
 
   beforeEach(async () => {
@@ -159,14 +160,26 @@ describe("GroupBoardComponent", () => {
     httpServiceStub = jasmine.createSpyObj("HttpService", ["getGroups"]);
     httpServiceStub.getGroups.and.callFake(() => of([]));
 
-    rsocketPublicUpdateStreamService = {
-      get isPublicUpdatesStreamReady$(): any {
-        return NEVER;
+    rsocketPublicUpdateStreamServiceSpy = jasmine.createSpyObj(
+      "RsocketPublicUpdateStreamService",
+      ["initializePublicUpdateStream"],
+    );
+    Object.defineProperty(
+      rsocketPublicUpdateStreamServiceSpy,
+      "isPublicUpdatesStreamReady$",
+      {
+        get: () => NEVER,
+        configurable: true,
       },
-      get publicUpdatesStream$(): any {
-        return NEVER;
+    );
+    Object.defineProperty(
+      rsocketPublicUpdateStreamServiceSpy,
+      "publicUpdatesStream$",
+      {
+        get: () => NEVER,
+        configurable: true,
       },
-    };
+    );
 
     retryDefaultServiceStub = jasmine.createSpyObj("RetryDefaultService", [
       "addRetryLogic",
@@ -187,10 +200,10 @@ describe("GroupBoardComponent", () => {
         },
         { provide: GroupManagerService, useValue: groupManagerServiceStub },
         { provide: HttpService, useValue: httpServiceStub },
-        { provide: IdentificationService, useValue: {} },
+        { provide: UserService, useValue: {} },
         {
           provide: RsocketPublicUpdateStreamService,
-          useValue: rsocketPublicUpdateStreamService,
+          useValue: rsocketPublicUpdateStreamServiceSpy,
         },
         { provide: AbstractRetryService, useValue: retryDefaultServiceStub },
         { provide: ConfigService, useValue: {} },
@@ -236,7 +249,7 @@ describe("GroupBoardComponent", () => {
   describe("initialization", () => {
     beforeEach(() => {
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => of(true),
@@ -304,7 +317,7 @@ describe("GroupBoardComponent", () => {
     it("should set the sync state to true if public update stream is connected", () => {
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -324,7 +337,7 @@ describe("GroupBoardComponent", () => {
     it("should set the sync state to false if public update stream is not connected", () => {
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -475,7 +488,7 @@ describe("GroupBoardComponent", () => {
   describe("ready state", () => {
     beforeEach(() => {
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => of(true),
@@ -511,7 +524,7 @@ describe("GroupBoardComponent", () => {
   describe("failure states", () => {
     beforeEach(() => {
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => of(true),
@@ -546,7 +559,7 @@ describe("GroupBoardComponent", () => {
 
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -582,7 +595,7 @@ describe("GroupBoardComponent", () => {
 
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -637,7 +650,7 @@ describe("GroupBoardComponent", () => {
 
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -670,7 +683,7 @@ describe("GroupBoardComponent", () => {
 
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -706,7 +719,7 @@ describe("GroupBoardComponent", () => {
 
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -739,7 +752,7 @@ describe("GroupBoardComponent", () => {
 
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -778,7 +791,7 @@ describe("GroupBoardComponent", () => {
 
       const subject = new Subject<boolean>();
       Object.defineProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         {
           get: () => subject.asObservable(),
@@ -805,12 +818,12 @@ describe("GroupBoardComponent", () => {
       const mockReadyObservable = cold("a", { a: true });
 
       spyOnProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "isPublicUpdatesStreamReady$",
         "get",
       ).and.returnValue(mockReadyObservable);
       spyOnProperty(
-        rsocketPublicUpdateStreamService,
+        rsocketPublicUpdateStreamServiceSpy,
         "publicUpdatesStream$",
         "get",
       ).and.returnValue(cold("a", { a: mockEvent }));

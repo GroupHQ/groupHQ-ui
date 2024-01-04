@@ -7,10 +7,10 @@ import {
   RSocket,
 } from "rsocket-core";
 import { Buffer } from "buffer";
-import { PublicEventModel } from "../../../model/publicEvent.model";
+import { PublicEventModel } from "../../../../model/publicEvent.model";
 import { Subject } from "rxjs";
-import { RsocketMetadataService } from "./rsocketMetadata.service";
-import { RsocketService } from "./rsocket.service";
+import { RsocketMetadataService } from "../rsocketMetadata.service";
+import { RsocketService } from "../rsocket.service";
 
 @Injectable({
   providedIn: "root",
@@ -25,11 +25,13 @@ export class RsocketPublicUpdateStreamService {
   constructor(
     private readonly rsocketService: RsocketService,
     private readonly rsocketMetadataService: RsocketMetadataService,
-  ) {
+  ) {}
+
+  public initializePublicUpdateStream(username: string, password = "empty") {
     this.rsocketService.rsocketConnection$.subscribe((rsocket) => {
       if (rsocket) {
         console.log("RSocket is ready. Creating public update stream");
-        this.createPublicUpdateStream(rsocket);
+        this.createPublicUpdateStream(rsocket, username, password);
         this._isPublicUpdatesStreamReady$.next(true);
       } else {
         this._isPublicUpdatesStreamReady$.next(false);
@@ -49,15 +51,21 @@ export class RsocketPublicUpdateStreamService {
    * Creates the publicUpdatesStream$.
    * @private
    */
-  private createPublicUpdateStream(rsocket: RSocket) {
+  private createPublicUpdateStream(
+    rsocket: RSocket,
+    username: string,
+    password = "empty",
+  ) {
     if (!rsocket) {
       throw new Error("RSocket is not initialized");
     }
 
     console.log("Establishing Public Update Stream");
     const PUBLIC_UPDATES_ROUTES = "groups.updates.all";
-    const metadata = this.rsocketMetadataService.getMetadata(
+    const metadata = this.rsocketMetadataService.authMetadataWithRoute(
       PUBLIC_UPDATES_ROUTES,
+      username,
+      password,
     );
 
     this._publicUpdatesStream?.cancel();
@@ -77,7 +85,7 @@ export class RsocketPublicUpdateStreamService {
           this._publicUpdatesStream$?.error(error);
         },
         onNext: (payload: Payload, isComplete: boolean) => {
-          const event = this.generateEvent(payload.data);
+          const event = this.generatePublicEvent(payload.data);
           if (event) {
             this._publicUpdatesStream$?.next(event);
           }
@@ -98,7 +106,7 @@ export class RsocketPublicUpdateStreamService {
     );
   }
 
-  private generateEvent(
+  private generatePublicEvent(
     data: Buffer | null | undefined,
   ): PublicEventModel | null {
     if (!data) {

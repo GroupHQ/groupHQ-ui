@@ -100,6 +100,7 @@ export class GroupManagerService {
     if (event === EventTypeEnum.MEMBER_JOINED) {
       memberListUpdated = this.groupService.addMember(member, group);
     } else {
+      console.log("Removing member");
       memberListUpdated = this.groupService.removeMember(member.id, group);
     }
 
