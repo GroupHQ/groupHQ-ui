@@ -102,20 +102,22 @@ export class GroupDetailsDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  timeSince(date: string) {
+  timeSince(date: string): string {
     const seconds = Math.floor(
       (new Date().getTime() - new Date(date).getTime()) / 1000,
     );
 
+    if (seconds < 0) return "0 seconds ago";
+
     let interval: number;
 
     interval = seconds / 3600;
-    if (interval > 1) {
+    if (interval >= 1) {
       const floored = Math.floor(interval);
       return floored === 1 ? "1 hour ago" : floored + " hours ago";
     }
     interval = seconds / 60;
-    if (interval > 1) {
+    if (interval >= 1) {
       const floored = Math.floor(interval);
       return floored === 1 ? "1 minute ago" : floored + " minutes ago";
     }
