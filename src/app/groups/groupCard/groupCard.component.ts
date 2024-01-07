@@ -32,7 +32,7 @@ export class GroupCardComponent {
   openDialog(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.maxWidth = "100vw"; // overrides default in-line style of 80vw
-    dialogConfig.maxHeight = "100vh";
+    dialogConfig.maxHeight = "100%";
     dialogConfig.data = this.group;
 
     const dialogRef = this.dialog.open(
