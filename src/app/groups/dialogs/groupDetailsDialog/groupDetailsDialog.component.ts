@@ -107,6 +107,8 @@ export class GroupDetailsDialogComponent implements OnInit, OnDestroy {
       (new Date().getTime() - new Date(date).getTime()) / 1000,
     );
 
+    if (seconds < 0) return 0;
+
     let interval: number;
 
     interval = seconds / 3600;
