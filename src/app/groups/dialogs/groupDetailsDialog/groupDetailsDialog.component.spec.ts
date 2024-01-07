@@ -154,6 +154,62 @@ describe("GroupDetailsDialogComponent", () => {
     }).compileComponents();
   });
 
+  describe("#timeSince", () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(GroupDetailsDialogComponent);
+      component = fixture.componentInstance;
+    });
+
+    it("should return singular hour description when time since is one hour", () => {
+      const date = new Date();
+      date.setHours(date.getHours() - 1);
+      const timeSince = component.timeSince(date.toISOString());
+      expect(timeSince).toBe("1 hour ago");
+    });
+
+    it("should return plural hour description when time since is multiple hours", () => {
+      const date = new Date();
+      date.setHours(date.getHours() - 2);
+      const timeSince = component.timeSince(date.toISOString());
+      expect(timeSince).toBe("2 hours ago");
+    });
+
+    it("should return singular minute description when time since is one minute", () => {
+      const date = new Date();
+      date.setMinutes(date.getMinutes() - 1);
+      const timeSince = component.timeSince(date.toISOString());
+      expect(timeSince).toBe("1 minute ago");
+    });
+
+    it("should return plural minute description when time since is multiple minutes", () => {
+      const date = new Date();
+      date.setMinutes(date.getMinutes() - 2);
+      const timeSince = component.timeSince(date.toISOString());
+      expect(timeSince).toBe("2 minutes ago");
+    });
+
+    it("should return singular second description when time since is one second", () => {
+      const date = new Date();
+      date.setSeconds(date.getSeconds() - 1);
+      const timeSince = component.timeSince(date.toISOString());
+      expect(timeSince).toBe("1 second ago");
+    });
+
+    it("should return plural second description when time since is multiple seconds", () => {
+      const date = new Date();
+      date.setSeconds(date.getSeconds() - 2);
+      const timeSince = component.timeSince(date.toISOString());
+      expect(timeSince).toBe("2 seconds ago");
+    });
+
+    it("should return zero seconds ago when time since is negative", () => {
+      const date = new Date();
+      date.setSeconds(date.getSeconds() + 1);
+      const timeSince = component.timeSince(date.toISOString());
+      expect(timeSince).toBe("0 seconds ago");
+    });
+  });
+
   describe("group details", () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(GroupDetailsDialogComponent);
