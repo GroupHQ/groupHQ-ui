@@ -355,6 +355,30 @@ describe("GroupBoardComponent", () => {
     });
   });
 
+  it("should not load groups when the sync state is ready but the groups failed to load", () => {
+    const groupsObservable = cold("#");
+    httpServiceStub.getGroups.and.callFake(() => groupsObservable);
+
+    const subject = new Subject<boolean>();
+    Object.defineProperty(
+      rsocketPublicUpdateStreamServiceSpy,
+      "isPublicUpdatesStreamReady$",
+      {
+        get: () => subject.asObservable(),
+      },
+    );
+
+    fixture.detectChanges();
+
+    expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
+
+    subject.next(true);
+
+    getTestScheduler().flush();
+
+    expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
+  });
+
   describe("#loadGroups", () => {
     it("should load groups to the component", () => {
       const groupsObservable = cold("a|", { a: mockGroups });
@@ -663,7 +687,7 @@ describe("GroupBoardComponent", () => {
       subject.next(true);
       fixture.detectChanges();
 
-      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(1);
+      expect(httpServiceStub.getGroups).toHaveBeenCalledTimes(2);
       expect(page.isSyncBannerComponentVisible).toBeFalse();
     });
 
