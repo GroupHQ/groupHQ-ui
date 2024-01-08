@@ -78,10 +78,8 @@ export class GroupBoardComponent implements OnInit {
         this.changeDetectorRef.detectChanges();
         this.isGroupsSynced = isReady;
 
-        if (!wasSynced && isReady) {
+        if (!wasSynced && isReady && this.isGroupsLoaded) {
           this.stateTransitionService.transitionTo(StatesEnum.NEUTRAL);
-          this.loadGroups();
-        } else if (!this.isGroupsLoaded) {
           this.loadGroups();
         }
       },
@@ -129,6 +127,8 @@ export class GroupBoardComponent implements OnInit {
           );
         }
       });
+
+    this.loadGroups();
   }
 
   get minimumLoadingTimeSeconds() {
