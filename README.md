@@ -14,7 +14,7 @@ interface for users to view, join, and leave dynamically generated groups.
 - [Running unit tests](#running-unit-tests)
 - [Adding unit tests](#adding-unit-tests)
 - [Running end-to-end tests](#running-end-to-end-tests)
-- [Adding End-to-end tests](#adding-end-to-end-tests)
+- [Adding end-to-end tests](#adding-end-to-end-tests)
 - [Starting up the backend](#starting-up-the-backend)
 - [Checks to Pass](#checks-to-pass)
 - [Further help](#further-help)
@@ -73,7 +73,7 @@ End-to-end (E2E) tests are run automatically when opening a pull request. These 
 environment, testing any changes provided by the pull request. The results of these tests will be accessible
 through a link attached to the commit status once the tests have completed.
 
-## Adding End-to-end tests
+## Adding end-to-end tests
 
 For any user-facing changed, add an end-to-end (E2E) test to ensure that the change works as expected.
 End-to-end tests are hosted on another repository. Check out the README there for more information,
