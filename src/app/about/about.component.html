@@ -1,7 +1,7 @@
 <div class="about-page-container" data-test="about-container">
   <div class="about-page-title-container">
     <p appMedia app-media-base-class="about-page-title">
-      A service providing ephemeral groups for activities happening
+      A service providing ephemeral groups for (fake) activities happening
       <em>now</em>.
     </p>
   </div>
@@ -10,18 +10,41 @@
       <h1>What is GroupHQ?</h1>
       <p>
         GroupHQ is an application created as a training exercise for building
-        and deploying reactive cloud-native applications through the use of
-        Spring Boot, Project Reactor, Docker, and Kubernetes, with an emphasis
-        on cloud-native principles, particularly based on the 15-factor app
-        methodology.
+        and deploying
+        <a href="https://en.wikipedia.org/wiki/Reactive_Streams" target="_blank"
+          >reactive</a
+        >,
+        <a href="https://aws.amazon.com/what-is/cloud-native/" target="_blank"
+          >cloud-native applications</a
+        >
+        through the use of
+        <a href="https://www.ibm.com/topics/java-spring-boot" target="_blank"
+          >Spring Boot</a
+        >,
+        <a href="https://projectreactor.io/" target="_blank">Project Reactor</a
+        >, <a href="https://www.docker.com/" target="_blank">Docker</a>, and
+        <a href="https://kubernetes.io/" target="_blank">Kubernetes</a>, with an
+        emphasis on cloud-native principles, particularly based on the
+        <a
+          href="https://developer.ibm.com/articles/15-factor-applications/"
+          target="_blank"
+          >15-factor app methodology</a
+        >.
       </p>
     </div>
     <div>
       <h1>What can I do here?</h1>
       <p>
-        In the GroupHQ Demo, you can join and leave auto-generated groups. These
-        groups are ephemeral, meaning that they’ll expire after a set amount of
-        time.
+        In the GroupHQ Demo, you can join and leave dynamically generated
+        groups. These groups are ephemeral, meaning that they’ll expire after a
+        set amount of time. They're also not real or user-made, but instead
+        generated through the
+        <a href="https://openai.com/blog/openai-api" target="_blank"
+          >OpenAI API</a
+        >. So unfortunately, you won't be able to attend Goku's training
+        session. If you want to check out a real-world example of an ephemeral
+        group service, check out the inspiration for this project:
+        <a href="https://toonhq.org/" target="_blank">ToonHQ</a>!
       </p>
     </div>
   </div>
