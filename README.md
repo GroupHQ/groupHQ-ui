@@ -12,6 +12,7 @@ interface for users to view, join, and leave dynamically generated groups.
 - [Code scaffolding](#code-scaffolding)
 - [Build](#build)
 - [Running unit tests](#running-unit-tests)
+- [Adding unit tests](#adding-unit-tests)
 - [Running end-to-end tests](#running-end-to-end-tests)
 - [Adding End-to-end tests](#adding-end-to-end-tests)
 - [Starting up the backend](#starting-up-the-backend)
