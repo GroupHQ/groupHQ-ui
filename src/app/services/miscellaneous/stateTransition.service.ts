@@ -20,14 +20,19 @@ export class StateTransitionService {
     id?: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   ): void {
     if (!this._timeoutIds.has(id)) {
-      console.log("Transition with queued delay to", newState, delay);
+      console.debug("Transition with queued delay to", newState, delay);
       this.queueTransitionTo(newState, delay);
       return;
     } else {
       this._timeoutIds.delete(id);
       this._lastTransitionDate = Date.now() + delay;
     }
-    console.log("Processing Transition to", newState, delay, Date.now() / 1000);
+    console.debug(
+      "Processing Transition to",
+      newState,
+      delay,
+      Date.now() / 1000,
+    );
     const timeoutId = setTimeout(() => {
       this._currentState$.next(newState);
       this._timeoutIds.delete(timeoutId);
@@ -39,12 +44,12 @@ export class StateTransitionService {
   private queueTransitionTo(newState: StatesEnum, delay: number): void {
     const timeLeftUntilTransitionAvailable =
       this._lastTransitionDate - Date.now();
-    console.log(
+    console.debug(
       "Time left until transition available",
       timeLeftUntilTransitionAvailable,
     );
-    console.log(this._lastTransitionDate / 1000);
-    console.log(
+    console.debug(this._lastTransitionDate / 1000);
+    console.debug(
       timeLeftUntilTransitionAvailable < 0
         ? 0
         : timeLeftUntilTransitionAvailable,

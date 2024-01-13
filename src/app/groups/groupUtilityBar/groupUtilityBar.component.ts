@@ -25,7 +25,7 @@ export class GroupUtilityBarComponent {
   constructor(private groupService: GroupsService) {}
 
   onSortChange() {
-    console.log("Sort changed to: ", this.selected);
+    console.debug("Sort changed to: ", this.selected);
     this.groupService.changeSort(this.selected);
   }
 }

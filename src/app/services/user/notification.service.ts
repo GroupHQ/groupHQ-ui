@@ -36,7 +36,7 @@ export class NotificationService {
   private subscribeToPrivateUpdatesStream() {
     this.rsocketPrivateUpdateStreamService.privateUpdatesStream$.subscribe({
       next: (privateEvent) => {
-        console.log("Received private event: ", privateEvent);
+        console.debug("Received private event: ", privateEvent);
         const message = this.privateEventMessage(privateEvent);
 
         if (message) {
@@ -63,7 +63,7 @@ export class NotificationService {
   private subscribeToPublicUpdatesStream() {
     this.rsocketPublicUpdateStreamService.publicUpdatesStream$.subscribe({
       next: (publicEvent) => {
-        console.log("Received public event: ", publicEvent);
+        console.debug("Received public event: ", publicEvent);
         const message = this.publicEventMessage(publicEvent);
 
         if (message) {
@@ -134,7 +134,7 @@ export class NotificationService {
   }
 
   private showMessage(message: string) {
-    console.log("Sending message: ", message);
+    console.debug("Sending message: ", message);
     this._snackbar.open(message, "Dismiss", {
       verticalPosition: "top",
       duration: 5000,

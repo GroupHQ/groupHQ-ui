@@ -32,7 +32,7 @@ export class RsocketPrivateUpdateStreamService {
   public initializePrivateUpdateStream(username: string, password = "empty") {
     this.rsocketService.rsocketConnection$.subscribe((rsocket) => {
       if (rsocket) {
-        console.log("RSocket is ready. Creating private update stream");
+        console.debug("RSocket is ready. Creating private update stream");
         this.createPrivateUpdateStream(rsocket, username, password);
         this._isPrivateUpdatesStreamReady$.next(true);
       } else {
@@ -66,7 +66,7 @@ export class RsocketPrivateUpdateStreamService {
       throw new Error("RSocket is not initialized");
     }
 
-    console.log("Establishing Private Update Stream");
+    console.debug("Establishing Private Update Stream");
     const PRIVATE_UPDATES_ROUTES = "groups.updates.user";
     const metadata = this.rsocketMetadataService.authMetadataWithRoute(
       PRIVATE_UPDATES_ROUTES,
@@ -84,7 +84,7 @@ export class RsocketPrivateUpdateStreamService {
       {
         onError: (error: Error) => {
           this._isPrivateUpdatesStreamReady$.next(false);
-          console.log(
+          console.debug(
             `An error has occurred on the ${PRIVATE_UPDATES_ROUTES} request stream`,
             error,
           );
@@ -96,17 +96,17 @@ export class RsocketPrivateUpdateStreamService {
             this._privateUpdatesStream$?.next(event);
           }
 
-          console.log("Received payload. Data: ", event);
-          console.log("Event data: ", event?.eventData);
-          console.log("IsStreamComplete:", isComplete);
+          console.debug("Received payload. Data: ", event);
+          console.debug("Event data: ", event?.eventData);
+          console.debug("IsStreamComplete:", isComplete);
         },
         onComplete: () => {
           this._isPrivateUpdatesStreamReady$.next(false);
-          console.log(`${PRIVATE_UPDATES_ROUTES} stream completed`);
+          console.debug(`${PRIVATE_UPDATES_ROUTES} stream completed`);
           this._privateUpdatesStream$?.complete();
         },
         onExtension: () => {
-          console.log("This is required but not used");
+          console.debug("This is required but not used");
         },
       },
     );

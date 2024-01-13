@@ -25,7 +25,7 @@ export class RsocketService {
     configService: ConfigService,
     @Inject(RETRY_FOREVER) private readonly retryService: AbstractRetryService,
   ) {
-    console.log("Retries:", this.retryService);
+    console.debug("Retries:", this.retryService);
 
     if (configService) {
       this.MINIMUM_DISCONNECT_RETRY_TIME =
@@ -71,19 +71,19 @@ export class RsocketService {
         )
         .pipe(
           tap((rsocket) => {
-            console.log("RSocket object:", rsocket);
+            console.debug("RSocket object:", rsocket);
             this._rsocketConnection$.next(rsocket);
             this._isConnectionReady$.next(true);
 
             // Setup onClose handler with delay
             rsocket.onClose((error) => {
-              console.log("Connection closed with error:", error);
+              console.debug("Connection closed with error:", error);
               this._isConnectionReady$.next(false);
               this._rsocketConnection$.next(null);
 
               // Use setTimeout to delay reconnection attempt
               setTimeout(() => {
-                console.log("Attempting to re-establish connection...");
+                console.debug("Attempting to re-establish connection...");
                 this.setupRsocketService(username, password);
               }, this.calculateRetryIntervalWithJitter());
             });
@@ -114,7 +114,7 @@ export class RsocketService {
     const min = this.getMinimumDisconnectRetryTimeMilliseconds();
     const max = this.getMaximumDisconnectRetryTimeMilliseconds();
     const delay = Math.random() * (max - min) + min;
-    console.log("Delay is", delay);
+    console.debug("Delay is", delay);
     return delay;
   }
 }

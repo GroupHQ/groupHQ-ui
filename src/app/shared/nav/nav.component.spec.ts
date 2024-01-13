@@ -157,7 +157,7 @@ class Page {
     if (!element) {
       throw new Error("No page title element found");
     }
-    console.log("My element is", element);
+    console.debug("My element is", element);
     return element;
   }
 

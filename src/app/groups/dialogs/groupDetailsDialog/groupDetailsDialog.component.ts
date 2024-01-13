@@ -98,7 +98,7 @@ export class GroupDetailsDialogComponent implements OnInit, OnDestroy {
         });
       }
 
-      console.log("Input modal closed; no message");
+      console.debug("Input modal closed; no message");
     });
   }
 

@@ -42,12 +42,12 @@ export class RsocketRequestsService {
         },
         onNext: (payload: Payload) => {
           const member = this.convertPayloadToMember(payload.data);
-          console.log("Current member is", member);
+          console.debug("Current member is", member);
           member && callback(member);
         },
         onExtension() {},
         onComplete() {
-          console.log("Member request completed");
+          console.debug("Member request completed");
         },
       },
     );
@@ -85,7 +85,7 @@ export class RsocketRequestsService {
           console.error("Error sending join request", error);
         },
         onComplete() {
-          console.log("Join request sent");
+          console.debug("Join request sent");
         },
       },
     );
@@ -123,7 +123,7 @@ export class RsocketRequestsService {
           console.error("Error sending leave request", error);
         },
         onComplete() {
-          console.log("Leave request sent");
+          console.debug("Leave request sent");
         },
       },
     );

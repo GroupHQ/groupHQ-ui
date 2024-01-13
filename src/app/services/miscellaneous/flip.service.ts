@@ -37,7 +37,7 @@ export class FlipService {
     changeDetectorRef?: ChangeDetectorRef,
     removeId?: string,
   ) {
-    console.log("Components", this.components);
+    console.debug("Components", this.components);
     if (this.components === null) {
       throw new Error("Components not set");
     }

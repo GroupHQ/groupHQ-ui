@@ -31,17 +31,17 @@ export class RsocketPublicUpdateStreamService {
 
   public initializePublicUpdateStream(username: string, password = "empty") {
     if (this._isPublicUpdatesStreamReady$.getValue()) {
-      console.log("Public update stream is already initialized");
+      console.debug("Public update stream is already initialized");
       return;
     }
 
     this.rsocketService.rsocketConnection$.subscribe((rsocket) => {
       if (rsocket) {
-        console.log("RSocket is ready. Creating public update stream");
+        console.debug("RSocket is ready. Creating public update stream");
         this.createPublicUpdateStream(rsocket, username, password);
         this._isPublicUpdatesStreamReady$.next(true);
       } else {
-        console.log("RSocket is not ready");
+        console.debug("RSocket is not ready");
         this._isPublicUpdatesStreamReady$.next(false);
       }
     });
@@ -68,7 +68,7 @@ export class RsocketPublicUpdateStreamService {
       throw new Error("RSocket is not initialized");
     }
 
-    console.log("Establishing Public Update Stream");
+    console.debug("Establishing Public Update Stream");
     const PUBLIC_UPDATES_ROUTES = "groups.updates.all";
     const metadata = this.rsocketMetadataService.authMetadataWithRoute(
       PUBLIC_UPDATES_ROUTES,
@@ -86,7 +86,7 @@ export class RsocketPublicUpdateStreamService {
       {
         onError: (error: Error) => {
           this._isPublicUpdatesStreamReady$.next(false);
-          console.log(
+          console.debug(
             `An error has occurred on the ${PUBLIC_UPDATES_ROUTES} request stream`,
             error,
           );
@@ -98,17 +98,17 @@ export class RsocketPublicUpdateStreamService {
             this._publicUpdatesStream$?.next(event);
           }
 
-          console.log("Received payload. Data: ", event);
-          console.log("Event data: ", event?.eventData);
-          console.log("IsStreamComplete:", isComplete);
+          console.debug("Received payload. Data: ", event);
+          console.debug("Event data: ", event?.eventData);
+          console.debug("IsStreamComplete:", isComplete);
         },
         onComplete: () => {
           this._isPublicUpdatesStreamReady$.next(false);
-          console.log(`${PUBLIC_UPDATES_ROUTES} stream completed`);
+          console.debug(`${PUBLIC_UPDATES_ROUTES} stream completed`);
           this._publicUpdatesStream$?.complete();
         },
         onExtension: () => {
-          console.log("This is required but not used");
+          console.debug("This is required but not used");
         },
       },
     );

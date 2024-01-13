@@ -15,7 +15,7 @@ export class RetryDefaultService extends AbstractRetryService {
 
   constructor(readonly configService?: ConfigService) {
     super();
-    console.log(configService);
+    console.debug(configService);
     const retryConfig = configService?.retryServices.retryDefault;
 
     if (!retryConfig) {
@@ -54,13 +54,13 @@ export class RetryDefaultService extends AbstractRetryService {
     const minimumBackoff = minimum * 1000 + jitter;
     const backoff = Math.min(base ** attempt, cap) * 1000 + jitter;
 
-    console.log(Math.min(base ** attempt, cap));
+    console.debug(Math.min(base ** attempt, cap));
     return Math.max(backoff, minimumBackoff);
   }
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   protected getNotifier(error: any, retryCount: number): ObservableInput<any> {
-    console.log(this);
+    console.debug(this);
     if (retryCount < this.MAX_RETRY_ATTEMPTS) {
       const delay = this.exponentialBackoff(retryCount);
 

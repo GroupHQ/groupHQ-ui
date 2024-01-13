@@ -42,13 +42,13 @@ export class RsocketConnectorService {
     return defer(() =>
       from(rSocketConnector.connect()).pipe(
         tap((rsocket) => {
-          console.log(
+          console.debug(
             "Connected to server in RSocketConnectorService",
             rsocket,
           );
         }),
         catchError((error) => {
-          console.log(
+          console.debug(
             "Error connecting to server in RSocketConnector Service:",
             error,
           );
