@@ -25,19 +25,19 @@ export class GroupsService {
   sortGroups(groups: GroupModel[]) {
     switch (this.sortSource.getValue()) {
       case GroupSortEnum.OLDEST:
-        console.log("Sorting by oldest");
+        console.debug("Sorting by oldest");
         groups = this.sortGroupsByCreatedDate(groups, true);
         break;
       case GroupSortEnum.NEWEST:
-        console.log("Sorting by newest");
+        console.debug("Sorting by newest");
         groups = this.sortGroupsByCreatedDate(groups, false);
         break;
       case GroupSortEnum.MOST_MEMBERS:
-        console.log("Sorting by most members");
+        console.debug("Sorting by most members");
         groups = this.sortGroupsByCurrentGroupSize(groups, false);
         break;
       case GroupSortEnum.LEAST_MEMBERS:
-        console.log("Sorting by least members");
+        console.debug("Sorting by least members");
         groups = this.sortGroupsByCurrentGroupSize(groups, true);
         break;
     }
@@ -86,10 +86,10 @@ export class GroupsService {
   }
 
   removeMember(memberId: number, group: GroupModel) {
-    console.log("Current members: ", group.members);
+    console.debug("Current members: ", group.members);
     const index = group.members.findIndex((member) => member.id === memberId);
     if (index !== -1) {
-      console.log("Removing member from group");
+      console.debug("Removing member from group");
       group.members.splice(index, 1);
       return true;
     }
@@ -117,17 +117,17 @@ export class GroupsService {
     const groupExists = groups.find((group) => group.id === groupToAdd.id);
 
     if (groupExists) {
-      console.log("Group already exists");
+      console.debug("Group already exists");
       return false;
     }
 
     switch (this.sortSource.getValue()) {
       case GroupSortEnum.OLDEST:
-        console.log("pushing group to end of list");
+        console.debug("pushing group to end of list");
         groups.push(groupToAdd);
         break;
       case GroupSortEnum.NEWEST:
-        console.log("unshifting group to start of list");
+        console.debug("unshifting group to start of list");
         groups.unshift(groupToAdd);
         break;
       case GroupSortEnum.LEAST_MEMBERS: {
@@ -135,7 +135,7 @@ export class GroupsService {
           (groupInList) =>
             groupInList.members.length > groupToAdd.members.length,
         );
-        console.log("largerGroupIndex: ", largerGroupIndex);
+        console.debug("largerGroupIndex: ", largerGroupIndex);
         this.insertUsingIndex(largerGroupIndex, groupToAdd, groups);
         break;
       }
@@ -144,12 +144,12 @@ export class GroupsService {
           (groupInList) =>
             groupInList.members.length < groupToAdd.members.length,
         );
-        console.log("smallerGroupIndex: ", smallerGroupIndex);
+        console.debug("smallerGroupIndex: ", smallerGroupIndex);
         this.insertUsingIndex(smallerGroupIndex, groupToAdd, groups);
         break;
       }
       default:
-        console.log("default: pushing group to end of list");
+        console.debug("default: pushing group to end of list");
         groups.push(groupToAdd);
         break;
     }

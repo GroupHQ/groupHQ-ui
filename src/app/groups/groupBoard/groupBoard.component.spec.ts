@@ -599,7 +599,7 @@ describe("GroupBoardComponent", () => {
       getTestScheduler().flush();
       fixture.detectChanges();
 
-      console.log(component);
+      console.debug(component);
       expect(page.isSyncBannerComponentVisible).toBeTrue();
     });
 

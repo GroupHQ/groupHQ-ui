@@ -35,8 +35,8 @@ export class GroupManagerService {
   }
 
   handleUpdates(publicEvent: PublicEventModel) {
-    console.log("Handling update");
-    console.log(publicEvent);
+    console.debug("Handling update");
+    console.debug(publicEvent);
 
     const group = JSON.parse(publicEvent.eventData) as GroupModel;
 
@@ -74,7 +74,7 @@ export class GroupManagerService {
     if (!groupToAdd || !groupToAdd.id || !groupToAdd.title) {
       return;
     }
-    console.log("Pushing groups");
+    console.debug("Pushing groups");
 
     this._groupUpdateActions$.next({
       updateFunction: () => {
@@ -100,7 +100,7 @@ export class GroupManagerService {
     if (event === EventTypeEnum.MEMBER_JOINED) {
       memberListUpdated = this.groupService.addMember(member, group);
     } else {
-      console.log("Removing member");
+      console.debug("Removing member");
       memberListUpdated = this.groupService.removeMember(member.id, group);
     }
 

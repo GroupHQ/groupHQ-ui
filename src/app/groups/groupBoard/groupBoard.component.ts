@@ -71,7 +71,7 @@ export class GroupBoardComponent implements OnInit {
   ngOnInit() {
     this.rsocketPublicUpdateStreamService.isPublicUpdatesStreamReady$.subscribe(
       (isReady) => {
-        console.log("isReady", isReady);
+        console.debug("isReady", isReady);
         const wasSynced = this.syncedText;
 
         this.syncedText = isReady;
@@ -89,10 +89,10 @@ export class GroupBoardComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         this.groupManagerService.handleUpdates(event);
-        console.log("EVENT", event);
+        console.debug("EVENT", event);
       });
 
-    console.log("nextRetry", this.retryDefaultService.nextRetryInSeconds$);
+    console.debug("nextRetry", this.retryDefaultService.nextRetryInSeconds$);
     this.retryDefaultService.nextRetryInSeconds$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((nextRetry) => {
@@ -102,14 +102,14 @@ export class GroupBoardComponent implements OnInit {
     this.stateTransitionService.currentState$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((state) => {
-        console.log("Transitioning to state: " + state);
+        console.debug("Transitioning to state: " + state);
         this.componentState = state;
       });
 
     this.groupManagerService.groupUpdateActions$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((groupUpdate) => {
-        console.log("Handling group update");
+        console.debug("Handling group update");
         if (this.componentState !== StatesEnum.READY) {
           return;
         }
@@ -145,7 +145,7 @@ export class GroupBoardComponent implements OnInit {
     );
     this.subscription = getGroupsWithRetry.subscribe({
       next: (groups) => {
-        console.log("GOT GROUPS", groups);
+        console.debug("GOT GROUPS", groups);
         this.groupManagerService.groups.next(groups);
         this.groupManagerService.groups$.subscribe(
           (groups) => (this.groups = groups),
@@ -153,14 +153,14 @@ export class GroupBoardComponent implements OnInit {
         this.transitionState(StatesEnum.READY);
       },
       error: (error) => {
-        console.log(error);
+        console.debug(error);
         this.transitionState(StatesEnum.HTTP_INTERNAL_SERVER_ERROR);
       },
     });
   }
 
   public transitionState(state: StatesEnum) {
-    console.log("state transition", this.stateTransitionService);
+    console.debug("state transition", this.stateTransitionService);
     switch (state) {
       case StatesEnum.HTTP_INTERNAL_SERVER_ERROR:
         this.stateTransitionService.transitionTo(

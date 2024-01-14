@@ -50,7 +50,7 @@ export class UserService {
     const subscription = this.rsocketService.isConnectionReady$.subscribe(
       (status) => {
         if (status) {
-          console.log("Connection ready. Sending member request");
+          console.debug("Connection ready. Sending member request");
 
           this.rsocketRequestsService.currentMemberForUser((member) => {
             if (member) {
@@ -68,7 +68,7 @@ export class UserService {
   private saveOrGetUuidFromLocalStorage() {
     let uuid = localStorage.getItem(this.MY_UUID_KEY);
     if (!uuid) {
-      console.log("localStorage.getItem(this.MY_UUID_KEY) === null");
+      console.debug("localStorage.getItem(this.MY_UUID_KEY) === null");
       uuid = this.saveNewUuidToLocalStorage();
     }
 

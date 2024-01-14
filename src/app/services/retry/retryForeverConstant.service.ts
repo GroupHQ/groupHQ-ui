@@ -14,7 +14,7 @@ export class RetryForeverConstantService extends AbstractRetryService {
 
   constructor(readonly configService?: ConfigService) {
     super();
-    console.log(configService);
+    console.debug(configService);
     const retryConfig = configService?.retryServices.retryForeverConstant;
 
     if (!retryConfig) {

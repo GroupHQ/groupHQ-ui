@@ -34,7 +34,7 @@ export class GroupCardsComponent implements AfterViewInit {
   isGroupsSynced = false;
 
   ngAfterViewInit() {
-    console.log("Emitting group cards");
+    console.debug("Emitting group cards");
     this.groupCards.emit(this.itemElements);
   }
 
