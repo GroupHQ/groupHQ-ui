@@ -84,7 +84,11 @@ export class NotificationService {
       case EventTypeEnum.MEMBER_JOINED:
         if (privateEvent.eventStatus === EventStatusEnum.SUCCESSFUL) {
           this.userService.currentGroupId = privateEvent.aggregateId;
-          const member = JSON.parse(privateEvent.eventData) as MemberModel;
+
+          const member = this.parseIfJson(
+            privateEvent.eventData,
+          ) as MemberModel;
+
           this.userService.currentMemberId = member.id;
           return "Successfully joined group";
         } else {
@@ -120,7 +124,8 @@ export class NotificationService {
       case EventTypeEnum.MEMBER_JOINED:
       case EventTypeEnum.MEMBER_LEFT:
         if (publicEvent.aggregateId === this.userService.currentGroupId) {
-          const member = JSON.parse(publicEvent.eventData) as MemberModel;
+          const member = this.parseIfJson(publicEvent.eventData) as MemberModel;
+
           return (
             member.username +
             (publicEvent.eventType === EventTypeEnum.MEMBER_JOINED
@@ -139,5 +144,21 @@ export class NotificationService {
       verticalPosition: "top",
       duration: 5000,
     });
+  }
+
+  private parseIfJson<T>(maybeJson: string | T): T {
+    if (typeof maybeJson === "string") {
+      try {
+        maybeJson = JSON.parse(maybeJson) as T;
+      } catch (error) {
+        console.error(
+          `Error parsing event data to object for ${maybeJson}`,
+          error,
+        );
+        throw new Error("Invalid JSON string");
+      }
+    }
+
+    return maybeJson as T;
   }
 }

@@ -38,7 +38,7 @@ export class GroupManagerService {
     console.debug("Handling update");
     console.debug(publicEvent);
 
-    const group = JSON.parse(publicEvent.eventData) as GroupModel;
+    const group = this.parseIfJson(publicEvent.eventData) as GroupModel;
 
     switch (publicEvent.eventType) {
       case EventTypeEnum.GROUP_CREATED:
@@ -52,7 +52,7 @@ export class GroupManagerService {
           .getValue()
           .find((group) => group.id === publicEvent.aggregateId);
         if (!groupJoined) return;
-        const member = JSON.parse(publicEvent.eventData) as MemberModel;
+        const member = this.parseIfJson(publicEvent.eventData) as MemberModel;
         this.updateGroupSize(member, groupJoined, EventTypeEnum.MEMBER_JOINED);
         break;
       }
@@ -61,7 +61,7 @@ export class GroupManagerService {
           .getValue()
           .find((group) => group.id === publicEvent.aggregateId);
         if (!groupLeft) return;
-        const member = JSON.parse(publicEvent.eventData) as MemberModel;
+        const member = this.parseIfJson(publicEvent.eventData) as MemberModel;
         this.updateGroupSize(member, groupLeft, EventTypeEnum.MEMBER_LEFT);
         break;
       }
@@ -116,5 +116,21 @@ export class GroupManagerService {
       eventType: "SORT",
       groupId: -1,
     });
+  }
+
+  private parseIfJson<T>(maybeJson: string | T): T {
+    if (typeof maybeJson === "string") {
+      try {
+        maybeJson = JSON.parse(maybeJson) as T;
+      } catch (error) {
+        console.error(
+          `Error parsing event data to object for ${maybeJson}`,
+          error,
+        );
+        throw new Error("Invalid JSON string");
+      }
+    }
+
+    return maybeJson as T;
   }
 }

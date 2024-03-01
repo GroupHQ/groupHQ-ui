@@ -1,7 +1,8 @@
 import { MemberModel } from "./member.model";
 import { GroupStatusEnum } from "./enums/groupStatus.enum";
+import { EventDataModel } from "./eventDataModel";
 
-export class GroupModel {
+export class GroupModel implements EventDataModel {
   constructor(
     public id: number,
     public title: string,
