@@ -49,7 +49,7 @@ export class AppMediaBreakpointDirective implements OnDestroy {
 
   updateElementClassList(screenType: string) {
     const deviceClass: string =
-      this.baseClass + "-" + this.screenTypesMap.get(screenType) ?? "web";
+      this.baseClass + "-" + (this.screenTypesMap.get(screenType) ?? "web");
     if (this.currentDeviceClass)
       this.element.nativeElement.classList.remove(this.currentDeviceClass);
     this.element.nativeElement.classList.add(deviceClass);
