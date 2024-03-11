@@ -1,0 +1,5 @@
+export enum ConnectorStatesEnum {
+  INITIALIZING = "INITIALIZING",
+  CONNECTED = "CONNECTED",
+  RETRYING = "RETRYING",
+}
