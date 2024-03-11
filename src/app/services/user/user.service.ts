@@ -1,9 +1,7 @@
 import { Injectable } from "@angular/core";
 import { v4 as uuidv4 } from "uuid";
-import { RsocketRequestsService } from "../network/rsocket/requests/rsocketRequests.service";
-import { RsocketService } from "../network/rsocket/rsocket.service";
-import { RsocketPrivateUpdateStreamService } from "../network/rsocket/streams/rsocketPrivateUpdateStream.service";
 import { BehaviorSubject } from "rxjs";
+
 @Injectable({
   providedIn: "root",
 })
@@ -13,17 +11,8 @@ export class UserService {
   private _currentGroupId = new BehaviorSubject<number | null>(null);
   private _currentMemberId = new BehaviorSubject<number | null>(null);
 
-  constructor(
-    private readonly rsocketService: RsocketService,
-    private readonly rsocketRequestsService: RsocketRequestsService,
-    private readonly rsocketPrivateUpdateStreamService: RsocketPrivateUpdateStreamService,
-  ) {
+  constructor() {
     this.myUuid = this.saveOrGetUuidFromLocalStorage();
-    rsocketService.initializeRsocketConnection(this.uuid);
-    this.rsocketPrivateUpdateStreamService.initializePrivateUpdateStream(
-      this.uuid,
-    );
-    this.initializeCurrentMember();
   }
 
   get currentGroupId$() {
@@ -44,25 +33,6 @@ export class UserService {
 
   set currentMemberId(value: number | null) {
     this._currentMemberId.next(value);
-  }
-
-  private initializeCurrentMember() {
-    const subscription = this.rsocketService.isConnectionReady$.subscribe(
-      (status) => {
-        if (status) {
-          console.debug("Connection ready. Sending member request");
-
-          this.rsocketRequestsService.currentMemberForUser((member) => {
-            if (member) {
-              this._currentGroupId.next(member?.groupId);
-              this._currentMemberId.next(member?.id);
-            }
-          }, this.uuid);
-
-          subscription.unsubscribe();
-        }
-      },
-    );
   }
 
   private saveOrGetUuidFromLocalStorage() {

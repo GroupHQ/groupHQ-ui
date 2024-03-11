@@ -24,7 +24,7 @@
     "retryForeverConstant": {
       "MAX_RETRY_ATTEMPTS": -1,
       "MIN_RETRY_INTERVAL": 5,
-      "MAX_RETRY_INTERVAL": -1
+      "MAX_RETRY_INTERVAL": 5
     }
   },
   "groupBoardComponent": {

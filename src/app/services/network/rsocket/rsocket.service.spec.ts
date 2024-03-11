@@ -1,89 +1,175 @@
-import { TestBed } from "@angular/core/testing";
 import { RsocketService } from "./rsocket.service";
 import { RsocketConnectorService } from "./rsocketConnector.service";
-import { AbstractRetryService } from "../../retry/abstractRetry.service";
-import { cold, getTestScheduler } from "jasmine-marbles";
+import { TestBed } from "@angular/core/testing";
 import { ConfigService } from "../../../config/config.service";
-import { RETRY_FOREVER } from "../../../app-tokens";
-import { RsocketPublicUpdateStreamService } from "./streams/rsocketPublicUpdateStream.service";
+import { RSocket } from "rsocket-core";
+import { RequestSpec, RSocketRequester } from "rsocket-messaging";
+import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
+import { WellKnownMimeType } from "rsocket-composite-metadata";
+import { Observable, take } from "rxjs";
+import { ConnectorStatesEnum } from "./ConnectorStatesEnum";
+import { RetryOptions } from "../../retry/retry.options";
+import { Buffer } from "buffer";
+import { ColdObservable } from "rxjs/internal/testing/ColdObservable";
+
+function createMockRsocketRequester(responseObservable: Observable<any>) {
+  const mockRequestSpec: RequestSpec = {
+    metadata: function (
+      key: string | WellKnownMimeType | number,
+      content: Buffer,
+    ): RequestSpec {
+      return this;
+    },
+    request: function <TResponseType>(): TResponseType {
+      return responseObservable as unknown as TResponseType;
+    },
+  };
+
+  const mockRSocketRequester: RSocketRequester = {
+    route: function (route: string): RequestSpec {
+      return mockRequestSpec;
+    },
+  };
+
+  return mockRSocketRequester;
+}
 
 describe("RsocketService", () => {
   let service: RsocketService;
 
-  let retryServiceStub: jasmine.SpyObj<AbstractRetryService>;
-  let rsocketConnectorStub: jasmine.SpyObj<RsocketConnectorService>;
-  let testModuleConfiguration: any;
+  let rsocketConnectorService: jasmine.SpyObj<RsocketConnectorService>;
+  let mockRSocket: jasmine.SpyObj<RSocket>;
+
+  let testScheduler: TestScheduler;
+
+  function mockRsocketConnector(
+    mockRsocketResponse: ColdObservable<RSocket>,
+    mockPingResponse: ColdObservable<boolean>,
+  ) {
+    rsocketConnectorService.connect.and.returnValue(mockRsocketResponse);
+
+    const mockRSocketRequester = createMockRsocketRequester(mockPingResponse);
+    spyOn(RSocketRequester, "wrap").and.returnValue(mockRSocketRequester);
+  }
 
   beforeEach(() => {
-    retryServiceStub = jasmine.createSpyObj<AbstractRetryService>(
-      "AbstractRetryService",
-      ["addRetryLogic"],
-    );
-    retryServiceStub.addRetryLogic.and.callFake((observable) => observable);
-
-    rsocketConnectorStub = jasmine.createSpyObj<RsocketConnectorService>(
+    rsocketConnectorService = jasmine.createSpyObj<RsocketConnectorService>(
       "RsocketConnectorService",
-      ["connectToServer"],
+      ["connect"],
     );
-    rsocketConnectorStub.connectToServer.and.returnValue(cold("-"));
+    mockRSocket = jasmine.createSpyObj<RSocket>("RSocket", [
+      "requestResponse",
+      "close",
+      "onClose",
+    ]);
 
-    testModuleConfiguration = {
+    const retryOptions: RetryOptions = {
+      MAX_ATTEMPTS: 5,
+      MIN_RETRY_INTERVAL: 5,
+      MAX_RETRY_INTERVAL: 5,
+    };
+
+    TestBed.configureTestingModule({
       providers: [
         RsocketService,
-        { provide: RsocketConnectorService, useValue: rsocketConnectorStub },
+        { provide: RsocketConnectorService, useValue: rsocketConnectorService },
         {
           provide: ConfigService,
           useValue: {
-            rsocketMinimumDisconnectRetryTime: 5,
-            rsocketMaximumDisconnectRetryTime: 5,
+            get retryForeverStrategy(): RetryOptions {
+              return retryOptions;
+            },
           },
         },
-        {
-          provide: RETRY_FOREVER,
-          useValue: retryServiceStub,
-        },
-        {
-          provide: RsocketPublicUpdateStreamService,
-          useValue: {},
-        },
       ],
-    };
-    TestBed.configureTestingModule(testModuleConfiguration);
-    service = TestBed.inject(RsocketService);
-  });
-
-  it("should create", () => {
-    expect(service).toBeTruthy();
-  });
-
-  it("should have attempted to connect to the server once", () => {
-    service.initializeRsocketConnection("test", "test");
-    getTestScheduler().flush();
-    expect(rsocketConnectorStub.connectToServer).toHaveBeenCalledTimes(1);
-  });
-
-  it("should attempt to reconnect to the server after connection is closed based on the configured delay", () => {
-    jasmine.clock().install();
-
-    const rsocketMock = jasmine.createSpyObj("RSocket", ["onClose"]);
-    let onCloseCallback: any;
-    rsocketMock.onClose.and.callFake((callback: any) => {
-      onCloseCallback = callback;
     });
 
-    rsocketConnectorStub.connectToServer.and.returnValue(
-      cold("a|", { a: rsocketMock }),
-    );
+    testScheduler = new TestScheduler((actual, expected) => {
+      expect(actual).toEqual(expected);
+    });
+  });
 
-    service.initializeRsocketConnection("test", "test");
+  it("should automatically set up the RSocket connection when the service is loaded in", () => {
+    testScheduler.run((helpers) => {
+      const { cold, expectObservable } = helpers;
+      const mockPingResponse = cold("--b|", { b: true });
 
-    getTestScheduler().flush();
+      mockRsocketConnector(cold("a|", { a: mockRSocket }), mockPingResponse);
 
-    expect(rsocketMock.onClose).toHaveBeenCalledTimes(1);
-    onCloseCallback();
-    jasmine.clock().tick(5000);
-    expect(rsocketConnectorStub.connectToServer).toHaveBeenCalledTimes(2);
+      service = TestBed.inject(RsocketService);
 
-    jasmine.clock().uninstall();
+      expectObservable(service.connectionState$).toBe("a--b", {
+        a: ConnectorStatesEnum.INITIALIZING,
+        b: ConnectorStatesEnum.CONNECTED,
+      });
+    });
+  });
+
+  it("should transition to the RETRYING state when connecting to the server fails", () => {
+    testScheduler.run((helpers) => {
+      const { cold, expectObservable } = helpers;
+      rsocketConnectorService.connect.and.returnValue(cold("---#"));
+
+      service = TestBed.inject(RsocketService);
+
+      expectObservable(service.connectionState$).toBe("a--b", {
+        a: ConnectorStatesEnum.INITIALIZING,
+        b: ConnectorStatesEnum.RETRYING,
+      });
+    });
+  });
+
+  it("should transition to the RETRYING state when pinging fails after connecting to the server", () => {
+    testScheduler.run((helpers) => {
+      const { cold, expectObservable } = helpers;
+      const mockPingResponse = cold("---#");
+      rsocketConnectorService.connect.and.returnValue(
+        cold("a|", { a: mockRSocket }),
+      );
+
+      const mockRSocketRequester = createMockRsocketRequester(mockPingResponse);
+      spyOn(RSocketRequester, "wrap").and.returnValue(mockRSocketRequester);
+
+      service = TestBed.inject(RsocketService);
+
+      expectObservable(service.connectionState$).toBe("a---b", {
+        a: ConnectorStatesEnum.INITIALIZING,
+        b: ConnectorStatesEnum.RETRYING,
+      });
+    });
+  });
+
+  it("should automatically retry connection setup after the connection has been closed", () => {
+    testScheduler.run((helpers) => {
+      const { cold, expectObservable, flush } = helpers;
+      const mockPingResponse = cold("--b|", { b: true });
+
+      let onCloseCallBack: any;
+      mockRSocket.onClose.and.callFake((callback) => {
+        onCloseCallBack = callback;
+      });
+
+      mockRsocketConnector(cold("a|", { a: mockRSocket }), mockPingResponse);
+
+      service = TestBed.inject(RsocketService);
+
+      expectObservable(service.connectionState$).toBe("a--b", {
+        a: ConnectorStatesEnum.INITIALIZING,
+        b: ConnectorStatesEnum.CONNECTED,
+      });
+
+      flush();
+
+      service.connectionState$.pipe(take(1)).subscribe((state) => {
+        if (state === ConnectorStatesEnum.CONNECTED) {
+          onCloseCallBack();
+        }
+      });
+
+      expectObservable(service.connectionState$).toBe("----a--b", {
+        a: ConnectorStatesEnum.RETRYING,
+        b: ConnectorStatesEnum.CONNECTED,
+      });
+    });
   });
 });

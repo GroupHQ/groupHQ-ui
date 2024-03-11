@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { catchError, defer, from, tap } from "rxjs";
-import { RSocketConnector } from "rsocket-core";
+import { defer, Observable } from "rxjs";
+import { RSocket, RSocketConnector } from "rsocket-core";
 import { WebsocketClientTransport } from "rsocket-websocket-client";
 import { ConfigService } from "../../../config/config.service";
 import { RsocketMetadataService } from "./rsocketMetadata.service";
@@ -30,40 +30,16 @@ export class RsocketConnectorService {
     }
   }
 
-  /**
-   * Connects to the RSocket server. Should be used with RetryService.
-   * This will only fail if the initial connection fails.
-   * This will NOT fail if an RSocket connection is established and then lost.
-   * @private
-   */
-  public connectToServer(username: string, password = "empty") {
-    const rSocketConnector = this.createConnector(username, password);
-
-    return defer(() =>
-      from(rSocketConnector.connect()).pipe(
-        tap((rsocket) => {
-          console.debug(
-            "Connected to server in RSocketConnectorService",
-            rsocket,
-          );
-        }),
-        catchError((error) => {
-          console.debug(
-            "Error connecting to server in RSocketConnector Service:",
-            error,
-          );
-          throw new Error("Failed to connect to server");
-        }),
-      ),
-    );
-  }
-
   private getKeepAliveTimeMilliseconds() {
     return this.KEEP_ALIVE * 1000;
   }
 
   private getLifetimeTimeMilliseconds() {
     return this.LIFETIME * 1000;
+  }
+
+  public connect(): Observable<RSocket> {
+    return defer(() => this.createConnector().connect());
   }
 
   private createConnector(username = "user", password = "empty") {
