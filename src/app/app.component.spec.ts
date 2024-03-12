@@ -3,7 +3,7 @@ import { AppComponent } from "./app.component";
 import { RouterTestingModule } from "@angular/router/testing";
 import { NavComponent } from "./shared/nav/nav.component";
 import { FooterComponent } from "./shared/footer/footer.component";
-import { NotificationService } from "./services/user/notification.service";
+import { NotificationService } from "./services/notifications/notification.service";
 
 describe("AppComponent", () => {
   let fixture: ComponentFixture<AppComponent>;

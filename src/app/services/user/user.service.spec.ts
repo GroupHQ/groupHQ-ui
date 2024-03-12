@@ -25,6 +25,20 @@ describe("UserService", () => {
     expect(service.uuid).toEqual(service.uuid);
   });
 
+  describe("user group membership operations", () => {
+    it("should set the current group and member id", () => {
+      service.setUserInGroup(1, 1);
+      expect(service.currentGroupId).toBe(1);
+      expect(service.currentMemberId).toBe(1);
+    });
+
+    it("should clear the current group and member id", () => {
+      service.removeUserFromGroup();
+      expect(service.currentGroupId).toBeNull();
+      expect(service.currentMemberId).toBeNull();
+    });
+  });
+
   it("should return a different uuid when localStorage's uuid is cleared", () => {
     const uuid = service.uuid;
     localStorage.removeItem(service.MY_UUID_KEY);

@@ -27,12 +27,14 @@ export class UserService {
     return this._currentMemberId.getValue();
   }
 
-  set currentGroupId(value: number | null) {
-    this._currentGroupId.next(value);
+  public setUserInGroup(groupId: number, memberId: number) {
+    this._currentGroupId.next(groupId);
+    this._currentMemberId.next(memberId);
   }
 
-  set currentMemberId(value: number | null) {
-    this._currentMemberId.next(value);
+  public removeUserFromGroup() {
+    this._currentGroupId.next(null);
+    this._currentMemberId.next(null);
   }
 
   private saveOrGetUuidFromLocalStorage() {
