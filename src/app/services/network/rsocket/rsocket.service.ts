@@ -20,14 +20,10 @@ import { v4 as uuidv4 } from "uuid";
 import { RetryForeverStrategy } from "../../retry/strategies/retryForever.strategy";
 import { ConfigService } from "../../../config/config.service";
 import { ConnectorStatesEnum } from "./ConnectorStatesEnum";
-import {
-  encodeSimpleAuthMetadata,
-  WellKnownMimeType,
-} from "rsocket-composite-metadata";
 import { RxRequestersFactory } from "rsocket-adapter-rxjs";
 import { JsonCodec } from "./codecs/JsonCodec";
 import { UserService } from "../../user/user.service";
-import { BufferPolyfill } from "./buffer.polyfill";
+import { RsocketMetadataService } from "./rsocketMetadata.service";
 
 @Injectable({
   providedIn: "root",
@@ -44,15 +40,13 @@ export class RsocketService implements Retryable {
 
   constructor(
     private readonly rsocketConnectorService: RsocketConnectorService,
+    private readonly rsocketMetadataService: RsocketMetadataService,
     private readonly userService: UserService,
     private readonly retryService: RetryService,
     private readonly configService: ConfigService,
-    private readonly bufferPolyfill: BufferPolyfill,
-  ) {
-    this.initializeRsocketConnection(this.userService.uuid);
-  }
+  ) {}
 
-  public nextRetryTime$(): Observable<number> {
+  public get nextRetryTime$(): Observable<number> {
     const nextRetryTime$ = this.retryService.getNextRetryTime$(
       this.requestObservableKey,
     );
@@ -69,8 +63,8 @@ export class RsocketService implements Retryable {
     throw new Error("Method not implemented.");
   }
 
-  public initializeRsocketConnection(username: string, password = "empty") {
-    this.setupRsocketService(username, password);
+  public initializeRsocketConnection() {
+    this.setupRsocketService(this.userService.uuid, "empty");
   }
 
   public get connectionState$() {
@@ -132,11 +126,8 @@ export class RsocketService implements Retryable {
       }),
       concatWith(
         defer(() => {
-          return this.rsocketRequester!.route("groups.ping")
-            .metadata(
-              WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION,
-              encodeSimpleAuthMetadata(username, password),
-            )
+          return this.rsocketMetadataService
+            .authMetadata(this.rsocketRequester!.route("groups.ping"))
             .request(
               RxRequestersFactory.requestResponse<unknown, boolean>(
                 null,
@@ -172,6 +163,7 @@ export class RsocketService implements Retryable {
           console.error(
             "Retries exhausted, giving up establishing RSocket connection",
           );
+          this._connectionState$.next(ConnectorStatesEnum.RETRIES_EXHAUSTED);
           return of(EMPTY);
         }),
       )

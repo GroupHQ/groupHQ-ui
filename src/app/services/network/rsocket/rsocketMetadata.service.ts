@@ -1,53 +1,51 @@
 import { Injectable } from "@angular/core";
 import {
   encodeCompositeMetadata,
-  encodeRoute,
   encodeSimpleAuthMetadata,
   WellKnownMimeType,
 } from "rsocket-composite-metadata";
 import { Buffer } from "buffer";
 import { BufferPolyfill } from "./buffer.polyfill";
+import { UserService } from "../../user/user.service";
+import { RequestSpec, RSocketRequester } from "rsocket-messaging";
 
 @Injectable({
   providedIn: "root",
 })
 export class RsocketMetadataService {
-  constructor(readonly bufferPolyfill: BufferPolyfill) {}
+  constructor(
+    readonly bufferPolyfill: BufferPolyfill,
+    readonly userService: UserService,
+  ) {}
 
-  public authMetadata(username: string, password = "empty") {
-    const encodedSimpleAuthMetadata = encodeSimpleAuthMetadata(
-      username,
-      password,
-    );
+  private get encodedSimpleAuthMetadata(): Buffer {
+    const username = this.userService.uuid;
+    const password = "empty";
 
+    return encodeSimpleAuthMetadata(username, password);
+  }
+
+  public authMetadataAsBuffer() {
     const map = new Map<WellKnownMimeType, Buffer>();
     map.set(
       WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION,
-      encodedSimpleAuthMetadata,
+      this.encodedSimpleAuthMetadata,
     );
 
     return encodeCompositeMetadata(map);
   }
 
+  public authMetadata(requestSpec: RequestSpec): RequestSpec {
+    return requestSpec.metadata(
+      WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION,
+      this.encodedSimpleAuthMetadata,
+    );
+  }
+
   public authMetadataWithRoute(
     route: string,
-    username: string,
-    password = "empty",
-  ) {
-    const encodedSimpleAuthMetadata = encodeSimpleAuthMetadata(
-      username,
-      password,
-    );
-
-    const encodedRoute: Buffer = encodeRoute(route);
-
-    const map = new Map<WellKnownMimeType, Buffer>();
-    map.set(WellKnownMimeType.MESSAGE_RSOCKET_ROUTING, encodedRoute);
-    map.set(
-      WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION,
-      encodedSimpleAuthMetadata,
-    );
-
-    return encodeCompositeMetadata(map);
+    rsocketRequester: RSocketRequester,
+  ): RequestSpec {
+    return this.authMetadata(rsocketRequester.route(route));
   }
 }

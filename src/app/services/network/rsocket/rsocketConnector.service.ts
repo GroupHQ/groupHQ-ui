@@ -49,10 +49,7 @@ export class RsocketConnectorService {
         metadataMimeType: "message/x.rsocket.composite-metadata.v0",
         payload: {
           data: null,
-          metadata: this.rsocketMetadataService.authMetadata(
-            username,
-            password,
-          ),
+          metadata: this.rsocketMetadataService.authMetadataAsBuffer(),
         },
         keepAlive: this.getKeepAliveTimeMilliseconds(), // interval (ms) to send keep-alive frames
         lifetime: this.getLifetimeTimeMilliseconds(), // time (ms) since last keep-alive acknowledgement that the connection will be considered dead

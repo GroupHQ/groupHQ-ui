@@ -1,5 +1,5 @@
 import { RequestState } from "./request.state";
-import { Observable, Subscription } from "rxjs";
+import { Observable } from "rxjs";
 import { RequestServiceStateInterface } from "../../network/rsocket/mediators/interfaces/requestServiceState.interface";
 import { RequestingState } from "./requesting.state";
 import { ConnectorStatesEnum } from "../../network/rsocket/ConnectorStatesEnum";
@@ -13,8 +13,6 @@ export class RequestCompleteState<T> extends RequestState<T> {
 
   constructor(requestService: RequestServiceStateInterface<T>) {
     super(requestService);
-
-    this.requestService.nextRequestState(RequestStateEnum.REQUEST_ACCEPTED);
 
     const subscription = this.requestService.connectorState.subscribe(
       (state) => {
