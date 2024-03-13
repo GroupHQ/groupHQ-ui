@@ -1,6 +1,4 @@
-import { RSocketRequester } from "rsocket-messaging";
 import { AbstractRsocketRequestMediator } from "./abstractRsocketRequest.mediator";
-import { RxRequestersFactory } from "rsocket-adapter-rxjs";
 import { RequestCompleteState } from "../../../state/request/requestComplete.state";
 import { ReceivingDataState } from "../../../state/request/receivingData.state";
 import { RequestStateEnum } from "../../../state/RequestStateEnum";
@@ -14,18 +12,8 @@ export class RsocketRequestStreamMediator<
   sendRequest(): void {
     this.cleanUp();
 
-    const rSocketRequester: RSocketRequester =
-      this.rsocketService.rsocketRequester!;
-
-    const requestObservable = this.rsocketMetadataService
-      .authMetadataWithRoute(this.route, rSocketRequester)
-      .request(
-        RxRequestersFactory.requestStream<TData | null, RData>(
-          this.data,
-          this.inputCodec,
-          this.outputCodec,
-        ),
-      )
+    const requestObservable = this.rsocketRequestFactory
+      .createRequestStream<TData, RData>(this.route, this.data)
       .pipe(
         catchError((error) => {
           console.error("Error in RsocketRequestStreamMediator: ", error);

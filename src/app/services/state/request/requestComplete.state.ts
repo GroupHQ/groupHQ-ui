@@ -54,6 +54,6 @@ export class RequestCompleteState<T> extends RequestState<T> {
         break;
     }
 
-    return this.requestService.events$;
+    return this.requestService.getEvents$();
   }
 }

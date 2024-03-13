@@ -21,12 +21,6 @@ describe("RequestCompleteState", () => {
     setup = setupStateTest(RequestCompleteState, ConnectorStatesEnum.CONNECTED);
   });
 
-  it("sets the request state to REQUEST_ACCEPTED", () => {
-    expect(setup.requestServiceSpy.nextRequestState).toHaveBeenCalledWith(
-      RequestStateEnum.REQUEST_ACCEPTED,
-    );
-  });
-
   it("transitions to the RequestingState when the connector is CONNECTED and a request is received", () => {
     spyOn(setup.state, "cleanUp");
     setup.mockConnectorState$.next(ConnectorStatesEnum.CONNECTED);

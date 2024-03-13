@@ -8,6 +8,6 @@ export class DormantState<T> extends RequestState<T> {
     console.log("DormantState handles request.");
     console.log("DormantState is transitioning to WaitingForRsocketState.");
     this.requestService.state = new WaitingForRsocketState(this.requestService);
-    return this.requestService.events$;
+    return this.requestService.getEvents$();
   }
 }

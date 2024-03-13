@@ -1,4 +1,5 @@
 export enum RequestStateEnum {
+  DORMANT = "DORMANT",
   INITIALIZING = "INITIALIZING",
   LOADING = "LOADING",
   REQUESTING = "REQUESTING",

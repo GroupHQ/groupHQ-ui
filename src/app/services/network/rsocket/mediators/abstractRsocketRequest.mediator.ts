@@ -1,4 +1,11 @@
-import { BehaviorSubject, Observable, Subject, Subscription } from "rxjs";
+import {
+  BehaviorSubject,
+  defer,
+  Observable,
+  share,
+  Subject,
+  Subscription,
+} from "rxjs";
 import { Retryable } from "../../../retry/retryable";
 import { RequestStateEnum } from "../../../state/RequestStateEnum";
 import { RetryService } from "../../../retry/retry.service";
@@ -9,11 +16,9 @@ import { RequestServiceComponentInterface } from "./interfaces/requestServiceCom
 import { DormantState } from "../../../state/request/dormant.state";
 import { UserService } from "../../../user/user.service";
 import { RsocketService } from "../rsocket.service";
-import { RsocketMetadataService } from "../rsocketMetadata.service";
 import { ConnectorStatesEnum } from "../ConnectorStatesEnum";
-import { Codec } from "rsocket-messaging";
-import { JsonCodec } from "../codecs/JsonCodec";
 import { RequestState } from "../../../state/request/request.state";
+import { RsocketRequestFactory } from "../rsocketRequest.factory";
 
 export abstract class AbstractRsocketRequestMediator<TData, RData>
   implements
@@ -23,18 +28,19 @@ export abstract class AbstractRsocketRequestMediator<TData, RData>
 {
   public accessor state: RequestState<RData>;
   private _events$: Subject<RData> = new Subject<RData>();
+  private _eventsShareable$ = this._events$.asObservable().pipe(share()); // TODO: Add tests verifying that the events are shared
   private _requestState$: BehaviorSubject<RequestStateEnum> =
     new BehaviorSubject<RequestStateEnum>(RequestStateEnum.INITIALIZING);
-
-  protected readonly inputCodec: Codec<TData> = new JsonCodec();
-  protected readonly outputCodec: Codec<RData> = new JsonCodec();
+  private _requestStateShareable$ = this._requestState$
+    .asObservable()
+    .pipe(share()); // TODO: Add tests verifying that the state is shared
 
   protected requestObservableSubscription: Subscription | null = null;
   protected readonly requestObservableKey: string = uuidv4();
 
   public constructor(
     public readonly rsocketService: RsocketService,
-    protected readonly rsocketMetadataService: RsocketMetadataService,
+    protected readonly rsocketRequestFactory: RsocketRequestFactory,
     protected readonly retryService: RetryService,
     protected readonly userService: UserService,
     protected readonly configService: ConfigService,
@@ -48,13 +54,10 @@ export abstract class AbstractRsocketRequestMediator<TData, RData>
     return this.rsocketService.connectionState$;
   }
 
-  public start(): boolean {
+  private start() {
     if (this.state instanceof DormantState) {
       this.onRequest();
-      return true;
     }
-
-    return false;
   }
 
   public onRequest(): Observable<RData> {
@@ -72,16 +75,22 @@ export abstract class AbstractRsocketRequestMediator<TData, RData>
 
   public abstract sendRequest(): void;
 
-  public get events$(): Observable<RData> {
-    return this._events$.asObservable();
+  public getEvents$(start?: boolean): Observable<RData> {
+    return defer(() => {
+      if (start) this.start();
+      return this._eventsShareable$;
+    });
   }
 
   public nextEvent(event: RData): void {
     this._events$.next(event);
   }
 
-  public get state$(): Observable<RequestStateEnum> {
-    return this._requestState$.asObservable();
+  public getState$(start?: boolean): Observable<RequestStateEnum> {
+    return defer(() => {
+      if (start) this.start();
+      return this._requestStateShareable$;
+    });
   }
 
   public get currentState(): RequestStateEnum {

@@ -4,17 +4,17 @@ import { RsocketRequestStreamMediator } from "./rsocketRequestStream.mediator";
 import { ConfigService } from "../../../../config/config.service";
 import { UserService } from "../../../user/user.service";
 import { RsocketService } from "../rsocket.service";
-import { RsocketMetadataService } from "../rsocketMetadata.service";
 import { RsocketRequestResponseMediator } from "./rsocketRequestResponse.mediator";
 import { RequestServiceComponentInterface } from "./interfaces/requestServiceComponent.interface";
+import { RsocketRequestFactory } from "../rsocketRequest.factory";
 
 @Injectable({
   providedIn: "root",
 })
-export class RsocketRequestFactory {
+export class RsocketRequestMediatorFactory {
   constructor(
     private readonly rsocketService: RsocketService,
-    private readonly rsocketMetadataService: RsocketMetadataService,
+    private readonly rsocketRequestFactory: RsocketRequestFactory,
     private readonly retryService: RetryService,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
@@ -26,7 +26,7 @@ export class RsocketRequestFactory {
   ): RequestServiceComponentInterface<RData> {
     return new RsocketRequestResponseMediator<TData, RData>(
       this.rsocketService,
-      this.rsocketMetadataService,
+      this.rsocketRequestFactory,
       this.retryService,
       this.userService,
       this.configService,
@@ -41,7 +41,7 @@ export class RsocketRequestFactory {
   ): RequestServiceComponentInterface<RData> {
     return new RsocketRequestStreamMediator<TData, RData>(
       this.rsocketService,
-      this.rsocketMetadataService,
+      this.rsocketRequestFactory,
       this.retryService,
       this.userService,
       this.configService,

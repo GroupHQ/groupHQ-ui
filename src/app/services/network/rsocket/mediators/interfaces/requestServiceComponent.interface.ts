@@ -3,8 +3,7 @@ import { RequestStateEnum } from "../../../../state/RequestStateEnum";
 import { Retryable } from "../../../../retry/retryable";
 
 export interface RequestServiceComponentInterface<T> extends Retryable {
-  start(): boolean;
   onRequest(): Observable<T>;
-  get events$(): Observable<T>;
-  get state$(): Observable<RequestStateEnum>;
+  getEvents$(start?: boolean): Observable<T>;
+  getState$(start?: boolean): Observable<RequestStateEnum>;
 }

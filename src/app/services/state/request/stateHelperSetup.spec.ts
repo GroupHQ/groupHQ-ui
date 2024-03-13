@@ -22,7 +22,7 @@ export function setupStateTest<T, S extends RequestState<T>>(
   const requestServiceSpy = jasmine.createSpyObj<
     RequestServiceStateInterface<T>
   >("RequestServiceStateInterface", [
-    "start",
+    "getEvents$",
     "sendRequest",
     "cleanUp",
     "nextEvent",

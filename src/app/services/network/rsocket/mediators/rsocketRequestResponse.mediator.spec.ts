@@ -1,6 +1,6 @@
 import { RsocketService } from "../rsocket.service";
 import { TestBed } from "@angular/core/testing";
-import { RsocketRequestFactory } from "./rsocketRequest.factory";
+import { RsocketRequestMediatorFactory } from "./rsocketRequestMediator.factory";
 import { RequestServiceComponentInterface } from "./interfaces/requestServiceComponent.interface";
 import { BehaviorSubject } from "rxjs";
 import { RSocketRequester } from "rsocket-messaging";
@@ -37,7 +37,7 @@ describe("RsocketRequestResponseMediator", () => {
     );
 
     mediator = TestBed.inject(
-      RsocketRequestFactory,
+      RsocketRequestMediatorFactory,
     ).createRequestResponseMediator("route");
 
     testScheduler = new TestScheduler((actual, expected) => {
@@ -58,16 +58,15 @@ describe("RsocketRequestResponseMediator", () => {
         mockRSocketRequester,
       );
 
-      expectObservable(mediator.state$).toBe("(ab)", {
-        a: RequestStateEnum.REQUESTING,
-        b: RequestStateEnum.REQUEST_ACCEPTED,
+      expectObservable(mediator.getState$()).toBe("(abc)", {
+        a: RequestStateEnum.INITIALIZING,
+        b: RequestStateEnum.REQUESTING,
+        c: RequestStateEnum.REQUEST_ACCEPTED,
       });
 
-      expectObservable(mediator.events$).toBe("a", {
+      expectObservable(mediator.getEvents$(true)).toBe("a", {
         a: "response",
       });
-
-      mediator.start();
     });
   });
 
@@ -76,13 +75,11 @@ describe("RsocketRequestResponseMediator", () => {
       const { expectObservable } = helpers;
       connectionState$.next(ConnectorStatesEnum.INITIALIZING);
 
-      expectObservable(mediator.state$).toBe("a", {
+      expectObservable(mediator.getState$()).toBe("a", {
         a: RequestStateEnum.INITIALIZING,
       });
 
-      expectObservable(mediator.events$).toBe("-");
-
-      mediator.start();
+      expectObservable(mediator.getEvents$(true)).toBe("-");
     });
   });
 
@@ -99,14 +96,13 @@ describe("RsocketRequestResponseMediator", () => {
         mockRSocketRequester,
       );
 
-      expectObservable(mediator.state$).toBe("(ab)", {
-        a: RequestStateEnum.REQUESTING,
-        b: RequestStateEnum.REQUEST_REJECTED,
+      expectObservable(mediator.getState$()).toBe("(abc)", {
+        a: RequestStateEnum.INITIALIZING,
+        b: RequestStateEnum.REQUESTING,
+        c: RequestStateEnum.REQUEST_REJECTED,
       });
 
-      expectObservable(mediator.events$).toBe("-");
-
-      mediator.start();
+      expectObservable(mediator.getEvents$(true)).toBe("-");
     });
   });
 
@@ -121,14 +117,13 @@ describe("RsocketRequestResponseMediator", () => {
         mockRSocketRequester,
       );
 
-      expectObservable(mediator.state$).toBe("a 4999ms b", {
-        a: RequestStateEnum.REQUESTING,
-        b: RequestStateEnum.REQUEST_TIMEOUT,
+      expectObservable(mediator.getState$()).toBe("(ab) 4996ms c", {
+        a: RequestStateEnum.INITIALIZING,
+        b: RequestStateEnum.REQUESTING,
+        c: RequestStateEnum.REQUEST_TIMEOUT,
       });
 
-      expectObservable(mediator.events$).toBe("-");
-
-      mediator.start();
+      expectObservable(mediator.getEvents$(true)).toBe("-");
     });
   });
 });
