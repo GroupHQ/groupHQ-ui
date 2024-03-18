@@ -98,10 +98,13 @@ export class RsocketService implements Retryable {
   }
 
   /**
-   * TODO: Update #setupRsocketService method description
-   * This method is called in the service's constructor.
-   * If the RSocket connection is terminated for whatever reason, it is considered
-   * to be COMPLETE. In this case, the RSocket's onClose handler calls this method to restart the subscription.
+   * 3 phases:
+   * 1. Attempts connection to server
+   * 2. Once connection is established, attempts to ping the server
+   * 3. If ping is successful, sets connection state to CONNECTED and registers onClose handler
+   * If connection or ping attempts fail, this method will retry based on the provided retry strategy
+   * (currently RetryForeverStrategy). If the connection is closed after these steps, the registered
+   * onClose handler calls #onCloseHandler to attempt to recreate the connection.
    * @private
    */
   private setupRsocketService() {
@@ -116,19 +119,6 @@ export class RsocketService implements Retryable {
           rsocket,
         );
         this._rsocketConnection$.next(rsocket);
-
-        // TODO: Update tests for this call moving after a successful ping
-        // The issue with having this here is that for every failed connection, the onCloseHandler is called
-        // and this handler bypasses the retry logic--it will retry as soon as the connection fails.
-        // Moving it to after a successful ping will allow the retry logic to kick in for both
-        // an unsuccessful handshake, and a failed ping. In the case the connection is closed after
-        // this point (which should not happen after the server has accepted the connection and is pingable),
-        // then the connection will be retried all over again. For added robustness, we could keep track of the date
-        // the connection was created, and only attempt a reconnection if a certain time has passed.
-        // This will prevent retrying connections if the server behaves weirdly by closing the connection soon after
-        // a successful ping until a minimum time we specify. Though this is not a priority given we know how the server
-        // behaves now
-        // rsocket.onClose((error) => this.onCloseHandler(error))
       }),
       concatWith(
         defer(() => {
