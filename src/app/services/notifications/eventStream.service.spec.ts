@@ -5,7 +5,7 @@ import { RequestServiceComponentInterface } from "../network/rsocket/mediators/i
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
 import { EMPTY, of } from "rxjs";
 import { ConfigService } from "../../config/config.service";
-import { RequestStateEnum } from "../state/RequestStateEnum";
+import { StateEnum } from "../state/StateEnum";
 
 describe("EventStreamService", () => {
   let service: EventStreamService;
@@ -60,7 +60,7 @@ describe("EventStreamService", () => {
         const streamStatusObservable = service.streamStatus("route");
 
         expectObservable(streamStatusObservable).toBe("a", {
-          a: RequestStateEnum.INITIALIZING,
+          a: StateEnum.DORMANT,
         });
       });
     });
@@ -77,6 +77,20 @@ describe("EventStreamService", () => {
           new Error("No stream status for response route: nonTrackedStream"),
         );
       });
+    });
+  });
+
+  describe("#retryTime", () => {
+    it("should throw an error if there is no stream with the given route", () => {
+      expect(() => service.retryTime("nonTrackedStream")).toThrowError(
+        "No stream status for response route: nonTrackedStream",
+      );
+    });
+
+    it("should return the retry time of an existing stream with the given route", () => {
+      service.stream("route");
+      expect(() => service.retryTime("route")).not.toThrowError();
+      expect(service.retryTime("route")).toBeUndefined();
     });
   });
 });

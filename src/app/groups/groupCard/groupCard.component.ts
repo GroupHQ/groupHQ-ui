@@ -1,5 +1,9 @@
-import { Component, ElementRef, Input } from "@angular/core";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import { Component, ElementRef, Input, OnDestroy } from "@angular/core";
+import {
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { GroupDetailsDialogComponent } from "../dialogs/groupDetailsDialog/groupDetailsDialog.component";
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { Subject, takeUntil } from "rxjs";
@@ -17,10 +21,12 @@ import { MatIconModule } from "@angular/material/icon";
   standalone: true,
   imports: [MatCardModule, MatRippleModule, NgClass, MatIconModule],
 })
-export class GroupCardComponent {
+export class GroupCardComponent implements OnDestroy {
   @Input() group!: GroupModel;
 
   private readonly destroy$ = new Subject<void>();
+  public groupDetailsDialogRef: MatDialogRef<GroupDetailsDialogComponent> | null =
+    null;
 
   constructor(
     public dialog: MatDialog,
@@ -29,13 +35,19 @@ export class GroupCardComponent {
     private elementRef: ElementRef,
   ) {}
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.groupDetailsDialogRef?.close();
+  }
+
   openDialog(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.maxWidth = "100vw"; // overrides default in-line style of 80vw
     dialogConfig.maxHeight = "100%";
     dialogConfig.data = this.group;
 
-    const dialogRef = this.dialog.open(
+    this.groupDetailsDialogRef = this.dialog.open(
       GroupDetailsDialogComponent,
       dialogConfig,
     );
@@ -46,13 +58,13 @@ export class GroupCardComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe((result) => {
         if (result.matches) {
-          dialogRef.addPanelClass("full-screen-modal");
+          this.groupDetailsDialogRef?.addPanelClass("full-screen-modal");
         } else {
-          dialogRef.removePanelClass("full-screen-modal");
+          this.groupDetailsDialogRef?.removePanelClass("full-screen-modal");
         }
       });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    this.groupDetailsDialogRef.afterClosed().subscribe((result) => {
       console.debug("The dialog was closed. Result:", result);
       this.destroy$.next();
       this.destroy$.complete();

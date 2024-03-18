@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { GroupsComponent } from "./groups.component";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { Component } from "@angular/core";
+import { ConfigService } from "../../config/config.service";
 
 @Component({
   selector: "app-group-utility-bar",
@@ -21,9 +22,10 @@ describe("GroupsComponent", () => {
   let fixture: ComponentFixture<GroupsComponent>;
   let groupsComponent: GroupsComponent;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [NoopAnimationsModule, GroupsComponent],
+      providers: [{ provide: ConfigService, useValue: {} }],
     })
       .overrideComponent(GroupsComponent, {
         set: {

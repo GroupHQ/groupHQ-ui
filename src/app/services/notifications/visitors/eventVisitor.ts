@@ -1,5 +1,5 @@
-import { PublicEventModel } from "../../../model/publicEvent.model";
-import { PrivateEventModel } from "../../../model/privateEvent.model";
+import { PublicEventModel } from "../../../model/events/publicEvent.model";
+import { PrivateEventModel } from "../../../model/events/privateEvent.model";
 
 export interface EventVisitor {
   visitPrivateEvent(event: PrivateEventModel): void;

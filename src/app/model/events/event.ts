@@ -1,8 +1,8 @@
-import { AggregateTypeEnum } from "./enums/aggregateType.enum";
-import { EventTypeEnum } from "./enums/eventType.enum";
+import { AggregateTypeEnum } from "../enums/aggregateType.enum";
+import { EventTypeEnum } from "../enums/eventType.enum";
 import { EventDataModel } from "./eventDataModel";
-import { EventStatusEnum } from "./enums/eventStatus.enum";
-import { EventVisitor } from "../services/notifications/visitors/eventVisitor";
+import { EventStatusEnum } from "../enums/eventStatus.enum";
+import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
 
 export interface Event {
   eventId: string;

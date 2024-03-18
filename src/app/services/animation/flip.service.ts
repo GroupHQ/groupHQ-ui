@@ -1,10 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Inject,
-  Injectable,
-  InjectionToken,
-  QueryList,
-} from "@angular/core";
+import { ChangeDetectorRef, Injectable, QueryList } from "@angular/core";
 import {
   animate,
   AnimationBuilder,
@@ -12,31 +6,25 @@ import {
   style,
 } from "@angular/animations";
 
-export const ID_ATTRIBUTE_TOKEN = new InjectionToken<string>("id-attribute");
-
 /* eslint @typescript-eslint/no-explicit-any: "off" */
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class FlipService {
   private firstPositions = new Map<string, DOMRect>();
   private finalPositions = new Map<string, DOMRect>();
   private animatingElementsMap = new Map<string, AnimationPlayer>();
   private components: QueryList<any> | null = null;
   private dataRemovalAttribute = "data-removal-imminent";
+  public readonly idAttribute = "data-flip-id";
 
-  constructor(
-    private animationBuilder: AnimationBuilder,
-    @Inject(ID_ATTRIBUTE_TOKEN) private idAttribute: string,
-  ) {}
+  constructor(private animationBuilder: AnimationBuilder) {}
 
   public setComponents(components: QueryList<any>) {
     this.components = components;
   }
 
-  public animate(
-    change: () => any,
-    changeDetectorRef?: ChangeDetectorRef,
-    removeId?: string,
-  ) {
+  public animateRemoval(change: () => any, removeId: string) {
     console.debug("Components", this.components);
     if (this.components === null) {
       throw new Error("Components not set");
@@ -52,6 +40,15 @@ export class FlipService {
         return;
       }
       change = () => player.play();
+    }
+
+    this.animate(change);
+  }
+
+  public animate(change: () => any, changeDetectorRef?: ChangeDetectorRef) {
+    console.debug("Components", this.components);
+    if (this.components === null) {
+      throw new Error("Components not set");
     }
 
     this.setFirstPositions(this.components);
@@ -92,13 +89,13 @@ export class FlipService {
     components: QueryList<any>,
     id: string,
     removalCallback: () => void,
-  ): AnimationPlayer | null {
+  ): AnimationPlayer {
     const element = components.toArray().find((item) => {
-      return item.getRootElement().getAttribute("data-group-id") === id;
+      return item.getRootElement().getAttribute("data-flip-id") === id;
     });
 
     if (!element) {
-      return null;
+      throw new Error("Element not found. Cannot animate.");
     }
 
     let animation;

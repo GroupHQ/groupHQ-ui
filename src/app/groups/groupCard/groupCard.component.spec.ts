@@ -1,90 +1,47 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { GroupCardComponent } from "./groupCard.component";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import {
+  MatDialog,
+  MatDialogConfig,
+  MatDialogState,
+} from "@angular/material/dialog";
 import { GroupDetailsDialogComponent } from "../dialogs/groupDetailsDialog/groupDetailsDialog.component";
-import { Component } from "@angular/core";
 import { GroupModel } from "../../model/group.model";
 import { MemberModel } from "../../model/member.model";
 import { UserService } from "../../services/user/user.service";
-import { MemberStatusEnum } from "../../model/enums/memberStatus.enum";
-import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
-
-@Component({
-  template: `<app-group-card [group]="group"></app-group-card>`,
-  standalone: true,
-  imports: [GroupCardComponent],
-})
-class TestHostComponent {
-  group: GroupModel = {
-    id: 1,
-    title: "Group 1",
-    description: "Group 1 description",
-    status: GroupStatusEnum.ACTIVE,
-    maxGroupSize: 10,
-    lastModifiedDate: Date.now().toString(),
-    lastModifiedBy: "Test User 1",
-    createdDate: Date.now().toString(),
-    createdBy: "Test User 1",
-    version: 1,
-    members: [
-      new MemberModel(
-        1,
-        "Test User 1",
-        1,
-        MemberStatusEnum.ACTIVE,
-        Date.now().toString(),
-        null,
-      ),
-      new MemberModel(
-        2,
-        "Test User 2",
-        1,
-        MemberStatusEnum.ACTIVE,
-        Date.now().toString(),
-        null,
-      ),
-      new MemberModel(
-        3,
-        "Test User 3",
-        1,
-        MemberStatusEnum.ACTIVE,
-        Date.now().toString(),
-        null,
-      ),
-    ],
-  };
-}
+import { ConfigService } from "../../config/config.service";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
 describe("GroupCardComponent", () => {
-  let fixture: ComponentFixture<TestHostComponent>;
-  let testHost: TestHostComponent;
+  let fixture: ComponentFixture<GroupCardComponent>;
+  let component: GroupCardComponent;
   let dialog: MatDialog;
   let page: GroupCardPage;
-  const userServiceStub: Partial<UserService> = {};
+  let userService: UserService;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GroupCardComponent, TestHostComponent],
-      providers: [
-        { provide: UserService, useValue: userServiceStub },
-        {
-          provide: MatDialog,
-          useValue: {
-            open: () => {},
-          },
-        },
-      ],
-    }).compileComponents();
+  beforeEach(() => {
+    const members: Partial<MemberModel>[] = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const group: Partial<GroupModel> = {
+      id: 1,
+      title: "Group 1",
+      description: "Group 1 description",
+      maxGroupSize: 10,
+      members: members as MemberModel[],
+    };
 
-    fixture = TestBed.createComponent(TestHostComponent);
-    page = new GroupCardPage(fixture);
-    testHost = fixture.componentInstance;
-    fixture.detectChanges();
+    TestBed.configureTestingModule({
+      imports: [GroupCardComponent, NoopAnimationsModule],
+      providers: [{ provide: ConfigService, useValue: {} }],
+    });
+
+    fixture = TestBed.createComponent(GroupCardComponent);
+    component = fixture.componentInstance;
+    component.group = group as GroupModel;
+    userService = TestBed.inject(UserService);
     dialog = TestBed.inject(MatDialog);
-  });
+    page = new GroupCardPage(fixture);
 
-  it("creates the component", () => {
-    expect(testHost).toBeTruthy();
+    fixture.detectChanges();
   });
 
   it("has a group card", () => {
@@ -116,7 +73,14 @@ describe("GroupCardComponent", () => {
   });
 
   it("opens a dialog when clicked", () => {
-    const dialogOpenSpy = spyOn(dialog, "open");
+    page.clickCard();
+    fixture.detectChanges();
+
+    expect(dialog.openDialogs.length).toBe(1);
+  });
+
+  it("opens a group details dialog when clicked", () => {
+    const dialogOpenSpy = spyOn(dialog, "open").and.callThrough();
 
     page.clickCard();
     fixture.detectChanges();
@@ -128,24 +92,40 @@ describe("GroupCardComponent", () => {
   });
 
   it("shows the 'your group' icon when the user is a member of the group", () => {
-    userServiceStub.currentGroupId = 1;
+    userService.setUserInGroup(1, 1);
     fixture.detectChanges();
 
     expect(page.isYourGroupIconVisible).toBeTrue();
   });
 
   it("does not show the 'your group' icon when the user is not a member of the group", () => {
-    userServiceStub.currentGroupId = null;
+    userService.removeUserFromGroup();
     fixture.detectChanges();
 
     expect(page.isYourGroupIconVisible).toBeFalse();
+  });
+
+  it("should close the group details dialog if the group card is destroyed", () => {
+    page.clickCard();
+    fixture.detectChanges();
+
+    expect(component.groupDetailsDialogRef?.getState()).toBe(
+      MatDialogState.OPEN,
+    );
+
+    component.ngOnDestroy();
+
+    expect(component.groupDetailsDialogRef?.getState()).toBeTruthy();
+    expect([MatDialogState.CLOSING, MatDialogState.CLOSED]).toContain(
+      component.groupDetailsDialogRef!.getState(),
+    );
   });
 });
 
 class GroupCardPage {
   private readonly _cardComponent: HTMLElement;
 
-  constructor(private fixture: ComponentFixture<TestHostComponent>) {
+  constructor(private fixture: ComponentFixture<GroupCardComponent>) {
     this._cardComponent = this.fixture.nativeElement.querySelector(
       '[data-test="group-card"]',
     );

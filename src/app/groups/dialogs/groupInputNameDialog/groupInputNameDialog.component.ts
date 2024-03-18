@@ -16,15 +16,13 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { AppMediaBreakpointDirective } from "../../../shared/directives/attr.breakpoint";
-import { RsocketRequestsService } from "../../../services/network/rsocket/requests/rsocketRequests.service";
-import { RsocketPrivateUpdateStreamService } from "../../../services/network/rsocket/streams/rsocketPrivateUpdateStream.service";
 import { GroupModel } from "../../../model/group.model";
 import { Subscription } from "rxjs";
-import { EventTypeEnum } from "../../../model/enums/eventType.enum";
-import { EventStatusEnum } from "../../../model/enums/eventStatus.enum";
-import { PrivateEventModel } from "../../../model/privateEvent.model";
 import { UserService } from "../../../services/user/user.service";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { v4 as uuidv4 } from "uuid";
+import { AsynchronousRequestMediator } from "../../../services/notifications/asynchronousRequest.mediator";
+import { GroupJoinRequestEvent } from "../../../model/requestevent/GroupJoinRequestEvent";
 
 @Component({
   selector: "app-group-input-name-modal",
@@ -47,20 +45,14 @@ export class GroupInputNameDialogComponent {
   nameField: FormControl = new FormControl("", {
     validators: [Validators.required],
   });
-
-  isPrivateUpdateStreamReady: boolean = true;
-  errorJoiningGroup: boolean = false;
   loading: boolean = false;
-  timeout: number = 5000;
-  timeoutId: any;
   subscription: Subscription | null = null;
 
   constructor(
     public dialogRef: MatDialogRef<GroupInputNameDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public group: GroupModel,
-    private readonly rsocketRequestsService: RsocketRequestsService,
-    private readonly rsocketPrivateUpdateStreamService: RsocketPrivateUpdateStreamService,
     public readonly userService: UserService,
+    private readonly asyncRequestMediator: AsynchronousRequestMediator,
     private formBuilder: FormBuilder,
   ) {
     this.myFormGroup = this.formBuilder.group({
@@ -77,48 +69,23 @@ export class GroupInputNameDialogComponent {
 
     if (this.nameField.invalid) return;
 
-    this.isPrivateUpdateStreamReady =
-      this.rsocketPrivateUpdateStreamService.isPrivateUpdatesStreamReady;
+    const joinRequest = new GroupJoinRequestEvent(
+      uuidv4(),
+      this.group.id,
+      this.userService.uuid,
+      new Date().toISOString(),
+      this.nameField.value,
+    );
 
-    if (this.isPrivateUpdateStreamReady) {
-      this.loading = true;
-      this.errorJoiningGroup = false;
-      this.subscription =
-        this.rsocketPrivateUpdateStreamService.privateUpdatesStream$.subscribe(
-          (privateEvent) => {
-            this.handleJoinGroupResponse(privateEvent);
-          },
-        );
+    this.loading = true;
 
-      this.rsocketRequestsService.sendJoinRequest(
-        this.nameField.value,
-        this.group.id,
-        this.userService.uuid,
-      );
-
-      this.timeoutId = setTimeout(() => {
-        if (this.loading) {
+    this.asyncRequestMediator
+      .submitRequestEvent(joinRequest, "groups.join", "groups.updates.user")
+      .subscribe({
+        complete: () => {
           this.loading = false;
-          this.errorJoiningGroup = true;
-          this.subscription?.unsubscribe();
-        }
-      }, this.timeout);
-    }
-  }
-
-  private handleJoinGroupResponse(privateEvent: PrivateEventModel) {
-    if (
-      privateEvent.eventType === EventTypeEnum.MEMBER_JOINED &&
-      privateEvent.aggregateId === this.group.id
-    ) {
-      this.loading = false;
-      this.subscription?.unsubscribe();
-      clearTimeout(this.timeoutId);
-      if (privateEvent.eventStatus === EventStatusEnum.SUCCESSFUL) {
-        this.dialogRef.close();
-      } else {
-        this.errorJoiningGroup = true;
-      }
-    }
+          this.dialogRef.close();
+        },
+      });
   }
 }

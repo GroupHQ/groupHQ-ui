@@ -141,15 +141,15 @@ export class RetryService {
     this.updateNextRetry(delay, retryData);
     return timer(delay);
   }
-  /* eslint-enable */
 
+  /* eslint-enable */
   private exponentialBackoff(
     attempt: number,
     cap: number,
     minimum: number,
     base = 2,
   ) {
-    const jitter = Math.random() * 1000;
+    const jitter = Math.random();
     const backoff = Math.max(base ** attempt + jitter, minimum);
     const backoffCapped = Math.min(backoff, cap);
 

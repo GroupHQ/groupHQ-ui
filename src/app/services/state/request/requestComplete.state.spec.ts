@@ -3,7 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import { ConnectorStatesEnum } from "../../network/rsocket/ConnectorStatesEnum";
 import { RequestState } from "./request.state";
 import { setupStateTest } from "./stateHelperSetup.spec";
-import { RequestStateEnum } from "../RequestStateEnum";
+import { StateEnum } from "../StateEnum";
 import { WaitingForRsocketState } from "./waitingForRsocket.state";
 import { RequestingState } from "./requesting.state";
 import { RsocketRetryingState } from "./rsocketRetrying.state";
@@ -31,7 +31,7 @@ describe("RequestCompleteState", () => {
       RequestingState,
     );
     expect(setup.requestServiceSpy.nextRequestState).toHaveBeenCalledWith(
-      RequestStateEnum.LOADING,
+      StateEnum.LOADING,
     );
     expect(setup.state.cleanUp).toHaveBeenCalled();
   });
@@ -46,7 +46,7 @@ describe("RequestCompleteState", () => {
       RsocketRetryingState,
     );
     expect(setup.requestServiceSpy.nextRequestState).toHaveBeenCalledWith(
-      RequestStateEnum.RETRYING,
+      StateEnum.RETRYING,
     );
     expect(setup.state.cleanUp).toHaveBeenCalled();
   });
@@ -61,7 +61,7 @@ describe("RequestCompleteState", () => {
       WaitingForRsocketState,
     );
     expect(setup.requestServiceSpy.nextRequestState).toHaveBeenCalledWith(
-      RequestStateEnum.LOADING,
+      StateEnum.LOADING,
     );
     expect(setup.state.cleanUp).toHaveBeenCalled();
   });

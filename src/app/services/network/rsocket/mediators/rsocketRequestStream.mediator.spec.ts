@@ -3,19 +3,18 @@ import { TestBed } from "@angular/core/testing";
 import { RsocketRequestMediatorFactory } from "./rsocketRequestMediator.factory";
 import { RequestServiceComponentInterface } from "./interfaces/requestServiceComponent.interface";
 import { BehaviorSubject } from "rxjs";
-import { RSocketRequester } from "rsocket-messaging";
 import { ConnectorStatesEnum } from "../ConnectorStatesEnum";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
-import { RequestStateEnum } from "../../../state/RequestStateEnum";
+import { StateEnum } from "../../../state/StateEnum";
 import { ConfigService } from "../../../../config/config.service";
-import { createMockRsocketRequester } from "../rsocket.service.spec";
 import { RetryOptions } from "../../../retry/retry.options";
+import { RsocketRequestFactory } from "../rsocketRequest.factory";
 
 describe("RsocketRequestStreamMediator", () => {
   let mediator: RequestServiceComponentInterface<any>;
   let connectionState$: BehaviorSubject<ConnectorStatesEnum>;
-  let mockRSocketRequester: RSocketRequester;
   let rsocketService: RsocketService;
+  let rsocketRequestFactory: RsocketRequestFactory;
   let testScheduler: TestScheduler;
 
   beforeEach(() => {
@@ -51,6 +50,8 @@ describe("RsocketRequestStreamMediator", () => {
       RsocketRequestMediatorFactory,
     ).createStreamMediator("route");
 
+    rsocketRequestFactory = TestBed.inject(RsocketRequestFactory);
+
     testScheduler = new TestScheduler((actual, expected) => {
       expect(actual).toEqual(expected);
     });
@@ -61,22 +62,23 @@ describe("RsocketRequestStreamMediator", () => {
       const { cold, expectObservable } = helpers;
       connectionState$.next(ConnectorStatesEnum.CONNECTED);
 
-      mockRSocketRequester = createMockRsocketRequester(
-        cold("a 10s b --- |", { a: "response1", b: "response2" }),
+      const streamResponse = cold("a 10s - b --- |", {
+        a: "response1",
+        b: "response2",
+      });
+      spyOn(rsocketRequestFactory, "createRequestStream").and.returnValue(
+        streamResponse,
       );
 
-      spyOnProperty(rsocketService, "rsocketRequester", "get").and.returnValue(
-        mockRSocketRequester,
-      );
-
-      expectObservable(mediator.getState$()).toBe("(abc) 10s d", {
-        a: RequestStateEnum.INITIALIZING,
-        b: RequestStateEnum.REQUESTING,
-        c: RequestStateEnum.READY,
-        d: RequestStateEnum.REQUEST_COMPLETED,
+      expectObservable(mediator.getState$()).toBe("(a b c d) 10s (e|)", {
+        a: StateEnum.DORMANT,
+        b: StateEnum.INITIALIZING,
+        c: StateEnum.REQUESTING,
+        d: StateEnum.READY,
+        e: StateEnum.REQUEST_COMPLETED,
       });
 
-      expectObservable(mediator.getEvents$(true)).toBe("a 10s b", {
+      expectObservable(mediator.getEvents$(true)).toBe("a 10s - b --- |", {
         a: "response1",
         b: "response2",
       });
@@ -88,23 +90,24 @@ describe("RsocketRequestStreamMediator", () => {
       const { hot, expectObservable } = helpers;
       connectionState$.next(ConnectorStatesEnum.CONNECTED);
 
-      mockRSocketRequester = createMockRsocketRequester(
-        hot("a 5s #", { a: "response", error: "Simulated Error" }),
-      );
-
-      spyOnProperty(rsocketService, "rsocketRequester", "get").and.returnValue(
-        mockRSocketRequester,
+      const streamResponse = hot("a 5s #", {
+        a: "response",
+        error: "Simulated Error",
+      });
+      spyOn(rsocketRequestFactory, "createRequestStream").and.returnValue(
+        streamResponse,
       );
 
       expectObservable(mediator.getState$()).toBe(
-        "(abc) 4996ms d 4999ms (ef)",
+        "(a b c d) 4995ms e 4999ms (fg)",
         {
-          a: RequestStateEnum.INITIALIZING,
-          b: RequestStateEnum.REQUESTING,
-          c: RequestStateEnum.READY,
-          d: RequestStateEnum.RETRYING,
-          e: RequestStateEnum.RETRYING,
-          f: RequestStateEnum.REQUEST_REJECTED,
+          a: StateEnum.DORMANT,
+          b: StateEnum.INITIALIZING,
+          c: StateEnum.REQUESTING,
+          d: StateEnum.READY,
+          e: StateEnum.RETRYING,
+          f: StateEnum.RETRYING,
+          g: StateEnum.REQUEST_REJECTED,
         },
       );
 

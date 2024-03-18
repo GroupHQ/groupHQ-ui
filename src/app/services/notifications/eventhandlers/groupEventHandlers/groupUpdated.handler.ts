@@ -1,19 +1,21 @@
 import { Injectable } from "@angular/core";
 import { EventHandler } from "../eventHandler";
-import { PrivateEventModel } from "../../../../model/privateEvent.model";
-import { PublicEventModel } from "../../../../model/publicEvent.model";
+import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
+import { PublicEventModel } from "../../../../model/events/publicEvent.model";
 import { UserService } from "../../../user/user.service";
 import { NotificationService } from "../../notification.service";
 import { GroupModel } from "../../../../model/group.model";
 import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
 import { isEventDataGroupModel } from "../eventDataValidators";
 import { GroupStatusEnum } from "../../../../model/enums/groupStatus.enum";
+import { GroupsService } from "../../../../groups/services/groups.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class GroupUpdatedHandler implements EventHandler {
   constructor(
+    private readonly groupService: GroupsService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
   ) {}
@@ -47,18 +49,22 @@ export class GroupUpdatedHandler implements EventHandler {
 
   private publicEventSuccess(event: PublicEventModel): void {
     if (!isEventDataGroupModel(event.eventData)) {
-      console.warn(
-        "Invalid event data for public update group successful event: ",
-        event,
+      throw new Error(
+        "Invalid event data for public update group successful event",
       );
-      return;
     }
-
-    if (this.userService.currentGroupId !== event.aggregateId) return;
-
-    this.userService.removeUserFromGroup();
-
     const updatedGroup: GroupModel = event.eventData as GroupModel;
+
+    this.groupService.handleGroupUpdate(updatedGroup);
+
+    this.removeMemberIfInDisbandedGroup(updatedGroup);
+  }
+
+  private removeMemberIfInDisbandedGroup(updatedGroup: GroupModel): void {
+    if (this.userService.currentGroupId !== updatedGroup.id) return;
+
+    if (updatedGroup.status !== GroupStatusEnum.ACTIVE)
+      this.userService.removeUserFromGroup();
 
     switch (updatedGroup.status) {
       case GroupStatusEnum.BANNED:

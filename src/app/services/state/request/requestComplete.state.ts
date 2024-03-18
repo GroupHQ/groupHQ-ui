@@ -5,7 +5,7 @@ import { RequestingState } from "./requesting.state";
 import { ConnectorStatesEnum } from "../../network/rsocket/ConnectorStatesEnum";
 import { WaitingForRsocketState } from "./waitingForRsocket.state";
 import { RsocketRetryingState } from "./rsocketRetrying.state";
-import { RequestStateEnum } from "../RequestStateEnum";
+import { StateEnum } from "../StateEnum";
 
 export class RequestCompleteState<T> extends RequestState<T> {
   private currentConnectorState: ConnectorStatesEnum =
@@ -31,14 +31,14 @@ export class RequestCompleteState<T> extends RequestState<T> {
     switch (this.currentConnectorState) {
       case ConnectorStatesEnum.CONNECTED:
         console.log("Rsocket connected. Transitioning to RequestingState.");
-        this.requestService.nextRequestState(RequestStateEnum.LOADING);
+        this.requestService.nextRequestState(StateEnum.LOADING);
         this.requestService.state = new RequestingState(this.requestService);
         break;
       case ConnectorStatesEnum.RETRYING:
         console.log(
           "Rsocket is retrying. Transitioning to RsocketRetryingState.",
         );
-        this.requestService.nextRequestState(RequestStateEnum.RETRYING);
+        this.requestService.nextRequestState(StateEnum.RETRYING);
         this.requestService.state = new RsocketRetryingState(
           this.requestService,
         );
@@ -47,7 +47,7 @@ export class RequestCompleteState<T> extends RequestState<T> {
         console.error(
           "Rsocket is initializing. Transitioning to WaitingForRsocketState.",
         );
-        this.requestService.nextRequestState(RequestStateEnum.LOADING);
+        this.requestService.nextRequestState(StateEnum.LOADING);
         this.requestService.state = new WaitingForRsocketState(
           this.requestService,
         );

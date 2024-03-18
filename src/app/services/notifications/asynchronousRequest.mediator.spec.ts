@@ -8,7 +8,7 @@ import { RetryOptions } from "../retry/retry.options";
 import { ConfigService } from "../../config/config.service";
 import { NotificationService } from "./notification.service";
 import { RsocketRequestFactory } from "../network/rsocket/rsocketRequest.factory";
-import { PrivateEventModel } from "../../model/privateEvent.model";
+import { PrivateEventModel } from "../../model/events/privateEvent.model";
 import { v4 as uuidv4 } from "uuid";
 import { EventStatusEnum } from "../../model/enums/eventStatus.enum";
 import { EventTypeEnum } from "../../model/enums/eventType.enum";
@@ -16,7 +16,7 @@ import { AggregateTypeEnum } from "../../model/enums/aggregateType.enum";
 import { MemberModel } from "../../model/member.model";
 import { MemberStatusEnum } from "../../model/enums/memberStatus.enum";
 import { GroupJoinRequestEvent } from "../../model/requestevent/GroupJoinRequestEvent";
-import { RequestStateEnum } from "../state/RequestStateEnum";
+import { StateEnum } from "../state/StateEnum";
 import { UserService } from "../user/user.service";
 
 /**
@@ -128,7 +128,8 @@ describe("AsynchronousRequestMediator", () => {
           const requestRoute = "request.route";
           const eventResponseRoute = "response.route";
 
-          const eventResponses$ = cold("----a", { a: responseEvent });
+          // The backend only sends us properties, so use the spread operator to only send back properties, not methods
+          const eventResponses$ = cold("----a", { a: { ...responseEvent } });
           const request$ = cold("--a|", { a: true });
 
           rsocketRequestFactoryMock.createRequestStream.and.callFake(
@@ -146,9 +147,9 @@ describe("AsynchronousRequestMediator", () => {
           );
 
           expectObservable(response$).toBe("a-b-(c|)", {
-            a: RequestStateEnum.REQUESTING,
-            b: RequestStateEnum.REQUEST_ACCEPTED,
-            c: RequestStateEnum.EVENT_PROCESSED,
+            a: StateEnum.REQUESTING,
+            b: StateEnum.REQUEST_ACCEPTED,
+            c: StateEnum.EVENT_PROCESSED,
           });
 
           flush();
@@ -186,9 +187,9 @@ describe("AsynchronousRequestMediator", () => {
           );
 
           expectObservable(response$).toBe("a-b- 6996ms (c|)", {
-            a: RequestStateEnum.REQUESTING,
-            b: RequestStateEnum.REQUEST_ACCEPTED,
-            c: RequestStateEnum.EVENT_PROCESSING_TIMEOUT,
+            a: StateEnum.REQUESTING,
+            b: StateEnum.REQUEST_ACCEPTED,
+            c: StateEnum.EVENT_PROCESSING_TIMEOUT,
           });
         });
       });
@@ -220,14 +221,14 @@ describe("AsynchronousRequestMediator", () => {
           );
 
           expectObservable(response$).toBe("a-(b|)", {
-            a: RequestStateEnum.REQUESTING,
-            b: RequestStateEnum.REQUEST_REJECTED,
+            a: StateEnum.REQUESTING,
+            b: StateEnum.REQUEST_REJECTED,
           });
 
           flush();
 
           expect(notificationService.showMessage).toHaveBeenCalledWith(
-            `Error submitting request: ${RequestStateEnum.REQUEST_REJECTED}`,
+            `Error submitting request: ${StateEnum.REQUEST_REJECTED}`,
           );
         });
       });
@@ -257,8 +258,8 @@ describe("AsynchronousRequestMediator", () => {
           );
 
           expectObservable(response$).toBe("a- 4998ms (b|)", {
-            a: RequestStateEnum.REQUESTING,
-            b: RequestStateEnum.REQUEST_TIMEOUT,
+            a: StateEnum.REQUESTING,
+            b: StateEnum.REQUEST_TIMEOUT,
           });
 
           flush();
@@ -278,7 +279,8 @@ describe("AsynchronousRequestMediator", () => {
           const requestRoute = "request.route";
           const eventResponseRoute = "response.route";
 
-          const eventResponses$ = cold("----a", { a: responseEvent });
+          // The backend only sends us properties, so use the spread operator to only send back properties, not methods
+          const eventResponses$ = cold("----a", { a: { ...responseEvent } });
           const request$ = cold("-", { a: true });
 
           rsocketRequestFactoryMock.createRequestStream.and.callFake(
@@ -296,8 +298,8 @@ describe("AsynchronousRequestMediator", () => {
           );
 
           expectObservable(response$).toBe("a---(b|)", {
-            a: RequestStateEnum.REQUESTING,
-            b: RequestStateEnum.EVENT_PROCESSED,
+            a: StateEnum.REQUESTING,
+            b: StateEnum.EVENT_PROCESSED,
           });
 
           flush();

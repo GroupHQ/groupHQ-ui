@@ -9,37 +9,47 @@
   }"
   data-test="loading__component"
 >
-  @if (loading) { @if (nextRetry === null) {
-  <p class="loading-text" data-test="loading__text">
-    @if (itemName === null) { Loading... } @else { Loading {{ itemName }}... }
-  </p>
-  } @else {
-  <div data-test="loading__retrying-failure-text">
-    @if (nextRetry && nextRetry > 0) {
-    <p class="loading-text">
-      Failed to load groups<br />Retrying in {{ nextRetry }} seconds...
-    </p>
+  @if (loading) {
+    @if (nextRetry === null) {
+      <p class="loading-text" data-test="loading__text">
+        @if (itemName === null) {
+          Loading...
+        } @else {
+          Loading {{ itemName }}...
+        }
+      </p>
     } @else {
-    <p class="loading-text" data-test="loading__retrying-text">Retrying...</p>
+      <div data-test="loading__retrying-failure-text">
+        @if (nextRetry && nextRetry > 0) {
+          <p class="loading-text">
+            Failed to load groups<br />Retrying in {{ nextRetry }} seconds...
+          </p>
+        } @else {
+          <p class="loading-text" data-test="loading__retrying-text">
+            Retrying...
+          </p>
+        }
+      </div>
     }
-  </div>
-  } @if (nextRetry === null || nextRetry <= 0) {
-  <mat-progress-bar
-    mode="buffer"
-    data-test="loading__progress-bar"
-  ></mat-progress-bar>
-  } } @else {
-  <p class="loading-text" data-test="loading__failure-text">
-    Failed to load{{ itemName ? " " + itemName : "" }}.<br />Try again?
-  </p>
-  } @if (retryFunction !== null && shouldShowRetryButton) {
-  <button
-    mat-flat-button
-    color="primary"
-    (click)="retryFunction()"
-    data-test="loading__retry-button"
-  >
-    Retry Now
-  </button>
+    @if (nextRetry === null || nextRetry <= 0) {
+      <mat-progress-bar
+        mode="buffer"
+        data-test="loading__progress-bar"
+      ></mat-progress-bar>
+    }
+  } @else {
+    <p class="loading-text" data-test="loading__failure-text">
+      Failed to load{{ itemName ? " " + itemName : "" }}.<br />Try again?
+    </p>
+  }
+  @if (retryFunction !== null && shouldShowRetryButton) {
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="retryFunction()"
+      data-test="loading__retry-button"
+    >
+      Retry Now
+    </button>
   }
 </div>

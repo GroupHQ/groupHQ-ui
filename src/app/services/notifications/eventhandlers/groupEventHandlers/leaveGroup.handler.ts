@@ -2,8 +2,8 @@ import { Injectable } from "@angular/core";
 import { EventHandler } from "../eventHandler";
 import { UserService } from "../../../user/user.service";
 import { NotificationService } from "../../notification.service";
-import { PrivateEventModel } from "../../../../model/privateEvent.model";
-import { PublicEventModel } from "../../../../model/publicEvent.model";
+import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
+import { PublicEventModel } from "../../../../model/events/publicEvent.model";
 import { MemberModel } from "../../../../model/member.model";
 import { ErrorDataModel } from "../../../../model/errorData.model";
 import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
@@ -11,12 +11,14 @@ import {
   isEventDataErrorModel,
   isEventDataMemberModel,
 } from "../eventDataValidators";
+import { GroupsService } from "../../../../groups/services/groups.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class LeaveGroupHandler implements EventHandler {
   constructor(
+    private readonly groupService: GroupsService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
   ) {}
@@ -40,11 +42,9 @@ export class LeaveGroupHandler implements EventHandler {
 
   visitPrivateEventSuccess(event: PrivateEventModel): void {
     if (!isEventDataMemberModel(event.eventData)) {
-      console.warn(
-        "Invalid event data for private leave group successful event: ",
-        event,
+      throw new Error(
+        "Invalid event data for private leave group successful event",
       );
-      return;
     }
 
     const exitedMember: MemberModel = event.eventData as MemberModel;
@@ -59,11 +59,9 @@ export class LeaveGroupHandler implements EventHandler {
 
   visitPrivateEventFailure(event: PrivateEventModel): void {
     if (!isEventDataErrorModel(event.eventData)) {
-      console.warn(
-        "Invalid event data for private leave group failure event: ",
-        event,
+      throw new Error(
+        "Invalid event data for private leave group failure event",
       );
-      return;
     }
 
     const errorData: ErrorDataModel = event.eventData as ErrorDataModel;
@@ -93,23 +91,32 @@ export class LeaveGroupHandler implements EventHandler {
 
   visitPublicEventSuccess(event: PublicEventModel): void {
     if (!isEventDataMemberModel(event.eventData)) {
-      console.warn(
-        "Invalid event data for public leave group successful event: ",
-        event,
+      throw new Error(
+        "Invalid event data for public leave group successful event",
       );
-      return;
     }
 
     const exitedMember: MemberModel = event.eventData as MemberModel;
-    const groupId: number = event.aggregateId;
 
+    this.groupService.removeMember(exitedMember.id, event.aggregateId);
+
+    this.showMemberLeftMessageIfInGroupAndNotSelf(
+      event.aggregateId,
+      exitedMember.id,
+      exitedMember.username,
+    );
+  }
+
+  private showMemberLeftMessageIfInGroupAndNotSelf(
+    groupId: number,
+    memberId: number,
+    memberName: string,
+  ) {
     if (
       this.userService.currentGroupId === groupId &&
-      this.userService.currentMemberId !== exitedMember.id
+      this.userService.currentMemberId !== memberId
     ) {
-      this.notificationService.showMessage(
-        `${exitedMember.username} left the group`,
-      );
+      this.notificationService.showMessage(`${memberName} left the group`);
     }
   }
 }

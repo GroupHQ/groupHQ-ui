@@ -1,32 +1,35 @@
 @if (groups.length > 0) {
-<div
-  appMedia
-  app-media-base-class="group-cards"
-  data-test="group-cards"
-  @groupBoardAnimation
->
-  @for (group of groups; track trackByItems($index, group)) {
-  <app-group-card
-    [group]="group"
-    [attr.data-group-id]="group.id"
-    data-test="group-cards--group-card"
-  ></app-group-card>
-  }
-</div>
+  <div
+    appMedia
+    app-media-base-class="group-cards"
+    data-test="group-cards"
+    @groupBoardAnimation
+  >
+    @for (group of groups; track trackByItems($index, group)) {
+      <app-group-card
+        [group]="group"
+        [attr.data-flip-id]="group.id"
+        data-test="group-cards--group-card"
+      ></app-group-card>
+    }
+  </div>
 } @else {
-<div
-  appMedia
-  app-media-base-class="no-groups-message"
-  @groupBoardNoGroupsMessage
-  data-test="group-cards--no-groups-message"
->
-  <p class="no-groups-message-text" data-test="no-groups-message__text">
-    Aw shucks! There aren't any groups active!
-  </p>
-  @if (isGroupsSynced) {
-  <p class="no-groups-message-text" data-test="no-groups-message__sync-text">
-    Don't worry, we'll show you them as soon as they're ready!
-  </p>
-  }
-</div>
+  <div
+    appMedia
+    app-media-base-class="no-groups-message"
+    @groupBoardNoGroupsMessage
+    data-test="group-cards--no-groups-message"
+  >
+    <p class="no-groups-message-text" data-test="no-groups-message__text">
+      Aw shucks! There aren't any groups active!
+    </p>
+    @if (isGroupsSynced) {
+      <p
+        class="no-groups-message-text"
+        data-test="no-groups-message__sync-text"
+      >
+        Don't worry, we'll show you them as soon as they're ready!
+      </p>
+    }
+  </div>
 }

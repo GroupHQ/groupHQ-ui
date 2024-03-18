@@ -7,4 +7,5 @@ export enum EventTypeEnum {
   GROUP_DISBANDED = "GROUP_DISBANDED", // Currently unused by server
   MEMBER_JOINED = "MEMBER_JOINED",
   MEMBER_LEFT = "MEMBER_LEFT",
+  NONE = "NONE",
 }

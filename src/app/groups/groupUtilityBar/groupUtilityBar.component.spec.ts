@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { GroupUtilityBarComponent } from "./groupUtilityBar.component";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatSelectModule } from "@angular/material/select";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { GroupSortEnum } from "../../model/enums/groupSort.enum";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
@@ -15,12 +13,7 @@ describe("GroupUtilityBarComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        NoopAnimationsModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        GroupUtilityBarComponent,
-      ],
+      imports: [NoopAnimationsModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupUtilityBarComponent);

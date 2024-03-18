@@ -5,7 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { setupStateTest } from "./stateHelperSetup.spec";
 import { WaitingForRsocketState } from "./waitingForRsocket.state";
 import { ReceivingDataState } from "./receivingData.state";
-import { RequestStateEnum } from "../RequestStateEnum";
+import { StateEnum } from "../StateEnum";
 
 describe("ReceivingDataState", () => {
   let setup: {
@@ -21,7 +21,7 @@ describe("ReceivingDataState", () => {
 
   it("sets the request state to READY", () => {
     expect(setup.requestServiceSpy.nextRequestState).toHaveBeenCalledWith(
-      RequestStateEnum.READY,
+      StateEnum.READY,
     );
   });
 

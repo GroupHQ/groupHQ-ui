@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { setupStateTest } from "./stateHelperSetup.spec";
 import { WaitingForRsocketState } from "./waitingForRsocket.state";
 import { DormantState } from "./dormant.state";
+import { StateEnum } from "../StateEnum";
 
 describe("DormantState", () => {
   let setup: {
@@ -18,10 +19,13 @@ describe("DormantState", () => {
     setup = setupStateTest(DormantState, ConnectorStatesEnum.INITIALIZING);
   });
 
-  it("transitions to the WaitingForRsocketState when a request is received", () => {
+  it("transitions to the WaitingForRsocketState and sets state to INITIALIZING when a request is received", () => {
     spyOn(setup.state, "cleanUp");
     setup.currentStateContainer.currentState!.onRequest();
 
+    expect(setup.requestServiceSpy.nextRequestState).toHaveBeenCalledWith(
+      StateEnum.INITIALIZING,
+    );
     expect(setup.currentStateContainer.currentState).toBeInstanceOf(
       WaitingForRsocketState,
     );

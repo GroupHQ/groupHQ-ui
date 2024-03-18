@@ -2,12 +2,13 @@ import { RsocketRequestMediatorFactory } from "../network/rsocket/mediators/rsoc
 import { NotificationService } from "./notification.service";
 import { Injectable } from "@angular/core";
 import { RequestEvent } from "../../model/requestevent/RequestEvent";
-import { Observable } from "rxjs";
-import { RequestStateEnum } from "../state/RequestStateEnum";
+import { map, Observable } from "rxjs";
+import { StateEnum } from "../state/StateEnum";
 import { GroupEventVisitor } from "./visitors/group/groupEvent.visitor";
 import { EventStreamService } from "./eventStream.service";
 import { AsyncRequestStatusService } from "./asyncRequestStatus.service";
-import { Event } from "../../model/event";
+import { Event } from "../../model/events/event";
+import { EventRevivable } from "../../model/events/event.revivable";
 
 /**
  * This service submits asynchronous RSocket requests and handles their response.
@@ -28,7 +29,7 @@ export class AsynchronousRequestMediator {
     requestEvent: RequestEvent,
     requestRoute: string,
     responseRoute: string,
-  ): Observable<RequestStateEnum> {
+  ): Observable<StateEnum> {
     const eventStream = this.eventStreamService.stream<T>(responseRoute);
     const request = this.rsocketRequestFactory.createRequestResponseMediator<
       RequestEvent,
@@ -41,6 +42,7 @@ export class AsynchronousRequestMediator {
         request.getState$(true),
         requestEvent.eventId,
       )
+      .pipe(map((event) => EventRevivable.createEvent(event)))
       .subscribe({
         next: (event) => {
           event.accept(this.groupEventVisitor);
@@ -48,10 +50,10 @@ export class AsynchronousRequestMediator {
         error: (error) => {
           console.error(`Error processing event: ${error.message}`);
           switch (error.message) {
-            case RequestStateEnum.REQUEST_TIMEOUT:
+            case StateEnum.REQUEST_TIMEOUT:
               this.handleRequestTimeoutError();
               break;
-            case RequestStateEnum.EVENT_PROCESSING_TIMEOUT:
+            case StateEnum.EVENT_PROCESSING_TIMEOUT:
               this.handleResponseTimeoutError();
               break;
             default:

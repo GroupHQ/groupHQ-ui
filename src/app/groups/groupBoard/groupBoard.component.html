@@ -1,35 +1,42 @@
 @if (!isGroupsSynced && isGroupsLoaded) {
-<app-sync-banner
-  @groupChildAnimationEnabler
-  [syncedTextState]="syncedText"
-  data-test="sync-banner-component"
-></app-sync-banner>
-} @switch (componentState) {@case (StatesEnum.LOADING) {
-<app-loading
-  @groupChildAnimationEnabler
-  [nextRetry]="nextRetry"
-  [minimumLoadingTimeSeconds]="minimumLoadingTimeSeconds"
-  [retryFunction]="loadGroups.bind(this)"
-  [itemName]="'groups'"
-  [loading]="true"
-  data-test="loading-component__loading"
-></app-loading>
-} @case (StatesEnum.READY) {
-<app-group-cards
-  @groupChildAnimationEnabler
-  [groups]="groups"
-  [isGroupsSynced]="isGroupsSynced"
-  (groupCards)="setCardComponents($event)"
-  data-test="group-cards-component__ready"
-></app-group-cards>
-} @case (StatesEnum.HTTP_INTERNAL_SERVER_ERROR) {
-<app-loading
-  @groupChildAnimationEnabler
-  [nextRetry]="nextRetry"
-  [minimumLoadingTimeSeconds]="minimumLoadingTimeSeconds"
-  [retryFunction]="loadGroups.bind(this)"
-  [itemName]="'groups'"
-  [loading]="false"
-  data-test="loading-component__http-internal-server-error"
-></app-loading>
-} }
+  <app-sync-banner
+    @groupChildAnimationEnabler
+    [syncedTextState]="syncedText"
+    data-test="sync-banner-component"
+  ></app-sync-banner>
+}
+@switch (componentState) {
+  @case (ComponentStatesEnum.LOADING) {
+    <app-loading
+      @groupChildAnimationEnabler
+      [nextRetry]="nextRetry"
+      [minimumLoadingTimeSeconds]="1"
+      [retryFunction]="null"
+      [itemName]="'groups'"
+      [loading]="true"
+      data-test="loading-component__loading"
+    ></app-loading>
+  }
+  @case (ComponentStatesEnum.READY) {
+    <app-group-cards
+      @groupChildAnimationEnabler
+      [groups]="groupManagerService.groups"
+      [isGroupsSynced]="isGroupsSynced"
+      (groupCards)="
+        groupManagerService.setCardComponents($event, changeDetectorRef)
+      "
+      data-test="group-cards-component__ready"
+    ></app-group-cards>
+  }
+  @case (ComponentStatesEnum.RETRYING) {
+    <app-loading
+      @groupChildAnimationEnabler
+      [nextRetry]="nextRetry"
+      [minimumLoadingTimeSeconds]="1"
+      [retryFunction]="null"
+      [itemName]="'groups'"
+      [loading]="true"
+      data-test="loading-component__retrying"
+    ></app-loading>
+  }
+}

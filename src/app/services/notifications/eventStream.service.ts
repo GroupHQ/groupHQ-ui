@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { RequestServiceComponentInterface } from "../network/rsocket/mediators/interfaces/requestServiceComponent.interface";
 import { RsocketRequestMediatorFactory } from "../network/rsocket/mediators/rsocketRequestMediator.factory";
 import { Observable, throwError } from "rxjs";
-import { RequestStateEnum } from "../state/RequestStateEnum";
+import { StateEnum } from "../state/StateEnum";
 
 /**
  * This service is responsible for managing event streams.
@@ -45,7 +45,7 @@ export class EventStreamService {
     return newStream.getEvents$(true);
   }
 
-  public streamStatus(route: string): Observable<RequestStateEnum> {
+  public streamStatus(route: string): Observable<StateEnum> {
     if (!this._eventStreams.has(route)) {
       return throwError(
         () => new Error(`No stream status for response route: ${route}`),
@@ -53,5 +53,13 @@ export class EventStreamService {
     }
 
     return this._eventStreams.get(route)!.getState$();
+  }
+
+  public retryTime(route: string): Observable<number> | undefined {
+    if (!this._eventStreams.has(route)) {
+      throw new Error(`No stream status for response route: ${route}`);
+    }
+
+    return this._eventStreams.get(route)!.nextRetryTime$;
   }
 }

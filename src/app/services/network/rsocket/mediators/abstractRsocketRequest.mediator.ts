@@ -2,12 +2,11 @@ import {
   BehaviorSubject,
   defer,
   Observable,
-  share,
   Subject,
   Subscription,
 } from "rxjs";
 import { Retryable } from "../../../retry/retryable";
-import { RequestStateEnum } from "../../../state/RequestStateEnum";
+import { StateEnum } from "../../../state/StateEnum";
 import { RetryService } from "../../../retry/retry.service";
 import { v4 as uuidv4 } from "uuid";
 import { ConfigService } from "../../../../config/config.service";
@@ -28,12 +27,8 @@ export abstract class AbstractRsocketRequestMediator<TData, RData>
 {
   public accessor state: RequestState<RData>;
   private _events$: Subject<RData> = new Subject<RData>();
-  private _eventsShareable$ = this._events$.asObservable().pipe(share()); // TODO: Add tests verifying that the events are shared
-  private _requestState$: BehaviorSubject<RequestStateEnum> =
-    new BehaviorSubject<RequestStateEnum>(RequestStateEnum.INITIALIZING);
-  private _requestStateShareable$ = this._requestState$
-    .asObservable()
-    .pipe(share()); // TODO: Add tests verifying that the state is shared
+  private _requestState$: BehaviorSubject<StateEnum> =
+    new BehaviorSubject<StateEnum>(StateEnum.DORMANT);
 
   protected requestObservableSubscription: Subscription | null = null;
   protected readonly requestObservableKey: string = uuidv4();
@@ -78,7 +73,7 @@ export abstract class AbstractRsocketRequestMediator<TData, RData>
   public getEvents$(start?: boolean): Observable<RData> {
     return defer(() => {
       if (start) this.start();
-      return this._eventsShareable$;
+      return this._events$;
     });
   }
 
@@ -86,18 +81,30 @@ export abstract class AbstractRsocketRequestMediator<TData, RData>
     this._events$.next(event);
   }
 
-  public getState$(start?: boolean): Observable<RequestStateEnum> {
+  /**
+   * Resets event and request status streams.
+   * Any current subscriber will complete.
+   */
+  public completeEvents(): void {
+    this._events$.complete();
+    this._events$ = new Subject<RData>();
+
+    this._requestState$.complete();
+    this._requestState$ = new BehaviorSubject<StateEnum>(StateEnum.DORMANT);
+  }
+
+  public getState$(start?: boolean): Observable<StateEnum> {
     return defer(() => {
       if (start) this.start();
-      return this._requestStateShareable$;
+      return this._requestState$;
     });
   }
 
-  public get currentState(): RequestStateEnum {
+  public get currentState(): StateEnum {
     return this._requestState$.getValue();
   }
 
-  public nextRequestState(stateEnum: RequestStateEnum): void {
+  public nextRequestState(stateEnum: StateEnum): void {
     this._requestState$.next(stateEnum);
   }
 
@@ -105,16 +112,21 @@ export abstract class AbstractRsocketRequestMediator<TData, RData>
     this.onRequest();
   }
 
-  public get nextRetryTime$(): Observable<number> {
-    const nextRetryTime$ = this.retryService.getNextRetryTime$(
+  public get nextRetryTime$(): Observable<number> | undefined {
+    const rsocketRetryTime$ = this.rsocketService.nextRetryTime$;
+
+    if (rsocketRetryTime$) {
+      return rsocketRetryTime$;
+    }
+
+    const nextMediatorRetryTime$ = this.retryService.getNextRetryTime$(
       this.requestObservableKey,
     );
 
-    if (!nextRetryTime$) {
-      console.warn("No retry time found");
-      return new BehaviorSubject<number>(0);
+    if (nextMediatorRetryTime$) {
+      return nextMediatorRetryTime$;
     }
-
-    return nextRetryTime$;
+    console.warn("No retry time found");
+    return;
   }
 }

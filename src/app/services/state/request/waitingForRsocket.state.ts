@@ -3,7 +3,7 @@ import { RequestServiceStateInterface } from "../../network/rsocket/mediators/in
 import { RequestingState } from "./requesting.state";
 import { RsocketRetryingState } from "./rsocketRetrying.state";
 import { ConnectorStatesEnum } from "../../network/rsocket/ConnectorStatesEnum";
-import { RequestStateEnum } from "../RequestStateEnum";
+import { StateEnum } from "../StateEnum";
 
 export class WaitingForRsocketState<T> extends RequestState<T> {
   constructor(requestService: RequestServiceStateInterface<T>) {
@@ -32,7 +32,7 @@ export class WaitingForRsocketState<T> extends RequestState<T> {
   onRetrying(): void {
     this.cleanUp();
     console.log("Rsocket is retrying. Transitioning to RsocketRetryingState.");
-    this.requestService.nextRequestState(RequestStateEnum.RETRYING);
+    this.requestService.nextRequestState(StateEnum.RETRYING);
     this.requestService.state = new RsocketRetryingState(this.requestService);
   }
 }

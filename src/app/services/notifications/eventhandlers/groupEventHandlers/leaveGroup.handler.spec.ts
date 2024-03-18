@@ -1,8 +1,8 @@
 import { LeaveGroupHandler } from "./leaveGroup.handler";
 import { UserService } from "../../../user/user.service";
 import { NotificationService } from "../../notification.service";
-import { PrivateEventModel } from "../../../../model/privateEvent.model";
-import { PublicEventModel } from "../../../../model/publicEvent.model";
+import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
+import { PublicEventModel } from "../../../../model/events/publicEvent.model";
 import { TestBed } from "@angular/core/testing";
 import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
 import { MemberModel } from "../../../../model/member.model";
@@ -99,7 +99,7 @@ describe("LeaveGroupHandler", () => {
     });
 
     describe("invalid event data", () => {
-      it("should not take any action if the event data is invalid", () => {
+      it("should not take any action and throw an error if the event data is invalid", () => {
         userService.setUserInGroup(1, 1);
 
         const eventStatuses = [
@@ -112,7 +112,9 @@ describe("LeaveGroupHandler", () => {
 
           privateEvent.eventData = {};
 
-          leaveGroupHandler.handlePrivateEvent(privateEvent);
+          expect(() =>
+            leaveGroupHandler.handlePrivateEvent(privateEvent),
+          ).toThrowError();
 
           expect(userService.currentGroupId).toBe(1);
           expect(userService.currentMemberId).toBe(1);
@@ -154,10 +156,12 @@ describe("LeaveGroupHandler", () => {
           expect(notificationService.showMessage).not.toHaveBeenCalled();
         });
 
-        it("should not take any action if the event data is invalid", () => {
+        it("should not take any action and throw an error if the event data is invalid", () => {
           publicEvent.eventData = {};
 
-          leaveGroupHandler.handlePublicEvent(publicEvent);
+          expect(() =>
+            leaveGroupHandler.handlePublicEvent(publicEvent),
+          ).toThrowError();
 
           expect(userService.currentGroupId).toBe(1);
           expect(userService.currentMemberId).toBe(1);
@@ -180,25 +184,20 @@ describe("LeaveGroupHandler", () => {
     });
 
     describe("invalid event data", () => {
-      it("should not take any action if the event data is invalid", () => {
+      it("should not take any action and throw an error if the event data is invalid", () => {
         userService.setUserInGroup(1, 1);
 
-        const eventStatuses = [
-          EventStatusEnum.SUCCESSFUL,
-          EventStatusEnum.FAILED,
-        ];
+        publicEvent.eventStatus = EventStatusEnum.SUCCESSFUL;
 
-        for (const eventStatus of eventStatuses) {
-          privateEvent.eventStatus = eventStatus;
+        publicEvent.eventData = {};
 
-          privateEvent.eventData = {};
+        expect(() =>
+          leaveGroupHandler.handlePublicEvent(publicEvent),
+        ).toThrowError();
 
-          leaveGroupHandler.handlePublicEvent(privateEvent);
-
-          expect(userService.currentGroupId).toBe(1);
-          expect(userService.currentMemberId).toBe(1);
-          expect(notificationService.showMessage).not.toHaveBeenCalled();
-        }
+        expect(userService.currentGroupId).toBe(1);
+        expect(userService.currentMemberId).toBe(1);
+        expect(notificationService.showMessage).not.toHaveBeenCalled();
       });
     });
   });

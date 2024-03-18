@@ -1,4 +1,4 @@
-import { EventDataModel } from "../../../model/eventDataModel";
+import { EventDataModel } from "../../../model/events/eventDataModel";
 import { MemberModel } from "../../../model/member.model";
 import { ErrorDataModel } from "../../../model/errorData.model";
 import { GroupModel } from "../../../model/group.model";

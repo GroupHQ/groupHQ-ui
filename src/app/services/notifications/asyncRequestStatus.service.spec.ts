@@ -2,12 +2,12 @@ import { AsyncRequestStatusService } from "./asyncRequestStatus.service";
 import { TestBed } from "@angular/core/testing";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
 import { Observable } from "rxjs";
-import { Event } from "../../model/event";
+import { Event } from "../../model/events/event";
 import { AggregateTypeEnum } from "../../model/enums/aggregateType.enum";
 import { EventTypeEnum } from "../../model/enums/eventType.enum";
 import { EventStatusEnum } from "../../model/enums/eventStatus.enum";
 import { v4 as uuidv4 } from "uuid";
-import { RequestStateEnum } from "../state/RequestStateEnum";
+import { StateEnum } from "../state/StateEnum";
 
 function createMockEvent(): Event {
   return {
@@ -26,7 +26,7 @@ function createMockEvent(): Event {
 describe("AsyncRequestStatusService", () => {
   let service: AsyncRequestStatusService;
   let testScheduler: TestScheduler;
-  let mockEvents: Event[] = [];
+  const mockEvents: Event[] = [];
 
   beforeEach(() => {
     for (let i = 0; i < 10; i++) {
@@ -54,10 +54,10 @@ describe("AsyncRequestStatusService", () => {
           c: mockEvents[2],
         });
 
-        const statusStream: Observable<RequestStateEnum> = cold("--a-b-c--|", {
-          a: RequestStateEnum.INITIALIZING,
-          b: RequestStateEnum.REQUESTING,
-          c: RequestStateEnum.REQUEST_ACCEPTED,
+        const statusStream: Observable<StateEnum> = cold("--a-b-c--|", {
+          a: StateEnum.INITIALIZING,
+          b: StateEnum.REQUESTING,
+          c: StateEnum.REQUEST_ACCEPTED,
         });
 
         const requestId = mockEvents[2].eventId;
@@ -75,11 +75,11 @@ describe("AsyncRequestStatusService", () => {
         expectObservable(service.getRequestStatus$(requestId)).toBe(
           "a-b-c-d-(e|)",
           {
-            a: RequestStateEnum.DORMANT,
-            b: RequestStateEnum.INITIALIZING,
-            c: RequestStateEnum.REQUESTING,
-            d: RequestStateEnum.REQUEST_ACCEPTED,
-            e: RequestStateEnum.EVENT_PROCESSED,
+            a: StateEnum.DORMANT,
+            b: StateEnum.INITIALIZING,
+            c: StateEnum.REQUESTING,
+            d: StateEnum.REQUEST_ACCEPTED,
+            e: StateEnum.EVENT_PROCESSED,
           },
         );
 
@@ -103,10 +103,10 @@ describe("AsyncRequestStatusService", () => {
           c: mockEvents[2],
         });
 
-        const statusStream: Observable<RequestStateEnum> = cold("--a-b-c--", {
-          a: RequestStateEnum.INITIALIZING,
-          b: RequestStateEnum.REQUESTING,
-          c: RequestStateEnum.REQUEST_ACCEPTED,
+        const statusStream: Observable<StateEnum> = cold("--a-b-c--", {
+          a: StateEnum.INITIALIZING,
+          b: StateEnum.REQUESTING,
+          c: StateEnum.REQUEST_ACCEPTED,
         });
 
         const requestId = mockEvents[2].eventId;
@@ -124,11 +124,11 @@ describe("AsyncRequestStatusService", () => {
         expectObservable(service.getRequestStatus$(requestId)).toBe(
           "a-b-c-d-(e|)",
           {
-            a: RequestStateEnum.DORMANT,
-            b: RequestStateEnum.INITIALIZING,
-            c: RequestStateEnum.REQUESTING,
-            d: RequestStateEnum.REQUEST_ACCEPTED,
-            e: RequestStateEnum.EVENT_PROCESSED,
+            a: StateEnum.DORMANT,
+            b: StateEnum.INITIALIZING,
+            c: StateEnum.REQUESTING,
+            d: StateEnum.REQUEST_ACCEPTED,
+            e: StateEnum.EVENT_PROCESSED,
           },
         );
       });
@@ -145,10 +145,10 @@ describe("AsyncRequestStatusService", () => {
           b: mockEvents[1],
         });
 
-        const statusStream: Observable<RequestStateEnum> = cold("--a-b-c--", {
-          a: RequestStateEnum.INITIALIZING,
-          b: RequestStateEnum.REQUESTING,
-          c: RequestStateEnum.REQUEST_REJECTED,
+        const statusStream: Observable<StateEnum> = cold("--a-b-c--", {
+          a: StateEnum.INITIALIZING,
+          b: StateEnum.REQUESTING,
+          c: StateEnum.REQUEST_REJECTED,
         });
 
         const requestId = mockEvents[2].eventId;
@@ -162,16 +162,16 @@ describe("AsyncRequestStatusService", () => {
         expectObservable(asyncRequest$).toBe(
           "------#",
           undefined,
-          new Error(RequestStateEnum.REQUEST_REJECTED),
+          new Error(StateEnum.REQUEST_REJECTED),
         );
 
         expectObservable(service.getRequestStatus$(requestId)).toBe(
           "a-b-c-(d|)",
           {
-            a: RequestStateEnum.DORMANT,
-            b: RequestStateEnum.INITIALIZING,
-            c: RequestStateEnum.REQUESTING,
-            d: RequestStateEnum.REQUEST_REJECTED,
+            a: StateEnum.DORMANT,
+            b: StateEnum.INITIALIZING,
+            c: StateEnum.REQUESTING,
+            d: StateEnum.REQUEST_REJECTED,
           },
         );
 
@@ -194,10 +194,10 @@ describe("AsyncRequestStatusService", () => {
           b: mockEvents[1],
         });
 
-        const statusStream: Observable<RequestStateEnum> = cold("--a-b-c--", {
-          a: RequestStateEnum.INITIALIZING,
-          b: RequestStateEnum.REQUESTING,
-          c: RequestStateEnum.REQUEST_TIMEOUT,
+        const statusStream: Observable<StateEnum> = cold("--a-b-c--", {
+          a: StateEnum.INITIALIZING,
+          b: StateEnum.REQUESTING,
+          c: StateEnum.REQUEST_TIMEOUT,
         });
 
         const requestId = mockEvents[2].eventId;
@@ -211,16 +211,16 @@ describe("AsyncRequestStatusService", () => {
         expectObservable(asyncRequest$).toBe(
           "------#",
           undefined,
-          new Error(RequestStateEnum.REQUEST_TIMEOUT),
+          new Error(StateEnum.REQUEST_TIMEOUT),
         );
 
         expectObservable(service.getRequestStatus$(requestId)).toBe(
           "a-b-c-(d|)",
           {
-            a: RequestStateEnum.DORMANT,
-            b: RequestStateEnum.INITIALIZING,
-            c: RequestStateEnum.REQUESTING,
-            d: RequestStateEnum.REQUEST_TIMEOUT,
+            a: StateEnum.DORMANT,
+            b: StateEnum.INITIALIZING,
+            c: StateEnum.REQUESTING,
+            d: StateEnum.REQUEST_TIMEOUT,
           },
         );
       });
@@ -235,10 +235,10 @@ describe("AsyncRequestStatusService", () => {
           b: mockEvents[1],
         });
 
-        const statusStream: Observable<RequestStateEnum> = cold("--a-b-c--", {
-          a: RequestStateEnum.INITIALIZING,
-          b: RequestStateEnum.REQUESTING,
-          c: RequestStateEnum.REQUEST_ACCEPTED,
+        const statusStream: Observable<StateEnum> = cold("--a-b-c--", {
+          a: StateEnum.INITIALIZING,
+          b: StateEnum.REQUESTING,
+          c: StateEnum.REQUEST_ACCEPTED,
         });
 
         const requestId = mockEvents[2].eventId;
@@ -252,17 +252,17 @@ describe("AsyncRequestStatusService", () => {
         expectObservable(asyncRequest$).toBe(
           "7s #",
           undefined,
-          new Error(RequestStateEnum.EVENT_PROCESSING_TIMEOUT),
+          new Error(StateEnum.EVENT_PROCESSING_TIMEOUT),
         );
 
         expectObservable(service.getRequestStatus$(requestId)).toBe(
           "a-b-c-d 6993ms (e|)",
           {
-            a: RequestStateEnum.DORMANT,
-            b: RequestStateEnum.INITIALIZING,
-            c: RequestStateEnum.REQUESTING,
-            d: RequestStateEnum.REQUEST_ACCEPTED,
-            e: RequestStateEnum.EVENT_PROCESSING_TIMEOUT,
+            a: StateEnum.DORMANT,
+            b: StateEnum.INITIALIZING,
+            c: StateEnum.REQUESTING,
+            d: StateEnum.REQUEST_ACCEPTED,
+            e: StateEnum.EVENT_PROCESSING_TIMEOUT,
           },
         );
       });

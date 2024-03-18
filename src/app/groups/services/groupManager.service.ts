@@ -1,136 +1,158 @@
-import { Injectable } from "@angular/core";
+import { ChangeDetectorRef, Injectable, QueryList } from "@angular/core";
 import { GroupsService } from "./groups.service";
-import { PublicEventModel } from "../../model/publicEvent.model";
+import { PublicEventModel } from "../../model/events/publicEvent.model";
 import { GroupModel } from "../../model/group.model";
 import { EventTypeEnum } from "../../model/enums/eventType.enum";
-import { BehaviorSubject, Subject } from "rxjs";
-import { MemberModel } from "../../model/member.model";
-
-export interface GroupUpdate {
-  updateFunction: () => void;
-  eventType: EventTypeEnum | "SORT";
-  groupId: number;
-}
+import { map, Subscription } from "rxjs";
+import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
+import { EventStreamService } from "../../services/notifications/eventStream.service";
+import { StateEnum } from "../../services/state/StateEnum";
+import { FlipService } from "../../services/animation/flip.service";
+import { StateUpdateService } from "./stateUpdate.service";
+import { GroupSortingService } from "./groupSorting.service";
+import { GroupEventVisitor } from "../../services/notifications/visitors/group/groupEvent.visitor";
 
 @Injectable({
   providedIn: "root",
 })
 export class GroupManagerService {
-  private _groupUpdateActions$ = new Subject<GroupUpdate>();
-  public readonly groups = new BehaviorSubject<GroupModel[]>([]);
+  private subscriptions: Subscription = new Subscription();
+  private _currentGroupRoute: string | undefined;
+  private _changeDetectorRef: ChangeDetectorRef | undefined;
 
-  constructor(private readonly groupService: GroupsService) {
+  constructor(
+    private readonly groupService: GroupsService,
+    private readonly groupSortingService: GroupSortingService,
+    private readonly groupEventVisitor: GroupEventVisitor,
+    private readonly groupStateService: StateUpdateService,
+    private readonly eventStreamService: EventStreamService,
+    private readonly flipService: FlipService,
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.groupService.currentSort.subscribe((_) => {
-      this.triggerSort();
+    this.groupSortingService.currentSort$.subscribe((_) => {
+      this.commitChange(() => this.groupSortingService.sortGroups(this.groups));
     });
   }
 
   get groups$() {
-    return this.groups.asObservable();
+    return this.groupService.groups$;
   }
 
-  get groupUpdateActions$() {
-    return this._groupUpdateActions$.asObservable();
+  get groups() {
+    return this.groupService.groups;
   }
 
-  handleUpdates(publicEvent: PublicEventModel) {
-    console.debug("Handling update");
-    console.debug(publicEvent);
-
-    const group = this.parseIfJson(publicEvent.eventData) as GroupModel;
-
-    switch (publicEvent.eventType) {
-      case EventTypeEnum.GROUP_CREATED:
-        this.addGroup(group);
-        break;
-      case EventTypeEnum.GROUP_UPDATED:
-        this.updateGroup(group);
-        break;
-      case EventTypeEnum.MEMBER_JOINED: {
-        const groupJoined = this.groups
-          .getValue()
-          .find((group) => group.id === publicEvent.aggregateId);
-        if (!groupJoined) return;
-        const member = this.parseIfJson(publicEvent.eventData) as MemberModel;
-        this.updateGroupSize(member, groupJoined, EventTypeEnum.MEMBER_JOINED);
-        break;
-      }
-      case EventTypeEnum.MEMBER_LEFT: {
-        const groupLeft = this.groups
-          .getValue()
-          .find((group) => group.id === publicEvent.aggregateId);
-        if (!groupLeft) return;
-        const member = this.parseIfJson(publicEvent.eventData) as MemberModel;
-        this.updateGroupSize(member, groupLeft, EventTypeEnum.MEMBER_LEFT);
-        break;
-      }
-      default:
-        break;
-    }
+  get currentGroupRoute() {
+    return this._currentGroupRoute;
   }
 
-  private addGroup(groupToAdd: GroupModel) {
-    if (!groupToAdd || !groupToAdd.id || !groupToAdd.title) {
-      return;
-    }
-    console.debug("Pushing groups");
-
-    this._groupUpdateActions$.next({
-      updateFunction: () => {
-        this.groupService.insertGroup(groupToAdd, this.groups.getValue());
-      },
-      eventType: EventTypeEnum.GROUP_CREATED,
-      groupId: groupToAdd.id,
-    });
+  get streamRetryTime() {
+    if (!this._currentGroupRoute) throw new Error("No current group route");
+    return this.eventStreamService.retryTime(this._currentGroupRoute);
   }
 
-  private updateGroup(updatedGroup: GroupModel) {
-    this.groups.next(
-      this.groupService.updateGroup(updatedGroup, this.groups.getValue()),
+  get groupState$() {
+    return this.groupStateService.requestState$;
+  }
+
+  get groupState() {
+    return this.groupStateService.requestState;
+  }
+
+  get componentState$() {
+    return this.groupStateService.componentState$;
+  }
+
+  get componentState() {
+    return this.groupStateService.componentState;
+  }
+
+  public subscribeToGroupsStream(route: string) {
+    this.subscriptions.unsubscribe();
+    this.subscriptions = new Subscription();
+    this._currentGroupRoute = route;
+
+    const groupEventStreamSubscription = this.eventStreamService
+      .stream<PublicEventModel>(route)
+      .pipe(map((event) => PublicEventModel.instantiate(event)))
+      .subscribe((event) => {
+        console.debug(`Received ${route} event: `, event);
+        const change = () =>
+          this.groupStateService.handleEventAndUpdateStates(
+            event,
+            this.groupEventVisitor,
+          );
+        this.commitChange(change, event);
+      });
+
+    const groupEventStreamStatusSubscription = this.eventStreamService
+      .streamStatus(route)
+      .subscribe((status) => {
+        console.debug(`Received ${route} status: `, status);
+        this.groupStateService.handleNewRequestState(status);
+      });
+
+    this.subscriptions.add(groupEventStreamSubscription);
+    this.subscriptions.add(groupEventStreamStatusSubscription);
+  }
+
+  private commitChange(changeFunction: () => void, event?: PublicEventModel) {
+    this.animate(
+      changeFunction,
+      event ? this.mapEventTypeIfGroupDisbanded(event) : EventTypeEnum.NONE,
+      event ? event.aggregateId : 0,
     );
   }
 
-  private updateGroupSize(
-    member: MemberModel,
-    group: GroupModel,
-    event: EventTypeEnum.MEMBER_JOINED | EventTypeEnum.MEMBER_LEFT,
-  ) {
-    let memberListUpdated;
-    if (event === EventTypeEnum.MEMBER_JOINED) {
-      memberListUpdated = this.groupService.addMember(member, group);
-    } else {
-      console.debug("Removing member");
-      memberListUpdated = this.groupService.removeMember(member.id, group);
-    }
-
-    if (memberListUpdated && this.groupService.shouldResortAfterSizeChange()) {
-      this.triggerSort();
-    }
-  }
-
-  triggerSort() {
-    this._groupUpdateActions$.next({
-      updateFunction: () =>
-        this.groups.next(this.groupService.sortGroups(this.groups.getValue())),
-      eventType: "SORT",
-      groupId: -1,
-    });
-  }
-
-  private parseIfJson<T>(maybeJson: string | T): T {
-    if (typeof maybeJson === "string") {
-      try {
-        maybeJson = JSON.parse(maybeJson) as T;
-      } catch (error) {
-        console.error(
-          `Error parsing event data to object for ${maybeJson}`,
-          error,
-        );
-        throw new Error("Invalid JSON string");
+  /**
+   * Currently, the backend returns a GROUP_UPDATED event when a group is disbanded.
+   * This may change in the future.
+   * @param event An event
+   * @private
+   */
+  private mapEventTypeIfGroupDisbanded(event: PublicEventModel) {
+    if (event.eventType === EventTypeEnum.GROUP_UPDATED) {
+      const updatedGroup = event.eventData as GroupModel;
+      if (updatedGroup.status !== GroupStatusEnum.ACTIVE) {
+        return EventTypeEnum.GROUP_DISBANDED;
       }
     }
 
-    return maybeJson as T;
+    return event.eventType;
+  }
+
+  private animate(
+    changeFunction: () => void,
+    eventType: EventTypeEnum,
+    groupId: number,
+  ) {
+    // Note that currently, the first event processed will always be in a non-ready state
+    if (this.groupStateService.componentState !== StateEnum.READY) {
+      changeFunction();
+      return;
+    }
+
+    try {
+      if (eventType === EventTypeEnum.GROUP_DISBANDED) {
+        this.flipService.animateRemoval(changeFunction, groupId.toString());
+      } else {
+        this.flipService.animate(changeFunction, this._changeDetectorRef);
+      }
+    } catch (e) {
+      console.error(
+        "Falling back to no animation. There was an error animating group change",
+        e,
+      );
+      changeFunction();
+    }
+  }
+
+  public setCardComponents(
+    components: QueryList<any>,
+    changeDetectorRef: ChangeDetectorRef,
+  ) {
+    console.debug("Setting card components");
+    this._changeDetectorRef = changeDetectorRef;
+    this.flipService.setComponents(components);
   }
 }

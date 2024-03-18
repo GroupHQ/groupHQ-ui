@@ -1,8 +1,8 @@
 import { PublicEventModel } from "./publicEvent.model";
-import { EventVisitor } from "../services/notifications/visitors/eventVisitor";
-import { AggregateTypeEnum } from "./enums/aggregateType.enum";
-import { EventTypeEnum } from "./enums/eventType.enum";
-import { EventStatusEnum } from "./enums/eventStatus.enum";
+import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
+import { AggregateTypeEnum } from "../enums/aggregateType.enum";
+import { EventTypeEnum } from "../enums/eventType.enum";
+import { EventStatusEnum } from "../enums/eventStatus.enum";
 
 describe("PublicEventModel", () => {
   let eventVisitor: jasmine.SpyObj<EventVisitor>;

@@ -42,7 +42,7 @@ export class RsocketConnectorService {
     return defer(() => this.createConnector().connect());
   }
 
-  private createConnector(username = "user", password = "empty") {
+  private createConnector() {
     return new RSocketConnector({
       setup: {
         dataMimeType: "application/json",

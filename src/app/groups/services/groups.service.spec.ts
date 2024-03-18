@@ -1,338 +1,345 @@
-import { TestBed } from "@angular/core/testing";
 import { GroupsService } from "./groups.service";
-import { GroupModel } from "../../model/group.model";
-import { GroupSortEnum } from "../../model/enums/groupSort.enum";
+import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
+import { TestBed } from "@angular/core/testing";
+import { of, tap } from "rxjs";
 import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
+import { GroupModel } from "../../model/group.model";
+import { GroupSortingService } from "./groupSorting.service";
+import { GroupSortEnum } from "../../model/enums/groupSort.enum";
 import { MemberModel } from "../../model/member.model";
-import { MemberStatusEnum } from "../../model/enums/memberStatus.enum";
+
+let groupIdCounter = 0;
+
+function createGroup(members?: MemberModel[], other?: Partial<GroupModel>) {
+  const group: Partial<GroupModel> = {
+    id: ++groupIdCounter,
+    status: GroupStatusEnum.ACTIVE,
+    members: members ?? [],
+    ...other,
+  };
+
+  return group as any;
+}
+
+function createMembers(count: number) {
+  return Array.from(
+    { length: count },
+    (_, i): Partial<MemberModel> => ({ id: i + 1 }),
+  ) as any;
+}
 
 describe("GroupsService", () => {
   let service: GroupsService;
-  let groups: GroupModel[] = [];
-  const date = new Date(99, 0, 1, 0, 0, 0);
-  const groupDates = [
-    new Date(date.getTime() - 3000).toString(),
-    new Date(date.getTime() - 2000).toString(),
-    new Date(date.getTime() - 1000).toString(),
-  ];
+  let groupSortingService: GroupSortingService;
+  let testScheduler: TestScheduler;
 
   beforeEach(() => {
+    groupIdCounter = 0;
+
     TestBed.configureTestingModule({
       providers: [GroupsService],
     });
+
     service = TestBed.inject(GroupsService);
+    groupSortingService = TestBed.inject(GroupSortingService);
 
-    groups = [
-      {
-        id: 1,
-        title: "Group 1",
-        description: "Group 1 description",
-        status: GroupStatusEnum.ACTIVE,
-        maxGroupSize: 10,
-        lastModifiedDate: groupDates[0],
-        lastModifiedBy: "Test User 1",
-        createdDate: groupDates[0],
-        createdBy: "Test User 1",
-        version: 1,
-        members: [
-          new MemberModel(
-            1,
-            "Test User 1",
-            1,
-            MemberStatusEnum.ACTIVE,
-            new Date().toString(),
-            null,
-          ),
-        ],
-      },
-      {
-        id: 2,
-        title: "Group 2",
-        description: "Group 2 description",
-        status: GroupStatusEnum.ACTIVE,
-        maxGroupSize: 10,
-        lastModifiedDate: groupDates[1],
-        lastModifiedBy: "Test User 2",
-        createdDate: groupDates[1],
-        createdBy: "Test User 2",
-        version: 1,
-        members: [
-          new MemberModel(
-            2,
-            "Test User 2",
-            2,
-            MemberStatusEnum.ACTIVE,
-            new Date().toString(),
-            null,
-          ),
-          new MemberModel(
-            3,
-            "Test User 3",
-            2,
-            MemberStatusEnum.ACTIVE,
-            new Date().toString(),
-            null,
-          ),
-          new MemberModel(
-            4,
-            "Test User 4",
-            2,
-            MemberStatusEnum.ACTIVE,
-            new Date().toString(),
-            null,
-          ),
-        ],
-      },
-    ];
+    testScheduler = new TestScheduler((actual, expected) => {
+      expect(actual).toEqual(expected);
+    });
   });
 
-  it("should be created", () => {
-    expect(service).toBeTruthy();
+  describe("get #groups", () => {
+    it("should return the current groups", () => {
+      expect(service.groups).toEqual([]);
+    });
   });
 
-  describe("#changeSort", () => {
-    it("should change the sortSource value", (done) => {
-      const expectedSorts = [
-        GroupSortEnum.OLDEST,
-        GroupSortEnum.NEWEST,
-        GroupSortEnum.OLDEST,
-      ];
-      const actualSorts: GroupSortEnum[] = [];
+  describe("set #groups", () => {
+    it("should set the groups", () => {
+      const group = createGroup();
+      service.groups = [group];
 
-      const subscription = service.currentSort.subscribe((sort) => {
-        actualSorts.push(sort);
+      expect(service.groups).toEqual([group] as any);
+    });
+  });
 
-        if (actualSorts.length === expectedSorts.length) {
-          expect(actualSorts).toEqual(expectedSorts);
-          subscription.unsubscribe();
-          done();
+  describe("get #groups$", () => {
+    it("should allow the current groups to be observed", () => {
+      const groups = [createGroup(), createGroup()];
+
+      testScheduler.run(({ expectObservable }) => {
+        expectObservable(service.groups$).toBe("(abc)", {
+          a: [],
+          b: [groups[0]],
+          c: [groups[1]],
+        });
+
+        const groupsToEmit = of([groups[0]], [groups[1]]).pipe(
+          tap((groups) => (service.groups = groups)),
+        );
+
+        expectObservable(groupsToEmit).toBe("(ab|)", {
+          a: [groups[0]],
+          b: [groups[1]],
+        });
+      });
+    });
+  });
+
+  describe("#handleGroupUpdate", () => {
+    it("should add a group if it doesn't exist and sort its members", () => {
+      const group = createGroup();
+
+      spyOn(groupSortingService, "sortMembers").and.returnValue([]);
+
+      service.handleGroupUpdate(group);
+
+      expect(service.groups).toEqual([group]);
+      expect(groupSortingService.sortMembers).toHaveBeenCalledOnceWith([]);
+    });
+
+    it("should replace a group if it exists", () => {
+      let group = createGroup([], { title: "Old Title" });
+
+      service.handleGroupUpdate(group);
+
+      group = { ...group, title: "New Title" };
+
+      service.handleGroupUpdate(group);
+
+      expect(service.groups).toEqual([group]);
+    });
+
+    it("should remove a group if it is not active", () => {
+      let group = createGroup();
+
+      service.handleGroupUpdate(group);
+
+      group = { ...group, status: GroupStatusEnum.AUTO_DISBANDED };
+
+      service.handleGroupUpdate(group);
+
+      expect(service.groups).toEqual([]);
+    });
+
+    describe("when the sort type is OLDEST or unrecognized", () => {
+      it("should add the group to the end of the list", () => {
+        const sortTypes: GroupSortEnum[] = [
+          GroupSortEnum.OLDEST,
+          "UNKNOWN" as GroupSortEnum,
+        ];
+
+        for (const sortType of sortTypes) {
+          groupSortingService.changeSort = sortType;
+
+          service.groups = [createGroup(), createGroup()];
+
+          const group = createGroup();
+
+          service.handleGroupUpdate(group);
+
+          expect(service.groups.length).toEqual(3);
+          expect(service.groups[2]).toEqual(group);
+        }
+      });
+    });
+
+    describe("when the sort type is NEWEST", () => {
+      it("should add the group to the beginning of the list", () => {
+        groupSortingService.changeSort = GroupSortEnum.NEWEST;
+
+        service.groups = [createGroup(), createGroup()];
+
+        const group = createGroup();
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(3);
+        expect(service.groups[0]).toEqual(group);
+      });
+    });
+
+    describe("when the sort type is MOST_MEMBERS", () => {
+      beforeEach(() => {
+        groupSortingService.changeSort = GroupSortEnum.MOST_MEMBERS;
+      });
+
+      it("should add the group before the first group with less members than it", () => {
+        service.groups = [
+          createGroup(createMembers(3)),
+          createGroup(createMembers(1)),
+        ];
+
+        const group = createGroup(createMembers(2));
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(3);
+        expect(service.groups[1]).toEqual(group);
+      });
+
+      it("should add the group to the end of the list if no other group has less members than it", () => {
+        service.groups = [
+          createGroup(createMembers(3)),
+          createGroup(createMembers(2)),
+        ];
+
+        const group = createGroup(createMembers(1));
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(3);
+        expect(service.groups[2]).toEqual(group);
+      });
+    });
+
+    describe("when the sort type is LEAST_MEMBERS", () => {
+      beforeEach(() => {
+        groupSortingService.changeSort = GroupSortEnum.LEAST_MEMBERS;
+      });
+
+      it("should add the group before the first group with more members than it", () => {
+        service.groups = [
+          createGroup(createMembers(1)),
+          createGroup(createMembers(3)),
+        ];
+
+        const group = createGroup(createMembers(2));
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(3);
+        expect(service.groups[1]).toEqual(group);
+      });
+
+      it("should add the group to the end of the list if no other group has more members than it", () => {
+        service.groups = [
+          createGroup(createMembers(1)),
+          createGroup(createMembers(2)),
+        ];
+
+        const group = createGroup(createMembers(3));
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(3);
+        expect(service.groups[2]).toEqual(group);
+      });
+    });
+
+    describe("adding a member", () => {
+      it("should add a member to the group", () => {
+        const members = createMembers(2);
+
+        service.groups = [createGroup([]), createGroup(members)];
+
+        service.addMember(members[1], 2);
+
+        expect(service.groups[1].members).toEqual(members);
+      });
+
+      it("should not add a member if the group does not exist", () => {
+        const members = createMembers(2);
+
+        const groups = [createGroup([]), createGroup(members[0])];
+
+        service.groups = groups;
+
+        service.addMember(members[1], 3);
+
+        expect(groups.length).toEqual(2);
+
+        for (let i = 0; i < groups.length; i++) {
+          expect(service.groups[i].members).toEqual(groups[i].members);
         }
       });
 
-      service.changeSort(GroupSortEnum.NEWEST);
-      service.changeSort(GroupSortEnum.OLDEST);
-    });
-  });
+      it("should not add a member if the member is already in the group", () => {
+        const members = createMembers(2);
 
-  describe("#sortGroups", () => {
-    it("should sort groups by created date ascending", () => {
-      service.changeSort(GroupSortEnum.OLDEST);
-      service.sortGroups(groups);
+        service.groups = [createGroup([members[0]]), createGroup([members[1]])];
 
-      expect(groups[0].id).toBe(1);
-      expect(groups[1].id).toBe(2);
-    });
+        service.addMember(members[0], 1);
 
-    it("should sort groups by created date descending", () => {
-      service.changeSort(GroupSortEnum.NEWEST);
-      service.sortGroups(groups);
+        expect(service.groups[0].members).toEqual([members[0]]);
+      });
 
-      expect(groups[0].id).toBe(2);
-      expect(groups[1].id).toBe(1);
-    });
+      it("should sort the groups after adding a member if the sort type is MOST_MEMBERS or LEAST_MEMBERS", () => {
+        const sortTypes: GroupSortEnum[] = [
+          GroupSortEnum.MOST_MEMBERS,
+          GroupSortEnum.LEAST_MEMBERS,
+        ];
 
-    it("should sort groups by current size ascending", () => {
-      service.changeSort(GroupSortEnum.LEAST_MEMBERS);
-      service.sortGroups(groups);
+        spyOn(groupSortingService, "sortGroups");
 
-      expect(groups[0].id).toBe(1);
-      expect(groups[1].id).toBe(2);
-    });
+        for (const sortType of sortTypes) {
+          groupSortingService.changeSort = sortType;
 
-    it("should sort groups by current size descending", () => {
-      service.changeSort(GroupSortEnum.MOST_MEMBERS);
-      service.sortGroups(groups);
+          const member = createMembers(1)[0];
+          service.groups = [createGroup()];
 
-      expect(groups[0].id).toBe(2);
-      expect(groups[1].id).toBe(1);
-    });
-  });
+          service.addMember(member, groupIdCounter);
+        }
 
-  describe("#updateGroup", () => {
-    it("should remove the group when its status becomes non-active", () => {
-      const updatedGroup: GroupModel = {
-        id: 1,
-        title: "Group 1",
-        description: "Group 1 description",
-        status: GroupStatusEnum.AUTO_DISBANDED,
-        maxGroupSize: 10,
-        lastModifiedDate: new Date().toString(),
-        lastModifiedBy: "Test User 1",
-        createdDate: groupDates[0],
-        createdBy: "Test User 1",
-        version: 2,
-        members: [],
-      };
-      service.updateGroup(updatedGroup, groups);
-
-      expect(groups).not.toContain(updatedGroup);
+        expect(groupSortingService.sortGroups).toHaveBeenCalledTimes(2);
+      });
     });
 
-    it("should update group lastActive", () => {
-      const updatedGroup: GroupModel = {
-        id: 1,
-        title: "Group 1",
-        description: "Group 1 description",
-        status: GroupStatusEnum.ACTIVE,
-        maxGroupSize: 10,
-        lastModifiedDate: new Date().toString(),
-        lastModifiedBy: "Test User 1",
-        createdDate: groupDates[0],
-        createdBy: "Test User 1",
-        version: 2,
-        members: [],
-      };
-      groups = service.updateGroup(updatedGroup, groups);
+    describe("removing a member", () => {
+      it("should remove a member from the group", () => {
+        const members = createMembers(2);
 
-      expect(groups[0].lastModifiedDate).toBe(updatedGroup.lastModifiedDate);
-    });
+        service.groups = [createGroup(members), createGroup([members[0]])];
 
-    it("should update group currentGroupSize", () => {
-      const member: MemberModel = {
-        id: 1,
-        username: "Test User 1",
-        groupId: 1,
-        memberStatus: MemberStatusEnum.ACTIVE,
-        joinedDate: new Date().toString(),
-        exitedDate: null,
-      };
-      service.addMember(member, groups[0]);
+        service.removeMember(members[1].id, 1);
 
-      expect(groups[0].members.length).toBe(1);
-    });
-  });
+        expect(service.groups[0].members).toEqual([members[0]]);
+      });
 
-  describe("#shouldResortAfterSizeChange", () => {
-    it("should return true when sort is LEAST_MEMBERS", () => {
-      service.changeSort(GroupSortEnum.LEAST_MEMBERS);
-      expect(service.shouldResortAfterSizeChange()).toBe(true);
-    });
+      it("should not remove a member if the group does not exist", () => {
+        const members = createMembers(2);
 
-    it("should return true when sort is MOST_MEMBERS", () => {
-      service.changeSort(GroupSortEnum.MOST_MEMBERS);
-      expect(service.shouldResortAfterSizeChange()).toBe(true);
-    });
+        const groups = [createGroup(members), createGroup(members[0])];
 
-    it("should return false when sort is OLDEST", () => {
-      service.changeSort(GroupSortEnum.OLDEST);
-      expect(service.shouldResortAfterSizeChange()).toBe(false);
-    });
+        service.groups = groups;
 
-    it("should return false when sort is NEWEST", () => {
-      service.changeSort(GroupSortEnum.NEWEST);
-      expect(service.shouldResortAfterSizeChange()).toBe(false);
-    });
+        service.removeMember(members[1].id, 3);
 
-    it("should return false when sort is invalid", () => {
-      service.changeSort("INVALID" as GroupSortEnum);
-      expect(service.shouldResortAfterSizeChange()).toBe(false);
-    });
-  });
+        for (let i = 0; i < groups.length; i++) {
+          expect(service.groups[i].members).toEqual(groups[i].members);
+        }
+      });
 
-  describe("#removeGroup", () => {
-    it("should remove group from list", () => {
-      service.removeGroup(groups[0].id, groups);
+      it("should not remove a member if the member is not in the group", () => {
+        const members = createMembers(2);
 
-      expect(groups.length).toBe(1);
-      expect(groups.map((group) => group.id)).toEqual([2]);
-    });
+        service.groups = [createGroup([members[0]]), createGroup([members[0]])];
 
-    it("should not remove group from list when group does not exist", () => {
-      service.removeGroup(3, groups);
+        service.removeMember(members[1].id, 1);
 
-      expect(groups.length).toBe(2);
-      expect(groups.map((group) => group.id)).toEqual([1, 2]);
-    });
-  });
+        expect(service.groups[0].members).toEqual([members[0]]);
+        expect(service.groups[1].members).toEqual([members[0]]);
+      });
 
-  describe("#insertGroup", () => {
-    let group: GroupModel;
-    beforeEach(() => {
-      group = {
-        id: 3,
-        title: "Group 3",
-        description: "Group 3 description",
-        status: GroupStatusEnum.ACTIVE,
-        maxGroupSize: 10,
-        lastModifiedDate: new Date().toString(),
-        lastModifiedBy: "Test User 3",
-        createdDate: new Date().toString(),
-        createdBy: "Test User 3",
-        version: 1,
-        members: [
-          new MemberModel(
-            5,
-            "Test User 5",
-            3,
-            MemberStatusEnum.ACTIVE,
-            new Date().toString(),
-            null,
-          ),
-          new MemberModel(
-            6,
-            "Test User 6",
-            3,
-            MemberStatusEnum.ACTIVE,
-            new Date().toString(),
-            null,
-          ),
-        ],
-      };
-    });
+      it("should sort the groups after removing a member if the sort type is MOST_MEMBERS or LEAST_MEMBERS", () => {
+        const sortTypes: GroupSortEnum[] = [
+          GroupSortEnum.MOST_MEMBERS,
+          GroupSortEnum.LEAST_MEMBERS,
+        ];
 
-    it("should only insert group at end of list when sort is OLDEST", () => {
-      service.changeSort(GroupSortEnum.OLDEST);
-      service.sortGroups(groups);
-      service.insertGroup(group, groups);
+        spyOn(groupSortingService, "sortGroups");
 
-      expect(groups.length).toBe(3);
-      expect(groups.map((group) => group.id)).toEqual([1, 2, 3]);
-    });
+        for (const sortType of sortTypes) {
+          groupSortingService.changeSort = sortType;
 
-    it("should only insert group at start of list when sort is NEWEST", () => {
-      service.changeSort(GroupSortEnum.NEWEST);
-      service.sortGroups(groups);
-      service.insertGroup(group, groups);
+          const member = createMembers(1);
+          service.groups = [createGroup(member)];
 
-      expect(groups.length).toBe(3);
-      expect(groups.map((group) => group.id)).toEqual([3, 2, 1]);
-    });
+          service.removeMember(member[0].id, groupIdCounter);
+        }
 
-    it("should only insert group at correct index when sort is LEAST_MEMBERS", () => {
-      service.changeSort(GroupSortEnum.LEAST_MEMBERS);
-      service.sortGroups(groups);
-      service.insertGroup(group, groups);
-
-      expect(groups.length).toBe(3);
-      expect(groups.map((group) => group.id)).toEqual([1, 3, 2]);
-    });
-
-    it("should only insert group at correct index when sort is MOST_MEMBERS", () => {
-      service.changeSort(GroupSortEnum.MOST_MEMBERS);
-      service.sortGroups(groups);
-      group.maxGroupSize = 15;
-      service.insertGroup(group, groups);
-
-      expect(groups.length).toBe(3);
-      expect(groups.map((group) => group.id)).toEqual([2, 3, 1]);
-    });
-
-    it("should only insert group at end of list when sort is invalid", () => {
-      service.changeSort("INVALID" as GroupSortEnum);
-      service.sortGroups(groups);
-      service.insertGroup(group, groups);
-
-      expect(groups.length).toBe(3);
-      expect(groups.map((group) => group.id)).toEqual([1, 2, 3]);
-    });
-
-    it("should only not insert group when group already exists", () => {
-      service.changeSort(GroupSortEnum.OLDEST);
-      service.sortGroups(groups);
-      service.insertGroup(groups[0], groups);
-
-      expect(groups.length).toBe(2);
-      expect(groups.map((group) => group.id)).toEqual([1, 2]);
+        expect(groupSortingService.sortGroups).toHaveBeenCalledTimes(2);
+      });
     });
   });
 });

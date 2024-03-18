@@ -332,4 +332,48 @@ describe("RetryService", () => {
       });
     });
   });
+
+  describe("backoff time calculation", () => {
+    it("should increase the retry time for every retry", () => {
+      testScheduler.run((helpers) => {
+        service.currentTime = () => testScheduler.now();
+        const { cold, expectObservable } = helpers;
+
+        const retryStrategy = createRetryStrategy(5, 1, 60);
+
+        const errorObservableWithRetry = service.addRetryLogic(
+          cold("#"),
+          observableKeyA,
+          retryStrategy,
+        );
+
+        const nextRetryTimeObservable =
+          service.getNextRetryTime$(observableKeyA);
+        expect(nextRetryTimeObservable).toBeTruthy();
+
+        expectObservable(errorObservableWithRetry);
+
+        let retryFinished = false;
+        let maxRetryTime: number | null = null;
+
+        nextRetryTimeObservable!.subscribe((retryTime) => {
+          if (maxRetryTime === null) {
+            maxRetryTime = retryTime;
+            return;
+          }
+
+          if (retryTime == 0) {
+            retryFinished = true;
+            return;
+          }
+
+          if (retryFinished) {
+            expect(retryTime).toBeGreaterThan(maxRetryTime);
+            maxRetryTime = retryTime;
+            retryFinished = false;
+          }
+        });
+      });
+    });
+  });
 });

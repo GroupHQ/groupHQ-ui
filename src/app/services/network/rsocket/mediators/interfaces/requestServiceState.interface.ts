@@ -1,4 +1,4 @@
-import { RequestStateEnum } from "../../../../state/RequestStateEnum";
+import { StateEnum } from "../../../../state/StateEnum";
 import { RequestState } from "../../../../state/request/request.state";
 import { Observable } from "rxjs";
 import { ConnectorStatesEnum } from "../../ConnectorStatesEnum";
@@ -10,5 +10,6 @@ export interface RequestServiceStateInterface<T> {
   cleanUp(): void;
   getEvents$(start?: boolean): Observable<T>;
   nextEvent(value: T): void;
-  nextRequestState(value: RequestStateEnum): void;
+  completeEvents(): void;
+  nextRequestState(value: StateEnum): void;
 }

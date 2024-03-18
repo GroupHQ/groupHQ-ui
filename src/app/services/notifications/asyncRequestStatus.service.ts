@@ -14,8 +14,8 @@ import {
   timeout,
   TimeoutError,
 } from "rxjs";
-import { RequestStateEnum } from "../state/RequestStateEnum";
-import { Event } from "../../model/event";
+import { StateEnum } from "../state/StateEnum";
+import { Event } from "../../model/events/event";
 
 /**
  * This service is responsible for managing the status of asynchronous requests.
@@ -28,12 +28,10 @@ import { Event } from "../../model/event";
   providedIn: "root",
 })
 export class AsyncRequestStatusService {
-  private readonly _requestStatuses: Map<
-    string,
-    BehaviorSubject<RequestStateEnum>
-  > = new Map<string, BehaviorSubject<RequestStateEnum>>();
+  private readonly _requestStatuses: Map<string, BehaviorSubject<StateEnum>> =
+    new Map<string, BehaviorSubject<StateEnum>>();
 
-  public getRequestStatus$(eventId: string): Observable<RequestStateEnum> {
+  public getRequestStatus$(eventId: string): Observable<StateEnum> {
     if (!this._requestStatuses.has(eventId)) {
       return throwError(
         () => new Error(`Request with id ${eventId} is not being processed`),
@@ -45,7 +43,7 @@ export class AsyncRequestStatusService {
 
   public observeRequestCompletion<T extends Event>(
     eventStream: Observable<T>,
-    requestStatus$: Observable<RequestStateEnum>,
+    requestStatus$: Observable<StateEnum>,
     eventId: string,
   ): Observable<T> {
     if (!this.putSink(eventId)) return EMPTY;
@@ -75,7 +73,7 @@ export class AsyncRequestStatusService {
 
     this._requestStatuses.set(
       eventId,
-      new BehaviorSubject<RequestStateEnum>(RequestStateEnum.DORMANT),
+      new BehaviorSubject<StateEnum>(StateEnum.DORMANT),
     );
 
     return true;
@@ -83,8 +81,8 @@ export class AsyncRequestStatusService {
 
   private requestResponseRace<T extends Event>(
     eventStream: Observable<T>,
-    requestStatus$: Observable<RequestStateEnum>,
-    asyncRequestStatusSink: BehaviorSubject<RequestStateEnum>,
+    requestStatus$: Observable<StateEnum>,
+    asyncRequestStatusSink: BehaviorSubject<StateEnum>,
     eventId: string,
   ): Observable<T> {
     const responseEvent$ = this.createEventResponseEventObserver(
@@ -104,32 +102,35 @@ export class AsyncRequestStatusService {
   private createEventResponseEventObserver<T extends Event>(
     eventStream: Observable<T>,
     eventId: string,
-    asyncRequestStatusSink: BehaviorSubject<RequestStateEnum>,
+    asyncRequestStatusSink: BehaviorSubject<StateEnum>,
   ): Observable<T> {
     return eventStream.pipe(
+      tap((event) =>
+        console.debug(`Received event with id ${eventId}: `, event),
+      ),
       filter((event) => event.eventId === eventId),
       take(1),
       tap((event) => {
-        asyncRequestStatusSink.next(RequestStateEnum.EVENT_PROCESSED);
+        asyncRequestStatusSink.next(StateEnum.EVENT_PROCESSED);
         return event;
       }),
     );
   }
 
   private createRequestStatusObserver<T extends Event>(
-    requestStatus$: Observable<RequestStateEnum>,
+    requestStatus$: Observable<StateEnum>,
     responseEvent$: Observable<T>,
-    asyncRequestStatusSink: BehaviorSubject<RequestStateEnum>,
+    asyncRequestStatusSink: BehaviorSubject<StateEnum>,
   ): Observable<T> {
     const terminatingStatuses = [
-      RequestStateEnum.REQUEST_ACCEPTED,
-      RequestStateEnum.REQUEST_REJECTED,
-      RequestStateEnum.REQUEST_TIMEOUT,
+      StateEnum.REQUEST_ACCEPTED,
+      StateEnum.REQUEST_REJECTED,
+      StateEnum.REQUEST_TIMEOUT,
     ];
 
     const terminatingErrorStatuses = [
-      RequestStateEnum.REQUEST_TIMEOUT,
-      RequestStateEnum.REQUEST_REJECTED,
+      StateEnum.REQUEST_TIMEOUT,
+      StateEnum.REQUEST_REJECTED,
     ];
 
     return requestStatus$.pipe(
@@ -138,8 +139,7 @@ export class AsyncRequestStatusService {
       take(1),
       tap((status) => {
         if (
-          asyncRequestStatusSink.getValue() !==
-            RequestStateEnum.EVENT_PROCESSED &&
+          asyncRequestStatusSink.getValue() !== StateEnum.EVENT_PROCESSED &&
           terminatingErrorStatuses.includes(status)
         ) {
           throw new Error(status);
@@ -154,7 +154,7 @@ export class AsyncRequestStatusService {
     console.error(`Error processing event with id ${eventId}: ${error}`);
 
     if (error instanceof TimeoutError) {
-      asyncRequestStatusSink.next(RequestStateEnum.EVENT_PROCESSING_TIMEOUT);
+      asyncRequestStatusSink.next(StateEnum.EVENT_PROCESSING_TIMEOUT);
     }
 
     return throwError(() => new Error(asyncRequestStatusSink.getValue()));

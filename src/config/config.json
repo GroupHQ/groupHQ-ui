@@ -19,12 +19,12 @@
     "retryDefault": {
       "MAX_RETRY_ATTEMPTS": 2,
       "MIN_RETRY_INTERVAL": 3,
-      "MAX_RETRY_INTERVAL": 60
+      "MAX_RETRY_INTERVAL": 30
     },
     "retryForeverConstant": {
       "MAX_RETRY_ATTEMPTS": -1,
       "MIN_RETRY_INTERVAL": 5,
-      "MAX_RETRY_INTERVAL": 5
+      "MAX_RETRY_INTERVAL": 15
     }
   },
   "groupBoardComponent": {

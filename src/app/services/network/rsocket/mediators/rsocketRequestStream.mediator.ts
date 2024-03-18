@@ -1,7 +1,7 @@
 import { AbstractRsocketRequestMediator } from "./abstractRsocketRequest.mediator";
 import { RequestCompleteState } from "../../../state/request/requestComplete.state";
 import { ReceivingDataState } from "../../../state/request/receivingData.state";
-import { RequestStateEnum } from "../../../state/RequestStateEnum";
+import { StateEnum } from "../../../state/StateEnum";
 import { RetryDefaultStrategy } from "../../../retry/strategies/retryDefault.strategy";
 import { catchError, throwError } from "rxjs";
 
@@ -13,11 +13,14 @@ export class RsocketRequestStreamMediator<
     this.cleanUp();
 
     const requestObservable = this.rsocketRequestFactory
-      .createRequestStream<TData, RData>(this.route, this.data)
+      .createRequestStream<
+        TData,
+        RData
+      >(this.rsocketService.rsocketRequester!, this.route, this.data)
       .pipe(
         catchError((error) => {
           console.error("Error in RsocketRequestStreamMediator: ", error);
-          this.nextRequestState(RequestStateEnum.RETRYING);
+          this.nextRequestState(StateEnum.RETRYING);
           return throwError(() => error);
         }),
       );
@@ -41,19 +44,21 @@ export class RsocketRequestStreamMediator<
       },
       error: (error: Error) => {
         console.error("Error in RsocketRequestResponseMediator: ", error);
-        console.log("Transitioning to RetryingState.");
-        this.nextRequestState(RequestStateEnum.REQUEST_REJECTED);
+        console.log("Transitioning to RequestCompleteState.");
+        this.nextRequestState(StateEnum.REQUEST_REJECTED);
         this.state.cleanUp();
         this.state = new RequestCompleteState(this);
       },
       complete: () => {
         console.log("RsocketRequestResponseMediator: complete");
-        console.log("Transitioning to ResponseAcceptedState.");
-        if (this.currentState !== RequestStateEnum.REQUEST_REJECTED) {
+        console.log("Transitioning to RequestCompleteState.");
+        if (this.currentState !== StateEnum.REQUEST_REJECTED) {
           this.state.cleanUp();
-          this.nextRequestState(RequestStateEnum.REQUEST_COMPLETED);
+          this.nextRequestState(StateEnum.REQUEST_COMPLETED);
           this.state = new RequestCompleteState(this);
         }
+
+        this.completeEvents();
       },
     });
   }

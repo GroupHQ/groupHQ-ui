@@ -3,7 +3,7 @@ import { RequestServiceStateInterface } from "../../network/rsocket/mediators/in
 import { ConnectorStatesEnum } from "../../network/rsocket/ConnectorStatesEnum";
 import { BehaviorSubject } from "rxjs";
 import { RequestState } from "./request.state";
-import { RequestStateEnum } from "../RequestStateEnum";
+import { StateEnum } from "../StateEnum";
 import { RequestingState } from "./requesting.state";
 import { RsocketRetryingState } from "./rsocketRetrying.state";
 import { setupStateTest } from "./stateHelperSetup.spec";
@@ -38,7 +38,7 @@ describe("WaitingForRsocketState", () => {
     setup.mockConnectorState$.next(ConnectorStatesEnum.RETRYING);
 
     expect(setup.requestServiceSpy.nextRequestState).toHaveBeenCalledWith(
-      RequestStateEnum.RETRYING,
+      StateEnum.RETRYING,
     );
     expect(setup.currentStateContainer.currentState).toBeInstanceOf(
       RsocketRetryingState,

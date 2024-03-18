@@ -1,14 +1,15 @@
-import { AggregateTypeEnum } from "./enums/aggregateType.enum";
-import { EventTypeEnum } from "./enums/eventType.enum";
-import { EventStatusEnum } from "./enums/eventStatus.enum";
+import { AggregateTypeEnum } from "../enums/aggregateType.enum";
+import { EventTypeEnum } from "../enums/eventType.enum";
+import { EventStatusEnum } from "../enums/eventStatus.enum";
 import { EventDataModel } from "./eventDataModel";
 import { Event } from "./event";
-import { EventVisitor } from "../services/notifications/visitors/eventVisitor";
+import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
 
-export class PublicEventModel implements Event {
+export class PrivateEventModel implements Event {
   constructor(
     public eventId: string,
     public aggregateId: number,
+    public websocketId: string,
     public aggregateType: AggregateTypeEnum,
     public eventType: EventTypeEnum,
     public eventData: EventDataModel,
@@ -17,6 +18,6 @@ export class PublicEventModel implements Event {
   ) {}
 
   accept(visitor: EventVisitor): void {
-    visitor.visitPublicEvent(this);
+    visitor.visitPrivateEvent(this);
   }
 }

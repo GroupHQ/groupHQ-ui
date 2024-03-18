@@ -1,13 +1,13 @@
 import { EventHandler } from "../eventHandler";
 import { GroupUpdatedHandler } from "./groupUpdated.handler";
 import { TestBed } from "@angular/core/testing";
-import { PrivateEventModel } from "../../../../model/privateEvent.model";
+import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
 import { UserService } from "../../../user/user.service";
 import { NotificationService } from "../../notification.service";
 import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
 import { GroupStatusEnum } from "../../../../model/enums/groupStatus.enum";
 import { GroupModel } from "../../../../model/group.model";
-import { PublicEventModel } from "../../../../model/publicEvent.model";
+import { PublicEventModel } from "../../../../model/events/publicEvent.model";
 
 describe("GroupUpdatedHandler", () => {
   let groupUpdatedHandler: EventHandler;
@@ -16,8 +16,23 @@ describe("GroupUpdatedHandler", () => {
 
   let privateEvent: PrivateEventModel;
   let publicEvent: PublicEventModel;
+  let eventData: GroupModel;
 
   beforeEach(() => {
+    eventData = new GroupModel(
+      1,
+      "title",
+      "description",
+      5,
+      Date.now().toString(),
+      Date.now().toString(),
+      "owner",
+      "owner",
+      1,
+      GroupStatusEnum.DISBANDED,
+      [],
+    );
+
     privateEvent = {} as PrivateEventModel;
 
     publicEvent = {} as PublicEventModel;
@@ -58,23 +73,7 @@ describe("GroupUpdatedHandler", () => {
       });
 
       describe("user in updated group", () => {
-        let eventData: GroupModel;
-
         beforeEach(() => {
-          eventData = new GroupModel(
-            1,
-            "title",
-            "description",
-            5,
-            Date.now().toString(),
-            Date.now().toString(),
-            "owner",
-            "owner",
-            1,
-            GroupStatusEnum.DISBANDED,
-            [],
-          );
-
           userService.setUserInGroup(1, 1);
           publicEvent.aggregateId = 1;
         });
@@ -127,39 +126,37 @@ describe("GroupUpdatedHandler", () => {
 
       describe("user not in updated group", () => {
         beforeEach(() => {
-          userService.setUserInGroup(1, 1);
-          publicEvent.aggregateId = 2;
+          userService.setUserInGroup(2, 1);
+          publicEvent.aggregateId = 1;
         });
 
         it("should not set the user's currentGroupId and currentMemberId to null if the group has been disbanded", () => {
-          publicEvent.eventData = { status: GroupStatusEnum.DISBANDED };
+          publicEvent.eventData = {
+            ...eventData,
+            status: GroupStatusEnum.DISBANDED,
+          };
           groupUpdatedHandler.handlePublicEvent(publicEvent);
-          expect(userService.currentGroupId).toBe(1);
+          expect(userService.currentGroupId).toBe(2);
           expect(userService.currentMemberId).toBe(1);
         });
       });
     });
 
     describe("invalid event data", () => {
-      it("should not take any action if the event data is invalid", () => {
+      it("should not take any action and throw an error if the if the event data is invalid", () => {
         userService.setUserInGroup(1, 1);
 
-        const eventStatuses = [
-          EventStatusEnum.SUCCESSFUL,
-          EventStatusEnum.FAILED,
-        ];
+        publicEvent.eventStatus = EventStatusEnum.SUCCESSFUL;
 
-        for (const eventStatus of eventStatuses) {
-          privateEvent.eventStatus = eventStatus;
+        publicEvent.eventData = {};
 
-          privateEvent.eventData = {};
+        expect(() =>
+          groupUpdatedHandler.handlePublicEvent(publicEvent),
+        ).toThrowError();
 
-          groupUpdatedHandler.handlePublicEvent(privateEvent);
-
-          expect(userService.currentGroupId).toBe(1);
-          expect(userService.currentMemberId).toBe(1);
-          expect(notificationService.showMessage).not.toHaveBeenCalled();
-        }
+        expect(userService.currentGroupId).toBe(1);
+        expect(userService.currentMemberId).toBe(1);
+        expect(notificationService.showMessage).not.toHaveBeenCalled();
       });
     });
   });

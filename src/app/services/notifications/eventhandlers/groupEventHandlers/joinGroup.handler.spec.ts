@@ -1,8 +1,8 @@
 import { JoinGroupHandler } from "./joinGroup.handler";
 import { UserService } from "../../../user/user.service";
 import { NotificationService } from "../../notification.service";
-import { PublicEventModel } from "../../../../model/publicEvent.model";
-import { PrivateEventModel } from "../../../../model/privateEvent.model";
+import { PublicEventModel } from "../../../../model/events/publicEvent.model";
+import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
 import { TestBed } from "@angular/core/testing";
 import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
 import { MemberModel } from "../../../../model/member.model";
@@ -98,7 +98,7 @@ describe("JoinGroupHandler", () => {
     });
 
     describe("invalid event data", () => {
-      it("should not take any action if the event data is invalid", () => {
+      it("should not take any action and throw an error if the event data is invalid", () => {
         const eventStatuses = [
           EventStatusEnum.SUCCESSFUL,
           EventStatusEnum.FAILED,
@@ -108,7 +108,9 @@ describe("JoinGroupHandler", () => {
           privateEvent.eventStatus = eventStatus;
           privateEvent.eventData = {};
 
-          joinGroupHandler.handlePrivateEvent(privateEvent);
+          expect(() =>
+            joinGroupHandler.handlePrivateEvent(privateEvent),
+          ).toThrowError();
 
           expect(userService.currentGroupId).toBe(null);
           expect(userService.currentMemberId).toBe(null);
@@ -171,22 +173,17 @@ describe("JoinGroupHandler", () => {
     });
 
     describe("invalid event data", () => {
-      it("should not take any action if the event data is invalid", () => {
-        const eventStatuses = [
-          EventStatusEnum.SUCCESSFUL,
-          EventStatusEnum.FAILED,
-        ];
+      it("should not take any action and throw an error if the event data is invalid", () => {
+        publicEvent.eventStatus = EventStatusEnum.SUCCESSFUL;
+        publicEvent.eventData = {};
 
-        for (const eventStatus of eventStatuses) {
-          privateEvent.eventStatus = eventStatus;
-          privateEvent.eventData = {};
+        expect(() =>
+          joinGroupHandler.handlePublicEvent(publicEvent),
+        ).toThrowError();
 
-          joinGroupHandler.handlePublicEvent(privateEvent);
-
-          expect(userService.currentGroupId).toBe(1);
-          expect(userService.currentMemberId).toBe(1);
-          expect(notificationService.showMessage).not.toHaveBeenCalled();
-        }
+        expect(userService.currentGroupId).toBe(1);
+        expect(userService.currentMemberId).toBe(1);
+        expect(notificationService.showMessage).not.toHaveBeenCalled();
       });
     });
   });

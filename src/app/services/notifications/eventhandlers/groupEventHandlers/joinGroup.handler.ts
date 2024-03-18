@@ -1,8 +1,8 @@
 import { UserService } from "../../../user/user.service";
 import { NotificationService } from "../../notification.service";
 import { EventHandler } from "../eventHandler";
-import { PublicEventModel } from "../../../../model/publicEvent.model";
-import { PrivateEventModel } from "../../../../model/privateEvent.model";
+import { PublicEventModel } from "../../../../model/events/publicEvent.model";
+import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
 import { MemberModel } from "../../../../model/member.model";
 import { Injectable } from "@angular/core";
 import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
@@ -11,12 +11,14 @@ import {
   isEventDataErrorModel,
   isEventDataMemberModel,
 } from "../eventDataValidators";
+import { GroupsService } from "../../../../groups/services/groups.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class JoinGroupHandler implements EventHandler {
   constructor(
+    private readonly groupService: GroupsService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
   ) {}
@@ -40,11 +42,9 @@ export class JoinGroupHandler implements EventHandler {
 
   private privateEventSuccess(event: PrivateEventModel): void {
     if (!isEventDataMemberModel(event.eventData)) {
-      console.warn(
-        "Invalid event data for private join group successful event: ",
-        event,
+      throw new Error(
+        "Invalid event data for private join group successful event",
       );
-      return;
     }
 
     const joinedMember: MemberModel = event.eventData as MemberModel;
@@ -53,6 +53,7 @@ export class JoinGroupHandler implements EventHandler {
     if (this.userService.currentGroupId === groupId) return;
 
     this.userService.setUserInGroup(groupId, joinedMember.id);
+    console.log("Current group id: ", this.userService.currentGroupId);
     this.notificationService.showMessage(
       `Successfully joined group as ${joinedMember.username}!`,
     );
@@ -60,11 +61,7 @@ export class JoinGroupHandler implements EventHandler {
 
   private privateEventFailure(event: PrivateEventModel): void {
     if (!isEventDataErrorModel(event.eventData)) {
-      console.warn(
-        "Invalid event data for private join group successful event: ",
-        event,
-      );
-      return;
+      throw new Error("Invalid event data for private join group failed event");
     }
 
     const errorData: ErrorDataModel = event.eventData as ErrorDataModel;
@@ -94,23 +91,32 @@ export class JoinGroupHandler implements EventHandler {
 
   private publicEventSuccess(event: PublicEventModel): void {
     if (!isEventDataMemberModel(event.eventData)) {
-      console.warn(
-        "Invalid event data for public join group successful event: ",
-        event,
+      throw new Error(
+        "Invalid event data for public join group successful event",
       );
-      return;
     }
 
     const joinedMember: MemberModel = event.eventData as MemberModel;
-    const groupId: number = event.aggregateId;
 
+    this.groupService.addMember(joinedMember, event.aggregateId);
+
+    this.showJoinMessageIfInGroupAndNotSelf(
+      event.aggregateId,
+      joinedMember.id,
+      joinedMember.username,
+    );
+  }
+
+  private showJoinMessageIfInGroupAndNotSelf(
+    groupId: number,
+    memberId: number,
+    memberName: string,
+  ) {
     if (
       this.userService.currentGroupId === groupId &&
-      this.userService.currentMemberId !== joinedMember.id
+      this.userService.currentMemberId !== memberId
     ) {
-      this.notificationService.showMessage(
-        `${joinedMember.username} joined the group!`,
-      );
+      this.notificationService.showMessage(`${memberName} joined the group!`);
     }
   }
 }
