@@ -124,6 +124,7 @@ export class AsyncRequestStatusService {
   ): Observable<T> {
     const terminatingStatuses = [
       StateEnum.REQUEST_ACCEPTED,
+      StateEnum.REQUEST_COMPLETED,
       StateEnum.REQUEST_REJECTED,
       StateEnum.REQUEST_TIMEOUT,
     ];

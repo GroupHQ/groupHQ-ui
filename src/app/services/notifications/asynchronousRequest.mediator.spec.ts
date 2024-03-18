@@ -130,14 +130,15 @@ describe("AsynchronousRequestMediator", () => {
 
           // The backend only sends us properties, so use the spread operator to only send back properties, not methods
           const eventResponses$ = cold("----a", { a: { ...responseEvent } });
-          const request$ = cold("--a|", { a: true });
 
-          rsocketRequestFactoryMock.createRequestStream.and.callFake(
-            () => eventResponses$ as any,
+          const request$ = cold("--|");
+
+          rsocketRequestFactoryMock.createRequestStream.and.returnValue(
+            eventResponses$,
           );
 
-          rsocketRequestFactoryMock.createRequestResponse.and.callFake(
-            () => request$ as any,
+          rsocketRequestFactoryMock.createRequestResponse.and.returnValue(
+            request$,
           );
 
           const response$ = service.submitRequestEvent(
@@ -148,7 +149,7 @@ describe("AsynchronousRequestMediator", () => {
 
           expectObservable(response$).toBe("a-b-(c|)", {
             a: StateEnum.REQUESTING,
-            b: StateEnum.REQUEST_ACCEPTED,
+            b: StateEnum.REQUEST_COMPLETED,
             c: StateEnum.EVENT_PROCESSED,
           });
 
@@ -170,14 +171,14 @@ describe("AsynchronousRequestMediator", () => {
           const eventResponseRoute = "response.route";
 
           const eventResponses$ = cold("-");
-          const request$ = cold("--a|", { a: true });
+          const request$ = cold("--|");
 
-          rsocketRequestFactoryMock.createRequestStream.and.callFake(
-            () => eventResponses$ as any,
+          rsocketRequestFactoryMock.createRequestStream.and.returnValue(
+            eventResponses$,
           );
 
-          rsocketRequestFactoryMock.createRequestResponse.and.callFake(
-            () => request$ as any,
+          rsocketRequestFactoryMock.createRequestResponse.and.returnValue(
+            request$,
           );
 
           const response$ = service.submitRequestEvent(
@@ -188,7 +189,7 @@ describe("AsynchronousRequestMediator", () => {
 
           expectObservable(response$).toBe("a-b- 6996ms (c|)", {
             a: StateEnum.REQUESTING,
-            b: StateEnum.REQUEST_ACCEPTED,
+            b: StateEnum.REQUEST_COMPLETED,
             c: StateEnum.EVENT_PROCESSING_TIMEOUT,
           });
         });
@@ -206,12 +207,12 @@ describe("AsynchronousRequestMediator", () => {
           const eventResponses$ = cold("-");
           const request$ = cold("--#");
 
-          rsocketRequestFactoryMock.createRequestStream.and.callFake(
-            () => eventResponses$ as any,
+          rsocketRequestFactoryMock.createRequestStream.and.returnValue(
+            eventResponses$,
           );
 
-          rsocketRequestFactoryMock.createRequestResponse.and.callFake(
-            () => request$ as any,
+          rsocketRequestFactoryMock.createRequestResponse.and.returnValue(
+            request$,
           );
 
           const response$ = service.submitRequestEvent(
@@ -243,12 +244,12 @@ describe("AsynchronousRequestMediator", () => {
           const eventResponses$ = cold("-");
           const request$ = cold("-");
 
-          rsocketRequestFactoryMock.createRequestStream.and.callFake(
-            () => eventResponses$ as any,
+          rsocketRequestFactoryMock.createRequestStream.and.returnValue(
+            eventResponses$,
           );
 
-          rsocketRequestFactoryMock.createRequestResponse.and.callFake(
-            () => request$ as any,
+          rsocketRequestFactoryMock.createRequestResponse.and.returnValue(
+            request$,
           );
 
           const response$ = service.submitRequestEvent(
@@ -281,14 +282,14 @@ describe("AsynchronousRequestMediator", () => {
 
           // The backend only sends us properties, so use the spread operator to only send back properties, not methods
           const eventResponses$ = cold("----a", { a: { ...responseEvent } });
-          const request$ = cold("-", { a: true });
+          const request$ = cold("-");
 
-          rsocketRequestFactoryMock.createRequestStream.and.callFake(
-            () => eventResponses$ as any,
+          rsocketRequestFactoryMock.createRequestStream.and.returnValue(
+            eventResponses$,
           );
 
-          rsocketRequestFactoryMock.createRequestResponse.and.callFake(
-            () => request$ as any,
+          rsocketRequestFactoryMock.createRequestResponse.and.returnValue(
+            request$,
           );
 
           const response$ = service.submitRequestEvent(
