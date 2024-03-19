@@ -32,14 +32,6 @@
       </mat-error>
     </mat-form-field>
 
-    @if (!this.isPrivateUpdateStreamReady) {
-    <div data-test="stream-error">Error receiving messages from the server</div>
-    } @else if (errorJoiningGroup) {
-    <div data-test="server-unavailable-error">
-      Error joining group. Please try again
-    </div>
-    }
-
     <div
       appMedia
       app-media-base-class="group-actions"
@@ -55,25 +47,27 @@
       >
         Close
       </button>
-      @if (!userService.currentGroupId) { @if (loading) {
-      <div class="dialog-actions">
-        <mat-progress-bar
-          mode="buffer"
-          data-test="loading-progress-bar"
-        ></mat-progress-bar>
-      </div>
-      } @else {
-      <button
-        class="dialog-actions"
-        type="submit"
-        [disabled]="nameField.invalid || loading"
-        mat-raised-button
-        color="primary"
-        data-test="join-group-button"
-      >
-        Join Group
-      </button>
-      } }
+      @if (!userService.currentGroupId) {
+        @if (loading) {
+          <div class="dialog-actions">
+            <mat-progress-bar
+              mode="buffer"
+              data-test="loading-progress-bar"
+            ></mat-progress-bar>
+          </div>
+        } @else {
+          <button
+            class="dialog-actions"
+            type="submit"
+            [disabled]="nameField.invalid || loading"
+            mat-raised-button
+            color="primary"
+            data-test="join-group-button"
+          >
+            Join Group
+          </button>
+        }
+      }
     </div>
   </form>
 </div>

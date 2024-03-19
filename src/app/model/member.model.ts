@@ -1,5 +1,5 @@
 import { MemberStatusEnum } from "./enums/memberStatus.enum";
-import { EventDataModel } from "./eventDataModel";
+import { EventDataModel } from "./events/eventDataModel";
 
 export class MemberModel implements EventDataModel {
   constructor(

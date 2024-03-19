@@ -1,198 +1,315 @@
+import { GroupManagerService } from "./groupManager.service";
 import { TestBed } from "@angular/core/testing";
+import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
+import { GroupSortingService } from "./groupSorting.service";
+import { GroupSortEnum } from "../../model/enums/groupSort.enum";
+import { EventStreamService } from "../../services/notifications/eventStream.service";
+import { StateUpdateService } from "./stateUpdate.service";
+import { StateEnum } from "../../services/state/StateEnum";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { GroupsService } from "./groups.service";
+import { EMPTY, of } from "rxjs";
+import { FlipService } from "../../services/animation/flip.service";
+import { QueryList } from "@angular/core";
+import { PublicEventModel } from "../../model/events/publicEvent.model";
+import { EventTypeEnum } from "../../model/enums/eventType.enum";
 import { GroupModel } from "../../model/group.model";
 import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
-import { GroupManagerService, GroupUpdate } from "./groupManager.service";
-import { GroupsService } from "./groups.service";
-import { PublicEventModel } from "../../model/publicEvent.model";
-import { EventTypeEnum } from "../../model/enums/eventType.enum";
+import { EventStatusEnum } from "../../model/enums/eventStatus.enum";
 
 describe("GroupManagerService", () => {
   let service: GroupManagerService;
-  let groups: GroupModel[] = [];
-  const date = new Date(99, 0, 1, 0, 0, 0);
-  const groupDates = [
-    new Date(date.getTime() - 3000).toString(),
-    new Date(date.getTime() - 2000).toString(),
-    new Date(date.getTime() - 1000).toString(),
-  ];
+  let eventStreamServiceSpy: jasmine.SpyObj<EventStreamService>;
+  let groupService: GroupsService;
+  let groupStateService: StateUpdateService;
+  let flipService: FlipService;
+  let testScheduler: TestScheduler;
 
   beforeEach(() => {
+    eventStreamServiceSpy = jasmine.createSpyObj("EventStreamService", [
+      "stream",
+      "streamStatus",
+      "retryTime",
+    ]);
+
     TestBed.configureTestingModule({
-      providers: [GroupManagerService, GroupsService],
+      imports: [NoopAnimationsModule],
+      providers: [
+        GroupManagerService,
+        {
+          provide: EventStreamService,
+          useValue: eventStreamServiceSpy,
+        },
+      ],
     });
+
     service = TestBed.inject(GroupManagerService);
 
-    groups = [
-      {
-        id: 1,
+    groupService = TestBed.inject(GroupsService);
+    groupStateService = TestBed.inject(StateUpdateService);
+    flipService = TestBed.inject(FlipService);
+
+    testScheduler = new TestScheduler((actual, expected) => {
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("exposed members", () => {
+    it("exposes observable status updates from the state service", () => {
+      expect(service.groupState$).toEqual(groupStateService.requestState$);
+    });
+
+    it("exposes the current status from the state service", () => {
+      expect(service.groupState).toEqual(groupStateService.requestState);
+    });
+
+    it("exposes the current component state observable from the state service", () => {
+      expect(service.componentState$).toEqual(
+        groupStateService.componentState$,
+      );
+    });
+
+    it("exposes the current component state from the state service", () => {
+      expect(service.componentState).toEqual(groupStateService.componentState);
+    });
+
+    it("exposes the current group route", () => {
+      eventStreamServiceSpy.stream.and.returnValue(EMPTY);
+      eventStreamServiceSpy.streamStatus.and.returnValue(EMPTY);
+
+      service.subscribeToGroupsStream("testRoute");
+
+      expect(service.currentGroupRoute).toEqual("testRoute");
+    });
+
+    it("exposes the current groups observable from group service", () => {
+      expect(service.groups$).toEqual(groupService.groups$);
+    });
+
+    it("exposes the current groups from group service", () => {
+      expect(service.groups).toEqual(groupService.groups);
+    });
+  });
+
+  describe("event status updates", () => {
+    it("delegates status updates to group state service", () => {
+      spyOn(groupStateService, "handleNewRequestState").and.callThrough();
+      const statusUpdates = [
+        StateEnum.INITIALIZING,
+        StateEnum.LOADING,
+        StateEnum.REQUESTING,
+        StateEnum.READY,
+      ];
+
+      testScheduler.run(({ cold, flush }) => {
+        const streamStatusUpdates = cold("a - b - c - d", {
+          a: statusUpdates[0],
+          b: statusUpdates[1],
+          c: statusUpdates[2],
+          d: statusUpdates[3],
+        });
+
+        eventStreamServiceSpy.stream.and.returnValue(cold("-"));
+        eventStreamServiceSpy.streamStatus.and.returnValue(streamStatusUpdates);
+
+        service.subscribeToGroupsStream("testRoute");
+
+        flush();
+
+        for (const status of statusUpdates) {
+          expect(groupStateService.handleNewRequestState).toHaveBeenCalledWith(
+            status,
+          );
+        }
+      });
+    });
+  });
+
+  describe("event handling updates", () => {
+    let groupIdCounter = 0;
+
+    function createGroup(status: GroupStatusEnum, id?: number): GroupModel {
+      return {
+        id: id ?? ++groupIdCounter,
         title: "Group 1",
         description: "Group 1 description",
-        status: GroupStatusEnum.ACTIVE,
         maxGroupSize: 10,
-        lastModifiedDate: groupDates[0],
-        lastModifiedBy: "Test User 1",
-        createdDate: groupDates[0],
+        createdDate: new Date().toISOString(),
+        lastModifiedDate: new Date().toISOString(),
         createdBy: "Test User 1",
+        lastModifiedBy: "Test User 1",
         version: 1,
+        status,
         members: [],
-      },
-      {
-        id: 2,
-        title: "Group 2",
-        description: "Group 2 description",
-        status: GroupStatusEnum.ACTIVE,
-        maxGroupSize: 10,
-        lastModifiedDate: groupDates[1],
-        lastModifiedBy: "Test User 2",
-        createdDate: groupDates[1],
-        createdBy: "Test User 2",
-        version: 1,
-        members: [],
-      },
-    ];
-  });
-
-  it("should be created", () => {
-    expect(service).toBeTruthy();
-  });
-
-  describe("#handleUpdates", () => {
-    function assertGroupUpdate(assertions: () => void) {
-      const subscription = service.groupUpdateActions$.subscribe(
-        (groupUpdate: GroupUpdate) => {
-          groupUpdate.updateFunction();
-          assertions();
-          subscription.unsubscribe();
-        },
-      );
+      };
     }
 
-    it("should add a group when a group created event is received", () => {
-      const group: GroupModel = {
-        id: 3,
-        title: "Group 3",
-        description: "Group 3 description",
-        status: GroupStatusEnum.ACTIVE,
-        maxGroupSize: 10,
-        lastModifiedDate: groupDates[2],
-        lastModifiedBy: "Test User 3",
-        createdDate: groupDates[2],
-        createdBy: "Test User 3",
-        version: 1,
-        members: [],
+    function createEvent(
+      eventType: EventTypeEnum,
+      eventStatus: EventStatusEnum,
+      eventData: any,
+      eventAggregateId?: number,
+    ): Partial<PublicEventModel> {
+      return {
+        eventType,
+        eventStatus,
+        eventData,
+        aggregateId: eventAggregateId ?? 0,
       };
-      const event = {
-        eventType: EventTypeEnum.GROUP_CREATED,
-        aggregateId: group.id,
-        eventData: JSON.stringify(group),
-      } as PublicEventModel;
+    }
 
-      assertGroupUpdate(() =>
-        expect(service.groups.getValue()).toContain(group),
+    function runEvents(events: Partial<PublicEventModel>[]) {
+      testScheduler.run(({ cold, flush }) => {
+        let marbles = "";
+        const values: { [key: string]: Partial<PublicEventModel> } = {};
+
+        events.forEach((event, index) => {
+          const key = String.fromCharCode(97 + index); // ASCII 'a' starts at 97
+          marbles += key;
+          values[key] = event;
+        });
+
+        console.log("Observable info", marbles, values);
+        const events$ = cold(`(${marbles})`, values);
+
+        eventStreamServiceSpy.stream.and.returnValue(events$);
+        eventStreamServiceSpy.streamStatus.and.returnValue(EMPTY);
+
+        service.subscribeToGroupsStream("testRoute");
+
+        flush();
+      });
+    }
+
+    it("handles events", () => {
+      const group = createGroup(GroupStatusEnum.ACTIVE);
+      const eventA = createEvent(
+        EventTypeEnum.GROUP_CREATED,
+        EventStatusEnum.SUCCESSFUL,
+        group,
       );
 
-      service.handleUpdates(event);
+      runEvents([eventA]);
+
+      spyOn(flipService, "animate").and.callThrough();
+
+      expect(groupService.groups).toContain(group);
+      expect(flipService.animate).toHaveBeenCalledTimes(0);
     });
 
-    it("should remove a group if group status changes from 'ACTIVE'", () => {
-      const group = groups[0];
-
-      const updatedGroup: GroupModel = {
-        id: 1,
-        title: "Group 1",
-        description: "Group 1 description",
-        status: GroupStatusEnum.AUTO_DISBANDED,
-        maxGroupSize: 10,
-        lastModifiedDate: new Date().toString(),
-        lastModifiedBy: "Test User 1",
-        createdDate: groupDates[0],
-        createdBy: "Test User 1",
-        version: 2,
-        members: [],
-      };
-
-      const event = {
-        eventType: EventTypeEnum.GROUP_UPDATED,
-        aggregateId: group.id,
-        eventData: JSON.stringify(updatedGroup),
-      } as PublicEventModel;
-
-      assertGroupUpdate(() =>
-        expect(
-          service.groups.getValue().map((group) => group.id),
-        ).not.toContain(group.id),
+    it("calls flip service to animate the change when the component state is ready (currently after the first event emitted)", () => {
+      const eventA = createEvent(
+        EventTypeEnum.GROUP_CREATED,
+        EventStatusEnum.SUCCESSFUL,
+        createGroup(GroupStatusEnum.ACTIVE),
+      );
+      const eventB = createEvent(
+        EventTypeEnum.GROUP_UPDATED,
+        EventStatusEnum.SUCCESSFUL,
+        createGroup(GroupStatusEnum.ACTIVE),
       );
 
-      service.handleUpdates(event);
+      spyOn(flipService, "animate").and.callThrough();
+      runEvents([eventA, eventB]);
+
+      expect(service.groups.length).toBe(2);
+      expect(flipService.animate).toHaveBeenCalledTimes(1);
     });
 
-    it("should update the group size when a MEMBER_JOINED event is received", () => {
-      const group = groups[0];
-
-      const event = {
-        eventType: EventTypeEnum.MEMBER_JOINED,
-        aggregateId: group.id,
-        eventData: JSON.stringify({}),
-      } as PublicEventModel;
-
-      assertGroupUpdate(() =>
-        expect(service.groups.getValue()[0].members.length).toBe(
-          group.members.length + 1,
-        ),
+    it("calls flip service to animate a group removal when the event type is GROUP_UPDATED and group status is not active", () => {
+      const addEvent = createEvent(
+        EventTypeEnum.GROUP_CREATED,
+        EventStatusEnum.SUCCESSFUL,
+        createGroup(GroupStatusEnum.ACTIVE, 1),
+      );
+      const removeEvent = createEvent(
+        EventTypeEnum.GROUP_UPDATED,
+        EventStatusEnum.SUCCESSFUL,
+        createGroup(GroupStatusEnum.DISBANDED, 1),
+        1,
       );
 
-      service.handleUpdates(event);
+      spyOn(flipService, "animateRemoval").and.callThrough();
+
+      runEvents([addEvent, removeEvent]);
+
+      expect(service.groups.length).toBe(0);
+      expect(flipService.animateRemoval).toHaveBeenCalledTimes(1); // 1 because first event is not animated
     });
 
-    it("should update the group size when a MEMBER_LEFT event is received", () => {
-      const group = groups[0];
-
-      const event = {
-        eventType: EventTypeEnum.MEMBER_LEFT,
-        aggregateId: group.id,
-        eventData: JSON.stringify({}),
-      } as PublicEventModel;
-
-      assertGroupUpdate(() =>
-        expect(service.groups.getValue()[0].members.length).toBe(
-          group.members.length - 1,
-        ),
+    it("performs the change without animation if flip service throws an error", () => {
+      const eventA = createEvent(
+        EventTypeEnum.GROUP_CREATED,
+        EventStatusEnum.SUCCESSFUL,
+        createGroup(GroupStatusEnum.ACTIVE),
+      );
+      const eventB = createEvent(
+        EventTypeEnum.GROUP_UPDATED,
+        EventStatusEnum.SUCCESSFUL,
+        createGroup(GroupStatusEnum.ACTIVE),
       );
 
-      service.handleUpdates(event);
+      spyOn(flipService, "animate").and.throwError("Test error");
+      runEvents([eventA, eventB]);
+
+      expect(service.groups.length).toBe(2);
+      expect(flipService.animate).toThrowError("Test error");
     });
 
-    describe("group integrity", () => {
-      function assertIntegrity(eventType: EventTypeEnum) {
-        const groupsCopy = [...groups];
-        const event = {
-          eventType: eventType,
-          aggregateId: Number.MAX_VALUE,
-          eventData: JSON.stringify({}),
-        } as PublicEventModel;
+    it("performs the change without calling flip service if the component state is not ready", () => {
+      const eventA = createEvent(
+        EventTypeEnum.GROUP_CREATED,
+        EventStatusEnum.SUCCESSFUL,
+        createGroup(GroupStatusEnum.ACTIVE),
+      );
 
-        assertGroupUpdate(() =>
-          expect(service.groups.getValue).toEqual(groupsCopy),
-        );
+      spyOn(flipService, "animate").and.callThrough();
+      runEvents([eventA]);
 
-        service.handleUpdates(event);
-      }
+      expect(service.groups.length).toBe(1);
+      expect(flipService.animate).toHaveBeenCalledTimes(0);
+    });
+  });
 
-      it("does not change groups if group is invalid for GROUP_CREATED event", () => {
-        assertIntegrity(EventTypeEnum.GROUP_CREATED);
-      });
+  describe("stream retry time", () => {
+    it("exposes the current stream retry time if the current route is set", () => {
+      eventStreamServiceSpy.stream.and.returnValue(EMPTY);
+      eventStreamServiceSpy.streamStatus.and.returnValue(EMPTY);
 
-      it("does not change groups if group doesn't exist for GROUP_STATUS_UPDATED event", () => {
-        assertIntegrity(EventTypeEnum.GROUP_UPDATED);
-      });
+      service.subscribeToGroupsStream("testRoute");
 
-      it("does not change groups if group doesn't exist for MEMBER_JOINED event", () => {
-        assertIntegrity(EventTypeEnum.MEMBER_JOINED);
-      });
+      const mockRetryTime = of(1000);
+      eventStreamServiceSpy.retryTime.and.returnValue(mockRetryTime);
+      expect(service.streamRetryTime).toEqual(mockRetryTime);
+    });
 
-      it("does not change groups if group doesn't exist for MEMBER_LEFT event", () => {
-        assertIntegrity(EventTypeEnum.MEMBER_LEFT);
-      });
+    it("should throw an error if the current route is not set", () => {
+      expect(() => service.streamRetryTime).toThrowError();
+    });
+  });
+
+  describe("sort handling updates", () => {
+    it("should sort the groups when the sort type changes", () => {
+      const groupSortingService = TestBed.inject(GroupSortingService);
+
+      spyOn(groupSortingService, "sortGroups").and.callThrough();
+
+      groupSortingService.changeSort = GroupSortEnum.NEWEST;
+
+      expect(groupSortingService.sortGroups).toHaveBeenCalled();
+    });
+  });
+
+  describe("#setCardComponents", () => {
+    it("should set the card components on FlipService", () => {
+      spyOn(flipService, "setComponents").and.callThrough();
+
+      expect(() =>
+        service.setCardComponents(new QueryList<any>(), null as any),
+      ).not.toThrowError();
+      expect(flipService.setComponents).toHaveBeenCalledOnceWith(
+        jasmine.any(QueryList),
+      );
     });
   });
 });

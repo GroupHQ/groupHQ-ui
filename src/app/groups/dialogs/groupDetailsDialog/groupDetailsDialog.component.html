@@ -14,12 +14,12 @@
       <div class="group-extra-info" data-test="group-extra-info">
         <div class="group-detail" data-test="group-creation-time">
           <p class="detail-title" data-test="detail-title">Created</p>
-          <p data-test="detail-content">{{ timeSince(group.createdDate) }}</p>
+          <p data-test="detail-content">{{ group.createdDate | dateAgo }}</p>
         </div>
         <div class="group-detail" data-test="group-last-activity">
           <p class="detail-title" data-test="detail-title">Last Activity</p>
           <p data-test="detail-content">
-            {{ timeSince(group.lastModifiedDate) }}
+            {{ group.lastModifiedDate | dateAgo }}
           </p>
         </div>
         <div class="group-detail" data-test="group-members-count">
@@ -40,32 +40,30 @@
         Members
       </h3>
       @for (member of group.members; track member) {
-      <mat-list-item class="member-list-item" data-test="group-member">
-        <mat-icon
-          matListItemIcon
-          aria-hidden="false"
-          aria-label="Default profile icon"
-          fontSet="material-symbols-outlined"
-          data-test="group-member-profile-icon"
-          >account_circle</mat-icon
-        >
-        <h4 matListItemTitle data-test="member-name">{{ member.username }}</h4>
-        <p matListItemLine data-test="member-joined-date">
-          Joined {{ timeSince(member.joinedDate) }}
-        </p>
-      </mat-list-item>
+        <mat-list-item class="member-list-item" data-test="group-member">
+          <mat-icon
+            matListItemIcon
+            aria-hidden="false"
+            aria-label="Default profile icon"
+            fontSet="material-symbols-outlined"
+            data-test="group-member-profile-icon"
+            >account_circle</mat-icon
+          >
+          <h4 matListItemTitle data-test="member-name">
+            {{ member.username }}
+          </h4>
+          <p matListItemLine data-test="member-joined-date">
+            Joined {{ member.joinedDate | dateAgo }}
+          </p>
+        </mat-list-item>
       } @empty {
-      <mat-list-item class="member-list-item" data-test="no-members-message">
-        <h4 matListItemTitle>No members yet</h4>
-      </mat-list-item>
+        <mat-list-item class="member-list-item" data-test="no-members-message">
+          <h4 matListItemTitle>No members yet</h4>
+        </mat-list-item>
       }
     </mat-list>
   </mat-dialog-content>
-  @if (errorLeavingGroup) {
-  <div data-test="server-unavailable-error">
-    Error joining group. Please try again
-  </div>
-  }
+
   <mat-dialog-actions
     appMedia
     app-media-base-class="group-actions"
@@ -80,49 +78,53 @@
     >
       Close
     </button>
-    @if (!userService.currentGroupId) { @if (loading) {
-    <div class="dialog-actions">
-      <mat-progress-bar mode="buffer" data-test="loading__progress-bar">
-      </mat-progress-bar>
-    </div>
+    @if (!userService.currentGroupId) {
+      @if (loading) {
+        <div class="dialog-actions">
+          <mat-progress-bar mode="buffer" data-test="loading__progress-bar">
+          </mat-progress-bar>
+        </div>
+      } @else {
+        <button
+          class="dialog-actions"
+          mat-raised-button
+          color="primary"
+          [disabled]="group.members.length >= group.maxGroupSize || loading"
+          (click)="openInputNameDialog()"
+          data-test="group-details-action-dialog-button"
+        >
+          {{
+            group.members.length >= group.maxGroupSize
+              ? "Group is full"
+              : "Join Group"
+          }}
+        </button>
+      }
     } @else {
-    <button
-      class="dialog-actions"
-      mat-raised-button
-      color="primary"
-      [disabled]="group.members.length >= group.maxGroupSize || loading"
-      (click)="openInputNameDialog()"
-      data-test="group-details-action-dialog-button"
-    >
-      {{
-        group.members.length >= group.maxGroupSize
-          ? "Group is full"
-          : "Join Group"
-      }}
-    </button>
-    } } @else { @if (loading) {
-    <div class="dialog-actions">
-      <mat-progress-bar
-        mode="buffer"
-        data-test="loading-progress-bar"
-        color="warn"
-      ></mat-progress-bar>
-    </div>
-    } @else {
-    <button
-      class="dialog-actions"
-      mat-raised-button
-      [color]="userService.currentGroupId === group.id ? 'warn' : 'primary'"
-      [disabled]="userService.currentGroupId !== group.id || loading"
-      (click)="leaveGroup()"
-      data-test="group-details-action-dialog-button"
-    >
-      {{
-        userService.currentGroupId !== group.id
-          ? "You're already in another group"
-          : "Leave Group"
-      }}
-    </button>
-    } }
+      @if (loading) {
+        <div class="dialog-actions">
+          <mat-progress-bar
+            mode="buffer"
+            data-test="loading-progress-bar"
+            color="warn"
+          ></mat-progress-bar>
+        </div>
+      } @else {
+        <button
+          class="dialog-actions"
+          mat-raised-button
+          [color]="userService.currentGroupId === group.id ? 'warn' : 'primary'"
+          [disabled]="userService.currentGroupId !== group.id || loading"
+          (click)="leaveGroup()"
+          data-test="group-details-action-dialog-button"
+        >
+          {{
+            userService.currentGroupId !== group.id
+              ? "You're already in another group"
+              : "Leave Group"
+          }}
+        </button>
+      }
+    }
   </mat-dialog-actions>
 </div>

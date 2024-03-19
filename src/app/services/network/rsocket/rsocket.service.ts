@@ -1,52 +1,74 @@
-// Inspired from https://github.com/rsocket/rsocket-js/blob/1.0.x-alpha/packages/rsocket-examples/src/rxjs/RxjsMessagingCompositeMetadataRouteExample.ts#L121
-import { Inject, Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, Subscription, tap } from "rxjs";
-import { AbstractRetryService } from "../../retry/abstractRetry.service";
-import { ConfigService } from "../../../config/config.service";
-import { RETRY_FOREVER } from "../../../app-tokens";
+import { Injectable } from "@angular/core";
+import {
+  BehaviorSubject,
+  catchError,
+  concatWith,
+  defer,
+  EMPTY,
+  Observable,
+  of,
+  Subscription,
+  tap,
+  throwError,
+} from "rxjs";
 import { RsocketConnectorService } from "./rsocketConnector.service";
 import { RSocket } from "rsocket-core";
+import { RetryService } from "../../retry/retry.service";
+import { RSocketRequester } from "rsocket-messaging";
+import { Retryable } from "../../retry/retryable";
+import { v4 as uuidv4 } from "uuid";
+import { RetryForeverStrategy } from "../../retry/strategies/retryForever.strategy";
+import { ConfigService } from "../../../config/config.service";
+import { ConnectorStatesEnum } from "./ConnectorStatesEnum";
+import { RsocketRequestFactory } from "./rsocketRequest.factory";
 
 @Injectable({
   providedIn: "root",
 })
-export class RsocketService {
-  private readonly MINIMUM_DISCONNECT_RETRY_TIME: number = 5;
-  private readonly MAXIMUM_DISCONNECT_RETRY_TIME: number = 10;
+export class RsocketService implements Retryable {
   private readonly _rsocketConnection$ = new BehaviorSubject<RSocket | null>(
     null,
   );
-  private readonly _isConnectionReady$ = new BehaviorSubject<boolean>(false);
-
+  private readonly _connectionState$ = new BehaviorSubject<ConnectorStatesEnum>(
+    ConnectorStatesEnum.INITIALIZING,
+  );
   private connectionSubscription: Subscription | null = null;
+  public readonly requestObservableKey: string = uuidv4();
 
   constructor(
     private readonly rsocketConnectorService: RsocketConnectorService,
-    configService: ConfigService,
-    @Inject(RETRY_FOREVER) private readonly retryService: AbstractRetryService,
-  ) {
-    console.debug("Retries:", this.retryService);
+    private readonly rsocketRequestFactory: RsocketRequestFactory,
+    private readonly retryService: RetryService,
+    private readonly configService: ConfigService,
+  ) {}
 
-    if (configService) {
-      this.MINIMUM_DISCONNECT_RETRY_TIME =
-        configService.rsocketMinimumDisconnectRetryTime ??
-        this.MINIMUM_DISCONNECT_RETRY_TIME;
-      this.MAXIMUM_DISCONNECT_RETRY_TIME =
-        configService.rsocketMaximumDisconnectRetryTime ??
-        this.MAXIMUM_DISCONNECT_RETRY_TIME;
+  public get nextRetryTime$(): Observable<number> | undefined {
+    const nextRetryTime$ = this.retryService.getNextRetryTime$(
+      this.requestObservableKey,
+    );
+
+    if (!nextRetryTime$) {
+      console.warn("No retry time found");
+      return;
     }
+
+    return nextRetryTime$;
   }
 
-  public initializeRsocketConnection(username: string, password = "empty") {
-    this.setupRsocketService(username, password);
+  retryNow(): void {
+    throw new Error("Method not implemented.");
   }
 
-  public get isConnectionReady$() {
-    return this._isConnectionReady$.asObservable();
+  public initializeRsocketConnection() {
+    this.setupRsocketService();
   }
 
-  public get isConnectionReady(): boolean {
-    return this._isConnectionReady$.getValue();
+  public get connectionState$() {
+    return this._connectionState$.asObservable();
+  }
+
+  public get connectionState(): ConnectorStatesEnum {
+    return this._connectionState$.getValue();
   }
 
   public get rsocketConnection$() {
@@ -57,64 +79,87 @@ export class RsocketService {
     return this._rsocketConnection$.getValue();
   }
 
+  public get rsocketRequester(): RSocketRequester | null {
+    const rsocket = this.rsocketConnection;
+
+    if (rsocket) {
+      return RSocketRequester.wrap(rsocket);
+    }
+
+    return null;
+  }
+
+  private onCloseHandler(error: Error | undefined) {
+    console.debug("Connection closed with error:", error);
+    this._connectionState$.next(ConnectorStatesEnum.RETRYING);
+    this._rsocketConnection$.next(null);
+    this.connectionSubscription?.unsubscribe();
+    this.setupRsocketService();
+  }
+
   /**
-   * This method is called in the service's constructor.
-   * If the RSocket connection is terminated for whatever reason, it is considered
-   * to be COMPLETE. In this case, the RSocket's onClose handler calls this method to restart the subscription.
+   * 3 phases:
+   * 1. Attempts connection to server
+   * 2. Once connection is established, attempts to ping the server
+   * 3. If ping is successful, sets connection state to CONNECTED and registers onClose handler
+   * If connection or ping attempts fail, this method will retry based on the provided retry strategy
+   * (currently RetryForeverStrategy). If the connection is closed after these steps, the registered
+   * onClose handler calls #onCloseHandler to attempt to recreate the connection.
    * @private
    */
-  private setupRsocketService(username: string, password = "empty") {
-    const connectWithRetry = () => {
-      return this.retryService
-        .addRetryLogic(
-          this.rsocketConnectorService.connectToServer(username, password),
-        )
-        .pipe(
-          tap((rsocket) => {
-            console.debug("RSocket object:", rsocket);
-            this._rsocketConnection$.next(rsocket);
-            this._isConnectionReady$.next(true);
+  private setupRsocketService() {
+    const connector = this.rsocketConnectorService.connect();
 
-            // Setup onClose handler with delay
-            rsocket.onClose((error) => {
-              console.debug("Connection closed with error:", error);
-              this._isConnectionReady$.next(false);
-              this._rsocketConnection$.next(null);
+    console.debug("Setting up RSocket service");
 
-              // Use setTimeout to delay reconnection attempt
-              setTimeout(() => {
-                console.debug("Attempting to re-establish connection...");
-                this.setupRsocketService(username, password);
-              }, this.calculateRetryIntervalWithJitter());
-            });
-          }),
-          catchError((error) => {
-            throw new Error(
-              "This error should never be reached! You should be retrying indefinitely. Error:",
-              error,
-            );
-          }),
+    const rsocketConnectionObservable = connector.pipe(
+      tap((rsocket) => {
+        console.debug(
+          "Connected to server in RSocketConnectorService",
+          rsocket,
         );
-    };
+        this._rsocketConnection$.next(rsocket);
+      }),
+      concatWith(
+        defer(() => {
+          return this.rsocketRequestFactory
+            .createRequestResponse(this.rsocketRequester!, "groups.ping", null)
+            .pipe(
+              tap((response) => {
+                console.debug("Ping response", response);
+                this.rsocketConnection!.onClose((error) =>
+                  this.onCloseHandler(error),
+                );
+                this._connectionState$.next(ConnectorStatesEnum.CONNECTED);
+              }),
+            );
+        }),
+      ),
+      catchError((error) => {
+        console.error("Error in RSocket Connection", error);
+        this._connectionState$.next(ConnectorStatesEnum.RETRYING);
+        return throwError(() => error); // return error to trigger retry behavior
+      }),
+    );
 
-    // Initiate connection logic
     this.connectionSubscription?.unsubscribe();
-    this.connectionSubscription = connectWithRetry().subscribe();
-  }
 
-  private getMinimumDisconnectRetryTimeMilliseconds() {
-    return this.MINIMUM_DISCONNECT_RETRY_TIME * 1000;
-  }
-
-  private getMaximumDisconnectRetryTimeMilliseconds() {
-    return this.MAXIMUM_DISCONNECT_RETRY_TIME * 1000;
-  }
-
-  private calculateRetryIntervalWithJitter(): number {
-    const min = this.getMinimumDisconnectRetryTimeMilliseconds();
-    const max = this.getMaximumDisconnectRetryTimeMilliseconds();
-    const delay = Math.random() * (max - min) + min;
-    console.debug("Delay is", delay);
-    return delay;
+    this.connectionSubscription = this.retryService
+      .addRetryLogic(
+        rsocketConnectionObservable,
+        this.requestObservableKey,
+        new RetryForeverStrategy(this.configService),
+      )
+      .pipe(
+        catchError((error) => {
+          console.error(
+            "Retries exhausted, giving up establishing RSocket connection",
+            error,
+          );
+          this._connectionState$.next(ConnectorStatesEnum.RETRIES_EXHAUSTED);
+          return of(EMPTY);
+        }),
+      )
+      .subscribe();
   }
 }

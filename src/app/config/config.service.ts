@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@angular/core";
 import { APP_CONFIG, Config } from "./config";
+import { RetryOptions } from "../services/retry/retry.options";
 
 @Injectable({
   providedIn: "root",
@@ -61,5 +62,30 @@ export class ConfigService {
 
   public get apiProtocol() {
     return this.config.api.protocol;
+  }
+
+  public get retryDefaultStrategy(): RetryOptions {
+    return {
+      MAX_ATTEMPTS: this.config.retryServices.retryDefault.MAX_ATTEMPTS ?? 5,
+      MIN_RETRY_INTERVAL:
+        this.config.retryServices.retryDefault.MIN_RETRY_INTERVAL ?? 5,
+      MAX_RETRY_INTERVAL:
+        this.config.retryServices.retryDefault.MAX_RETRY_INTERVAL ?? 5,
+    };
+  }
+
+  public get retryForeverStrategy(): RetryOptions {
+    const MAX_RETRY_ATTEMPTS =
+      this.config.retryServices.retryForeverConstant.MAX_ATTEMPTS == -1
+        ? Number.MAX_VALUE
+        : this.config.retryServices.retryForeverConstant.MAX_ATTEMPTS;
+
+    return {
+      MAX_ATTEMPTS: MAX_RETRY_ATTEMPTS ?? Number.MAX_VALUE,
+      MIN_RETRY_INTERVAL:
+        this.config.retryServices.retryForeverConstant.MIN_RETRY_INTERVAL ?? 5,
+      MAX_RETRY_INTERVAL:
+        this.config.retryServices.retryForeverConstant.MAX_RETRY_INTERVAL ?? 5,
+    };
   }
 }

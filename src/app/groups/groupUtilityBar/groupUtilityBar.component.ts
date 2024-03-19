@@ -1,10 +1,10 @@
 import { Component } from "@angular/core";
-import { GroupsService } from "../services/groups.service";
 import { GroupSortEnum } from "../../model/enums/groupSort.enum";
 import { MatOptionModule } from "@angular/material/core";
 import { MatSelectModule } from "@angular/material/select";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { AppMediaBreakpointDirective } from "../../shared/directives/attr.breakpoint";
+import { GroupSortingService } from "../services/groupSorting.service";
 
 @Component({
   selector: "app-group-utility-bar",
@@ -22,10 +22,10 @@ export class GroupUtilityBarComponent {
   public selected = GroupSortEnum.OLDEST;
   public GroupSortEnum = GroupSortEnum;
 
-  constructor(private groupService: GroupsService) {}
+  constructor(private groupSortingService: GroupSortingService) {}
 
   onSortChange() {
     console.debug("Sort changed to: ", this.selected);
-    this.groupService.changeSort(this.selected);
+    this.groupSortingService.changeSort = this.selected;
   }
 }

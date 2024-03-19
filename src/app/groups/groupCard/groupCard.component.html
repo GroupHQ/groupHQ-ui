@@ -10,13 +10,13 @@
   <div class="title-container">
     <p class="title" data-test="title">{{ group.title }}</p>
     @if (userService.currentGroupId === group.id) {
-    <mat-icon
-      aria-hidden="false"
-      aria-label="Your group icon"
-      fontSet="material-symbols-outlined"
-      data-test="your-group-icon"
-      >person_check</mat-icon
-    >
+      <mat-icon
+        aria-hidden="false"
+        aria-label="Your group icon"
+        fontSet="material-symbols-outlined"
+        data-test="your-group-icon"
+        >person_check</mat-icon
+      >
     }
   </div>
 

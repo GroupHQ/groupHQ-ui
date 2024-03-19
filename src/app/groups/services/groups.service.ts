@@ -1,174 +1,171 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
 import { GroupModel } from "../../model/group.model";
 import { GroupSortEnum } from "../../model/enums/groupSort.enum";
 import { MemberModel } from "../../model/member.model";
 import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
+import { BehaviorSubject } from "rxjs";
+import { GroupSortingService } from "./groupSorting.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class GroupsService {
-  private readonly sortSource = new BehaviorSubject<GroupSortEnum>(
-    GroupSortEnum.OLDEST,
-  );
-  private readonly _currentSort = this.sortSource.asObservable();
+  private readonly _groups$ = new BehaviorSubject<GroupModel[]>([]);
 
-  get currentSort() {
-    return this._currentSort;
+  constructor(private readonly groupSortingService: GroupSortingService) {}
+
+  get groups$() {
+    return this._groups$.asObservable();
   }
 
-  changeSort(sort: GroupSortEnum) {
-    this.sortSource.next(sort);
+  get groups() {
+    return this._groups$.getValue();
   }
 
-  sortGroups(groups: GroupModel[]) {
-    switch (this.sortSource.getValue()) {
-      case GroupSortEnum.OLDEST:
-        console.debug("Sorting by oldest");
-        groups = this.sortGroupsByCreatedDate(groups, true);
-        break;
-      case GroupSortEnum.NEWEST:
-        console.debug("Sorting by newest");
-        groups = this.sortGroupsByCreatedDate(groups, false);
-        break;
-      case GroupSortEnum.MOST_MEMBERS:
-        console.debug("Sorting by most members");
-        groups = this.sortGroupsByCurrentGroupSize(groups, false);
-        break;
-      case GroupSortEnum.LEAST_MEMBERS:
-        console.debug("Sorting by least members");
-        groups = this.sortGroupsByCurrentGroupSize(groups, true);
-        break;
-    }
-
-    return groups;
+  set groups(groups: GroupModel[]) {
+    this._groups$.next(groups);
   }
 
-  private sortGroupsByCreatedDate(groups: GroupModel[], reverse: boolean) {
-    return groups.sort((a, b) => {
-      const aDate = new Date(a.createdDate);
-      const bDate = new Date(b.createdDate);
-      const difference = bDate.getTime() - aDate.getTime();
-      return reverse ? -difference : difference;
-    });
-  }
-
-  private sortGroupsByCurrentGroupSize(groups: GroupModel[], reverse: boolean) {
-    return groups.sort((a, b) => {
-      const order = b.members.length - a.members.length;
-      return reverse ? -order : order;
-    });
-  }
-
-  updateGroup(updatedGroup: GroupModel, groups: GroupModel[]): GroupModel[] {
-    if (updatedGroup.status !== GroupStatusEnum.ACTIVE) {
-      return groups.filter((group) => group.id !== updatedGroup.id);
-    } else {
-      return groups.map((group) =>
-        group.id === updatedGroup.id
-          ? { ...updatedGroup, members: group.members }
-          : group,
-      );
-    }
-  }
-
-  addMember(member: MemberModel, group: GroupModel) {
-    const isMemberInGroup = group.members.find(
-      (memberInGroup) => memberInGroup.id === member.id,
+  /**
+   * Adds or updates a group in the list of groups
+   * Currently, the backend sends the initial group with members, and all subsequent updates without members.
+   * So for any updates, we need to keep the old members and replace the group with the new group.
+   * Member updates are managed separately via the addMember and removeMember methods as a result of
+   * receiving member joined and member left events.
+   *
+   * @param group The new or updated group
+   * @private
+   */
+  public handleGroupUpdate(group: GroupModel): GroupModel[] {
+    const index = this.groups.findIndex(
+      (groupInList) => group.id === groupInList.id,
     );
-    if (isMemberInGroup) {
-      return false;
+
+    if (group.status !== GroupStatusEnum.ACTIVE) {
+      console.debug("Group not active, removing group", group);
+      return this.removeGroup(group.id);
+    } else if (index === -1) {
+      console.debug("Group not found, adding group", group);
+      this.groupSortingService.sortMembers(group.members);
+      this.addGroup(group);
     } else {
-      group.members.push(member);
-      return true;
+      console.debug("Group found, replacing", group);
+      const oldGroup: GroupModel = this.groups[index];
+      this.groups.splice(index, 1, { ...group, members: oldGroup.members });
     }
+
+    return this.groups;
   }
 
-  removeMember(memberId: number, group: GroupModel) {
-    console.debug("Current members: ", group.members);
-    const index = group.members.findIndex((member) => member.id === memberId);
-    if (index !== -1) {
-      console.debug("Removing member from group");
-      group.members.splice(index, 1);
-      return true;
-    }
-    return false;
-  }
-
-  shouldResortAfterSizeChange(): boolean {
-    const sortCriteria = this.sortSource.getValue();
-    return (
-      sortCriteria === GroupSortEnum.MOST_MEMBERS ||
-      sortCriteria === GroupSortEnum.LEAST_MEMBERS
-    );
-  }
-
-  removeGroup(groupId: number, groups: GroupModel[]): boolean {
-    const index = groups.findIndex((group) => group.id === groupId);
-    if (index !== -1) {
-      groups.splice(index, 1);
-      return true;
-    }
-    return false;
-  }
-
-  insertGroup(groupToAdd: GroupModel, groups: GroupModel[]) {
-    const groupExists = groups.find((group) => group.id === groupToAdd.id);
+  private addGroup(groupToAdd: GroupModel) {
+    const groupExists = this.groups.find((group) => group.id === groupToAdd.id);
 
     if (groupExists) {
-      console.debug("Group already exists");
+      console.warn("Group already exists in list, not adding group");
       return false;
     }
 
-    switch (this.sortSource.getValue()) {
+    switch (this.groupSortingService.currentSort) {
       case GroupSortEnum.OLDEST:
-        console.debug("pushing group to end of list");
-        groups.push(groupToAdd);
+        this.groups.push(groupToAdd);
         break;
       case GroupSortEnum.NEWEST:
-        console.debug("unshifting group to start of list");
-        groups.unshift(groupToAdd);
+        this.groups.unshift(groupToAdd);
         break;
-      case GroupSortEnum.LEAST_MEMBERS: {
-        const largerGroupIndex = groups.findIndex(
-          (groupInList) =>
-            groupInList.members.length > groupToAdd.members.length,
-        );
-        console.debug("largerGroupIndex: ", largerGroupIndex);
-        this.insertUsingIndex(largerGroupIndex, groupToAdd, groups);
+      case GroupSortEnum.LEAST_MEMBERS:
+        this.insertGroupByMemberCount(groupToAdd, GroupSortEnum.LEAST_MEMBERS);
         break;
-      }
-      case GroupSortEnum.MOST_MEMBERS: {
-        const smallerGroupIndex = groups.findIndex(
-          (groupInList) =>
-            groupInList.members.length < groupToAdd.members.length,
-        );
-        console.debug("smallerGroupIndex: ", smallerGroupIndex);
-        this.insertUsingIndex(smallerGroupIndex, groupToAdd, groups);
+      case GroupSortEnum.MOST_MEMBERS:
+        this.insertGroupByMemberCount(groupToAdd, GroupSortEnum.MOST_MEMBERS);
         break;
-      }
       default:
-        console.debug("default: pushing group to end of list");
-        groups.push(groupToAdd);
+        console.warn("Unrecognized sort type, adding group to end of list");
+        this.groups.push(groupToAdd);
         break;
     }
+
     return true;
   }
 
-  private insertUsingIndex(
-    index: number,
+  private insertGroupByMemberCount(
     group: GroupModel,
-    groups: GroupModel[],
+    sortType: GroupSortEnum.LEAST_MEMBERS | GroupSortEnum.MOST_MEMBERS,
   ) {
-    if (index === -1) {
-      if (this.sortSource.getValue() === GroupSortEnum.LEAST_MEMBERS) {
-        groups.push(group);
-      } else {
-        groups.unshift(group);
-      }
+    const index =
+      sortType === GroupSortEnum.LEAST_MEMBERS
+        ? this.findFirstGroupWithMoreMembers(group)
+        : this.findFirstGroupWithLessMembers(group);
+
+    if (index != -1) {
+      this.groups.splice(index, 0, group);
     } else {
-      groups.splice(index, 0, group);
+      this.groups.push(group);
     }
+  }
+
+  private findFirstGroupWithMoreMembers(group: GroupModel): number {
+    return this.groups.findIndex(
+      (groupInList) => groupInList.members.length > group.members.length,
+    );
+  }
+
+  private findFirstGroupWithLessMembers(group: GroupModel): number {
+    return this.groups.findIndex(
+      (groupInList) => groupInList.members.length < group.members.length,
+    );
+  }
+
+  private removeGroup(groupId: number) {
+    return (this.groups = this.groups.filter((group) => group.id !== groupId));
+  }
+
+  public addMember(member: MemberModel, groupId: number) {
+    const group = this.findGroup(groupId);
+    if (!group) return;
+
+    const memberIndex = this.findMemberIndex(group, member.id);
+
+    if (memberIndex != -1) {
+      console.warn("Cannot add member: already exists in group");
+      return;
+    }
+
+    group.members.push(member);
+
+    if (this.groupSortingService.shouldSortGroupAfterSizeChange()) {
+      this.groupSortingService.sortGroups(this.groups);
+    }
+  }
+
+  public removeMember(memberId: number, groupId: number) {
+    const group = this.findGroup(groupId);
+    if (!group) return;
+
+    const memberIndex = this.findMemberIndex(group, memberId);
+    if (memberIndex == -1) {
+      console.warn("Cannot remove member: member not found in group");
+      return;
+    }
+
+    group.members.splice(memberIndex, 1);
+
+    if (this.groupSortingService.shouldSortGroupAfterSizeChange()) {
+      this.groupSortingService.sortGroups(this.groups);
+    }
+  }
+
+  private findGroup(groupId: number) {
+    const group = this.groups.find((group) => group.id === groupId);
+
+    if (!group) {
+      console.warn("Cannot find group: Group not found");
+      return null;
+    } else {
+      return group;
+    }
+  }
+
+  private findMemberIndex(group: GroupModel, memberId: number) {
+    return group.members.findIndex((member) => member.id === memberId);
   }
 }

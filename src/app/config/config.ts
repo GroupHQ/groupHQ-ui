@@ -1,4 +1,4 @@
-import { RetryServiceOptions } from "../services/retry/abstractRetry.service";
+import { RetryOptions } from "../services/retry/retry.options";
 import { InjectionToken } from "@angular/core";
 
 export type Config = {
@@ -19,8 +19,8 @@ export type Config = {
     maximumDisconnectRetryTime: number;
   };
   retryServices: {
-    retryDefault: RetryServiceOptions;
-    retryForeverConstant: RetryServiceOptions;
+    retryDefault: RetryOptions;
+    retryForeverConstant: RetryOptions;
   };
   groupBoardComponent: {
     loadingDelaySeconds: number;
