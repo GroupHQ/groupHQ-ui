@@ -9,7 +9,7 @@ export abstract class RequestState<T> {
   ) {}
 
   onRequest(): Observable<T> {
-    console.log("Returning existing events$.");
+    console.debug("Returning existing events$.");
     return this.requestService.getEvents$();
   }
 

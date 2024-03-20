@@ -136,7 +136,7 @@ export class RsocketService implements Retryable {
         }),
       ),
       catchError((error) => {
-        console.error("Error in RSocket Connection", error);
+        console.warn("Error in RSocket Connection", error);
         this._connectionState$.next(ConnectorStatesEnum.RETRYING);
         return throwError(() => error); // return error to trigger retry behavior
       }),
@@ -152,7 +152,7 @@ export class RsocketService implements Retryable {
       )
       .pipe(
         catchError((error) => {
-          console.error(
+          console.warn(
             "Retries exhausted, giving up establishing RSocket connection",
             error,
           );

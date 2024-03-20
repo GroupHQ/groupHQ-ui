@@ -17,6 +17,14 @@ import { RetryData } from "./retry.data";
 import { Injectable } from "@angular/core";
 import { v4 as uuidv4 } from "uuid";
 
+/**
+ * This service provides retry logic for observables based on a given strategy.
+ * The observable will be retried according to the strategy's options.
+ *
+ * This service also provides an observables next retry time in seconds.
+ * To keep track of observables wrapped by this service, a unique key is required.
+ * Observables are automatically disposed of once completed.
+ */
 @Injectable({
   providedIn: "root",
 })
@@ -53,6 +61,7 @@ export class RetryService {
   ): Observable<T> {
     const retryServiceOptions: RetryOptions = retryStrategy.retryServiceOptions;
 
+    // If the observable is already being retried, clean up the old retry data
     if (this.retryDataMap.has(observableKey)) {
       this.cleanupRetryData(observableKey);
     }
@@ -76,7 +85,7 @@ export class RetryService {
       }),
       takeUntil(retryData.stopSignal$),
       finalize(() => {
-        console.log("Retry observable completed");
+        console.debug("Retry observable completed");
         this.cleanupRetryData(observableKey);
       }),
     );
@@ -118,7 +127,7 @@ export class RetryService {
     observableKey: string,
     retryServiceOptions: RetryOptions,
   ): ObservableInput<any> {
-    console.log("Retrying...");
+    console.debug("Retrying...");
 
     const retryData = this.retryDataMap.get(observableKey);
 

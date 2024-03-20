@@ -27,7 +27,7 @@ export class RsocketRequestResponseMediator<
         },
         error: (error: Error) => {
           if (error instanceof TimeoutError) {
-            console.error("Timeout error in RsocketRequestMediator: ", error);
+            console.warn("Timeout error in RsocketRequestMediator: ", error);
             this.nextRequestState(StateEnum.REQUEST_TIMEOUT);
             return;
           } else {

@@ -22,7 +22,6 @@ import { Event } from "../../model/events/event";
  * In this context, asynchronous requests are requests that are sent to a server, with their
  * response expected in an event stream. This service tracks the state of the request through
  * its lifecycle, and provides an observable that can be used to observe the request's status.
- *
  */
 @Injectable({
   providedIn: "root",
@@ -67,7 +66,7 @@ export class AsyncRequestStatusService {
 
   private putSink(eventId: string): boolean {
     if (this._requestStatuses.has(eventId)) {
-      console.error(`Request with id ${eventId} is already being processed`);
+      console.warn(`Request with id ${eventId} is already being processed`);
       return false;
     }
 
@@ -79,6 +78,14 @@ export class AsyncRequestStatusService {
     return true;
   }
 
+  /**
+   * Creates observers to monitor the asynchronous request status and the event stream for the response.
+   * @param eventStream the event stream that the request response will be published to
+   * @param requestStatus$ an observable representing the current status of the request
+   * @param asyncRequestStatusSink a sink that is used to update the current status of the asynchronous request
+   * @param eventId the id of the request event
+   * @private
+   */
   private requestResponseRace<T extends Event>(
     eventStream: Observable<T>,
     requestStatus$: Observable<StateEnum>,
@@ -99,6 +106,13 @@ export class AsyncRequestStatusService {
     return race(requestEvent$, responseEvent$).pipe(timeout(7000));
   }
 
+  /**
+   * Creates an observer that listens to the event stream for a response to the request to return.
+   * @param eventStream the event stream that the request response will be published to
+   * @param eventId the id of the request event
+   * @param asyncRequestStatusSink a sink that is used to update the current status of the asynchronous request
+   * @private
+   */
   private createEventResponseEventObserver<T extends Event>(
     eventStream: Observable<T>,
     eventId: string,
@@ -117,6 +131,16 @@ export class AsyncRequestStatusService {
     );
   }
 
+  /**
+   * Creates an observer that listens to the request status and the response event.
+   * The completion of this observer is incidental. It is mainly meant to throw an error if
+   * the request completes with an error status. This error is then caught by the parent observer,
+   * which can notify the user of the error and complete the original request.
+   * @param requestStatus$ an observable representing the current status of the request
+   * @param responseEvent$ an observable representing the event stream that the request response will be published to
+   * @param asyncRequestStatusSink a sink that is used to update the current status of the asynchronous request
+   * @private
+   */
   private createRequestStatusObserver<T extends Event>(
     requestStatus$: Observable<StateEnum>,
     responseEvent$: Observable<T>,
@@ -152,7 +176,7 @@ export class AsyncRequestStatusService {
 
   private handleRequestError(eventId: string, error: Error) {
     const asyncRequestStatusSink = this._requestStatuses.get(eventId)!;
-    console.error(`Error processing event with id ${eventId}: ${error}`);
+    console.warn(`Error processing event with id ${eventId}: ${error}`);
 
     if (error instanceof TimeoutError) {
       asyncRequestStatusSink.next(StateEnum.EVENT_PROCESSING_TIMEOUT);
@@ -165,7 +189,7 @@ export class AsyncRequestStatusService {
     const asyncRequestStatusSink = this._requestStatuses.get(eventId);
 
     if (!asyncRequestStatusSink) {
-      console.error(`Request with id ${eventId} is not being processed`);
+      console.warn(`Request with id ${eventId} is not being processed`);
       return;
     }
 
