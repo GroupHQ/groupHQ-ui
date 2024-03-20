@@ -1,73 +1,79 @@
 <div class="group-input-name-dialog" data-test="group-input-name-dialog">
-  <p
-    appMedia
-    app-media-base-class="group-title"
-    mat-dialog-title
-    data-test="group-title"
-  >
-    What's your name?
-  </p>
-  <div class="quote-block" data-test="name-quote-block">
-    <p class="quote">"Words have meaning, and names have power."</p>
-    <p class="author">- Anonymous</p>
-  </div>
-  <form
-    [formGroup]="myFormGroup"
-    (ngSubmit)="joinGroup()"
-    data-test="join-group-form"
-  >
-    <mat-form-field class="input-name-field" data-test="member-name-form-field">
-      <mat-label data-test="member-name-label">Enter a name</mat-label>
-      <input
-        name="name"
-        [formControl]="nameField"
-        required
-        matInput
-        placeholder="Ex. Brooks Foley"
-        data-test="member-name-input"
-        autocomplete="nickname"
-      />
-      <mat-error data-test="member-name-required-error"
-        >Name is <strong>required</strong>
-      </mat-error>
-    </mat-form-field>
-
-    <div
+  <mat-dialog-content>
+    <p
       appMedia
-      app-media-base-class="group-actions"
-      data-test="group-actions"
+      app-media-base-class="group-title"
+      mat-dialog-title
+      data-test="group-title"
+      id="input-name-prompt"
     >
-      <button
-        class="dialog-actions"
-        mat-raised-button
-        color="accent"
-        mat-dialog-close
-        (click)="onNoClick()"
-        data-test="close-dialog-button"
-      >
-        Close
-      </button>
-      @if (!userService.currentGroupId) {
-        @if (loading) {
-          <div class="dialog-actions">
-            <mat-progress-bar
-              mode="buffer"
-              data-test="loading-progress-bar"
-            ></mat-progress-bar>
-          </div>
-        } @else {
-          <button
-            class="dialog-actions"
-            type="submit"
-            [disabled]="nameField.invalid || loading"
-            mat-raised-button
-            color="primary"
-            data-test="join-group-button"
-          >
-            Join Group
-          </button>
-        }
-      }
+      What's your name?
+    </p>
+    <div class="quote-block" data-test="name-quote-block">
+      <p class="quote">"Words have meaning, and names have power."</p>
+      <p class="author">- Anonymous</p>
     </div>
-  </form>
+    <form
+      [formGroup]="myFormGroup"
+      (ngSubmit)="joinGroup()"
+      data-test="join-group-form"
+    >
+      <mat-form-field
+        class="input-name-field"
+        data-test="member-name-form-field"
+      >
+        <mat-label data-test="member-name-label">Enter a name</mat-label>
+        <input
+          name="name"
+          [formControl]="nameField"
+          required
+          matInput
+          placeholder="Ex. Brooks Foley"
+          data-test="member-name-input"
+          autocomplete="nickname"
+        />
+        <mat-error data-test="member-name-required-error"
+          >Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <div
+        appMedia
+        app-media-base-class="group-actions"
+        data-test="group-actions"
+      >
+        <button
+          class="dialog-actions"
+          mat-raised-button
+          color="accent"
+          mat-dialog-close
+          (click)="onNoClick()"
+          data-test="close-dialog-button"
+        >
+          Close
+        </button>
+        @if (!userService.currentGroupId) {
+          @if (loading) {
+            <div class="dialog-actions">
+              <mat-progress-bar
+                mode="buffer"
+                data-test="loading-progress-bar"
+              ></mat-progress-bar>
+            </div>
+          } @else {
+            <button
+              class="dialog-actions"
+              type="submit"
+              [disabled]="nameField.invalid || loading"
+              mat-raised-button
+              color="primary"
+              data-test="join-group-button"
+            >
+              Join Group
+            </button>
+          }
+        }
+      </div>
+    </form>
+  </mat-dialog-content>
 </div>

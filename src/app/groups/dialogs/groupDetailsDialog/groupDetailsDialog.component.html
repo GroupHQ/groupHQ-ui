@@ -1,14 +1,23 @@
 <div
+  id="group-details-dialog"
   appMedia
   app-media-base-class="group-details-dialog"
   data-test="group-details-dialog"
 >
   <mat-dialog-content class="group-details">
-    <p class="group-title" data-test="group-title">
+    <p
+      id="group-details-dialog-title"
+      class="group-title"
+      data-test="group-title"
+    >
       {{ group.title }}
     </p>
     <div class="group-info" data-test="group-info">
-      <p class="group-description" data-test="group-description">
+      <p
+        id="group-details-dialog-description"
+        class="group-description"
+        data-test="group-description"
+      >
         {{ group.description }}
       </p>
       <div class="group-extra-info" data-test="group-extra-info">
@@ -24,14 +33,18 @@
         </div>
         <div class="group-detail" data-test="group-members-count">
           <p class="detail-title" data-test="detail-title">Members</p>
-          <p data-test="detail-content">
+          <p aria-live="polite" data-test="detail-content">
             {{ group.members ? group.members.length : 0 }} /
             {{ group.maxGroupSize }}
           </p>
         </div>
       </div>
     </div>
-    <mat-list class="group-member-list" data-test="group-member-list">
+    <mat-list
+      aria-live="assertive"
+      class="group-member-list"
+      data-test="group-member-list"
+    >
       <h3
         matSubheader
         class="member-list-subheader"
@@ -43,8 +56,7 @@
         <mat-list-item class="member-list-item" data-test="group-member">
           <mat-icon
             matListItemIcon
-            aria-hidden="false"
-            aria-label="Default profile icon"
+            aria-hidden="true"
             fontSet="material-symbols-outlined"
             data-test="group-member-profile-icon"
             >account_circle</mat-icon
@@ -70,6 +82,7 @@
     data-test="group-actions"
   >
     <button
+      id="group-details-close-dialog-button"
       class="dialog-actions"
       mat-raised-button
       color="accent"
@@ -91,6 +104,7 @@
           color="primary"
           [disabled]="group.members.length >= group.maxGroupSize || loading"
           (click)="openInputNameDialog()"
+          aria-live="polite"
           data-test="group-details-action-dialog-button"
         >
           {{
@@ -116,6 +130,7 @@
           [color]="userService.currentGroupId === group.id ? 'warn' : 'primary'"
           [disabled]="userService.currentGroupId !== group.id || loading"
           (click)="leaveGroup()"
+          aria-live="polite"
           data-test="group-details-action-dialog-button"
         >
           {{

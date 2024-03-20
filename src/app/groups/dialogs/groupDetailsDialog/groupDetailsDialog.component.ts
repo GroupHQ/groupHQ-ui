@@ -80,7 +80,16 @@ export class GroupDetailsDialogComponent implements OnInit, OnDestroy {
   openInputNameDialog(): void {
     this.inputNameDialogRef = this.dialog.open(GroupInputNameDialogComponent, {
       data: this.group,
+      ariaLabelledBy: "input-name-prompt",
     });
+
+    const closeSubscription = this.inputNameDialogRef
+      .afterClosed()
+      .subscribe(() => {
+        this.refocusCloseButton();
+      });
+
+    this.subscriptions.add(closeSubscription);
   }
 
   leaveGroup(): void {
@@ -102,11 +111,18 @@ export class GroupDetailsDialogComponent implements OnInit, OnDestroy {
     this.asyncRequestMediator
       .submitRequestEvent(leaveRequest, "groups.leave", "groups.updates.user")
       .subscribe({
-        complete: () => (this.loading = false),
+        complete: () => {
+          this.loading = false;
+          this.refocusCloseButton();
+        },
       });
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  private refocusCloseButton(): void {
+    document.getElementById("group-details-close-dialog-button")?.focus();
   }
 }

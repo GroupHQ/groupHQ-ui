@@ -1,12 +1,14 @@
 @use "../../custom-theme-colors" as theme;
 
 h1,
+h2,
 p {
   color: white;
 }
 
 a {
   color: white;
+  text-decoration: none;
 
   &:hover {
     color: theme.$grouphq-ui-about;
@@ -28,7 +30,6 @@ a {
     position: relative;
 
     .sources-page-title {
-      margin: 64px 240px;
       color: #fff;
       text-align: left;
       position: absolute;
@@ -37,6 +38,7 @@ a {
       font-style: normal;
       font-weight: 700;
       line-height: normal;
+      margin: 64px 240px;
 
       &.sources-page-title-tablet {
         margin: 64px 32px;
@@ -60,21 +62,35 @@ a {
   }
 
   .sources-page-content-container {
+    > h2 {
+      font-size: 32px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      margin: 0;
+    }
+
     background: #3e3426;
     flex-grow: 1;
-    padding: 64px 240px;
+    padding: 32px 240px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 32px;
+    gap: 16px;
     text-align: left;
+    font-size: 20px;
 
     &.sources-page-content-container-tablet {
-      padding: 64px 32px;
+      padding: 32px;
     }
 
     &.sources-page-content-container-handset {
-      padding: 64px 16px;
+      > h2 {
+        font-size: 20px;
+      }
+
+      font-size: 16px;
+      padding: 16px;
     }
 
     div {

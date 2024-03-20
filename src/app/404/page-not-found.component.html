@@ -1,5 +1,24 @@
-<div class="page-not-found-container" data-test="about-container">
-  <div class="page-not-found-title-container">
-    <p appMedia app-media-base-class="page-not-found-title">Page not found!</p>
-  </div>
+<div
+  class="page-not-found-container"
+  data-test="page-not-found-container"
+  role="main"
+>
+  <header class="page-not-found-title-container">
+    <h1
+      appMedia
+      app-media-base-class="page-not-found-title"
+      id="pageNotFoundTitle"
+      aria-describedby="page-not-found-message"
+    >
+      Page not found!
+    </h1>
+  </header>
+  <section
+    id="page-not-found-message"
+    appMedia
+    app-media-base-class="page-not-found-message"
+    aria-labelledby="pageNotFoundTitle"
+  >
+    <p>We're sorry, but the page you were looking for doesn't exist.</p>
+  </section>
 </div>

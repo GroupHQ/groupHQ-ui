@@ -4,6 +4,7 @@ import {
   MatDialogTitle,
   MatDialogClose,
   MAT_DIALOG_DATA,
+  MatDialogContent,
 } from "@angular/material/dialog";
 import {
   FormControl,
@@ -38,6 +39,7 @@ import { GroupJoinRequestEvent } from "../../../model/requestevent/GroupJoinRequ
     MatInputModule,
     MatButtonModule,
     MatProgressBarModule,
+    MatDialogContent,
   ],
 })
 export class GroupInputNameDialogComponent {

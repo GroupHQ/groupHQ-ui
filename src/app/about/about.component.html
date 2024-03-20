@@ -1,51 +1,126 @@
-<div class="about-page-container" data-test="about-container">
+<div
+  class="about-page-container"
+  data-test="about-container"
+  role="main"
+  aria-labelledby="aboutPageTitle"
+>
   <div class="about-page-title-container">
-    <p appMedia app-media-base-class="about-page-title">
-      A service providing ephemeral groups for (fake) activities happening
+    <h1 id="aboutPageTitle" appMedia app-media-base-class="about-page-title">
+      A service providing ephemeral groups for imaginary activities happening
       <em>now</em>.
+    </h1>
+  </div>
+  <section
+    aria-labelledby="groupHQDescriptionHeader"
+    aria-describedby="groupHQDescriptionContent"
+    appMedia
+    app-media-base-class="about-page-content-container"
+  >
+    <h2 id="groupHQDescriptionHeader">What is GroupHQ?</h2>
+    <p id="groupHQDescriptionContent">
+      GroupHQ is an application created as a training exercise for building and
+      deploying
+      <a
+        href="https://en.wikipedia.org/wiki/Reactive_Streams"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Reactive Streams (opens in a new tab)"
+      >
+        reactive<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >,
+      <a
+        href="https://aws.amazon.com/what-is/cloud-native/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Cloud-native applications (opens in a new tab)"
+      >
+        cloud-native applications<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >
+      through the use of
+      <a
+        href="https://www.ibm.com/topics/java-spring-boot"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Java Spring Boot (opens in a new tab)"
+      >
+        Spring Boot<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >,
+      <a
+        href="https://projectreactor.io/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Project Reactor (opens in a new tab)"
+        >Project Reactor<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >,
+      <a
+        href="https://www.docker.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Docker (opens in a new tab)"
+        >Docker<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >, and
+      <a
+        href="https://kubernetes.io/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Kubernetes (opens in a new tab)"
+        >Kubernetes<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >, with an emphasis on cloud-native principles, particularly based on the
+      <a
+        href="https://developer.ibm.com/articles/15-factor-applications/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="15-factor app methodology (opens in a new tab)"
+        >15-factor app methodology.<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >
     </p>
-  </div>
-  <div appMedia app-media-base-class="about-page-content-container">
-    <div>
-      <h1>What is GroupHQ?</h1>
-      <p>
-        GroupHQ is an application created as a training exercise for building
-        and deploying
-        <a href="https://en.wikipedia.org/wiki/Reactive_Streams" target="_blank"
-          >reactive</a
-        >,
-        <a href="https://aws.amazon.com/what-is/cloud-native/" target="_blank"
-          >cloud-native applications</a
-        >
-        through the use of
-        <a href="https://www.ibm.com/topics/java-spring-boot" target="_blank"
-          >Spring Boot</a
-        >,
-        <a href="https://projectreactor.io/" target="_blank">Project Reactor</a
-        >, <a href="https://www.docker.com/" target="_blank">Docker</a>, and
-        <a href="https://kubernetes.io/" target="_blank">Kubernetes</a>, with an
-        emphasis on cloud-native principles, particularly based on the
-        <a
-          href="https://developer.ibm.com/articles/15-factor-applications/"
-          target="_blank"
-          >15-factor app methodology</a
-        >.
-      </p>
-    </div>
-    <div>
-      <h1>What can I do here?</h1>
-      <p>
-        In the GroupHQ Demo, you can join and leave dynamically generated
-        groups. These groups are ephemeral, meaning that they’ll expire after a
-        set amount of time. They're also not real or user-made, but instead
-        generated through the
-        <a href="https://openai.com/blog/openai-api" target="_blank"
-          >OpenAI API</a
-        >. So unfortunately, you won't be able to attend Goku's training
-        session. If you want to check out a real-world example of an ephemeral
-        group service, check out the inspiration for this project:
-        <a href="https://toonhq.org/" target="_blank">ToonHQ</a>!
-      </p>
-    </div>
-  </div>
+  </section>
+  <section
+    aria-labelledby="whatYouCanDoHeader"
+    aria-describedby="whatYouCanDo"
+    appMedia
+    app-media-base-class="about-page-content-container"
+  >
+    <h2 id="whatYouCanDoHeader">What can I do here?</h2>
+    <p id="whatYouCanDo">
+      In the GroupHQ Demo, you can join and leave dynamically generated groups.
+      These groups are ephemeral, meaning that they’ll expire after a set amount
+      of time. They're also not real or user-made, but instead generated through
+      the
+      <a
+        href="https://openai.com/blog/openai-api"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="OpenAI API (opens in a new tab)"
+        >OpenAI API<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >. So unfortunately, you won't be able to attend Goku's latest training
+      session. If you want to check out a real-world example of an ephemeral
+      group service, check out the inspiration for this project:
+      <a
+        href="https://toonhq.org/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="ToonHQ (opens in a new tab)"
+        >ToonHQ!<mat-icon fontSet="material-symbols-outlined"
+          >arrow_outward</mat-icon
+        ></a
+      >
+    </p>
+  </section>
 </div>

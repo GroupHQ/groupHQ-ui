@@ -81,6 +81,11 @@
       line-height: 36px; /* 257.143% */
       letter-spacing: 1.25px;
       text-transform: uppercase;
+
+      &:hover,
+      &:focus {
+        box-shadow: 0 0 4px 4px rgba(147 150 162 / 82%);
+      }
     }
 
     &.group-actions-handset {
