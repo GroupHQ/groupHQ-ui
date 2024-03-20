@@ -1,5 +1,3 @@
-_This README is a work in progress. Some steps may be incomplete or missing_
-
 # GroupHQ UI
 
 The GroupHQ UI serves as the front-end for the GroupHQ application, managing user authentication and providing an
