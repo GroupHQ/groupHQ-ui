@@ -1,143 +1,261 @@
-<div class="sources-page-container" data-test="sources-container">
+<div class="sources-page-container" data-test="sources-container" role="main">
   <div class="sources-page-title-container">
-    <p appMedia app-media-base-class="sources-page-title">Sources</p>
+    <h1
+      id="sourcesPageTitle"
+      appMedia
+      app-media-base-class="sources-page-title"
+    >
+      Sources
+    </h1>
   </div>
-  <div appMedia app-media-base-class="sources-page-content-container">
-    <div>
-      <h1>Acknowledgements</h1>
-      <p>Check out these awesome authors and their books!</p>
-      <ul>
-        <li>
-          Laurentiu Spilca, author of
-          <a
-            href="https://www.manning.com/books/spring-start-here?ar=true&lpse=A"
-            target="_blank"
-            >Spring Start Here</a
-          >
-          &
-          <a
-            href="https://www.manning.com/books/spring-security-in-action"
-            target="_blank"
-            >Spring Security in Action</a
-          >
-        </li>
-        <li>
-          Cătălin Tudose, author of
-          <a
-            href="https://www.manning.com/books/junit-in-action-third-edition"
-            target="_blank"
-            >JUnit in Action</a
-          >
-        </li>
-        <li>
-          Neil Madden, author of
-          <a
-            href="https://www.manning.com/books/api-security-in-action"
-            target="_blank"
-            >API Security in Action</a
-          >
-        </li>
-        <li>
-          Thomas Vitale, author of
-          <a
-            href="https://www.manning.com/books/cloud-native-spring-in-action"
-            target="_blank"
-            >Cloud Native Spring in Action</a
-          >
-        </li>
-        <li>
-          Adam Freeman, author of
-          <a
-            href="https://www.manning.com/books/essential-typescript-5-third-edition"
-            target="_blank"
-            >Essential TypeScript 5</a
-          >
-          &
-          <a
-            href="https://www.amazon.com/Pro-Angular-Build-Powerful-Dynamic/dp/1484281756"
-            target="_blank"
-            >Pro Angular</a
-          >
-        </li>
-        <li>
-          David A. Black and Joseph Leo III, authors of
-          <a
-            href="https://www.manning.com/books/the-well-grounded-rubyist-third-edition"
-            target="_blank"
-            >The Well-Grounded Rubyist</a
-          >
-        </li>
-      </ul>
-    </div>
-    <div>
-      <h1>Frontend Sources</h1>
-      <ul>
-        <li>
-          <a
-            href="https://www.figma.com/file/1aiblQciNmPSUcQD27GtHt/GroupHQ-Demo?type=design&node-id=0%3A1&mode=design&t=RvuApHhMdKFzUKfm-1"
-            target="_blank"
-          >
-            Figma Design Files (Mock-ups & Prototyping)</a
-          >
-        </li>
-        <li>
-          <a href="https://github.com/GroupHQ/groupHQ-ui" target="_blank"
-            >GroupHQ User Interface (frontend)</a
-          >
-        </li>
-      </ul>
-    </div>
-    <div>
-      <h1>Backend Sources</h1>
-      <ul>
-        <li>
-          <a href="https://github.com/GroupHQ/group-service" target="_blank"
-            >Group Service</a
-          >
-        </li>
-        <li>
-          <a href="https://github.com/GroupHQ/group-sync" target="_blank"
-            >Group Sync</a
-          >
-        </li>
-        <li>
-          <a href="https://github.com/GroupHQ/edge-service" target="_blank"
-            >Edge Service (i.e. API Gateway)</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://github.com/GroupHQ/groupHQ-deployment"
-            target="_blank"
-            >GroupHQ Deployment Manifests Repository</a
-          >
-        </li>
-      </ul>
-    </div>
-    <div>
-      <h1>Continuous Testing Sources</h1>
-      <ul>
-        <li>
-          <a
-            href="https://github.com/GroupHQ/grouphq-continuous-testing-proxy-server"
-            target="_blank"
-            >Continuous Testing Proxy Server</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://github.com/GroupHQ/grouphq-continuous-testing-test-suite"
-            target="_blank"
-            >Continuous Testing Test Suite (hosts user-automated acceptance
-            tests)</a
-          >
-        </li>
-        <li>
-          <a href="https://e5c7-70-107-109-25.ngrok-free.app/" target="_blank"
-            >BuildWise (Continuous Testing Server)</a
-          >
-        </li>
-      </ul>
-    </div>
-  </div>
+  <section
+    aria-labelledby="acknowledgements"
+    appMedia
+    app-media-base-class="sources-page-content-container"
+  >
+    <h2 id="acknowledgements">Acknowledgements</h2>
+    <p>Check out these awesome authors and their books!</p>
+    <ul>
+      <li>
+        Laurentiu Spilca, author of
+        <a
+          href="https://www.manning.com/books/spring-start-here?ar=true&lpse=A"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Spring Start Here - opens in a new tab"
+          >Spring Start Here<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+        &amp;
+        <a
+          href="https://www.manning.com/books/spring-security-in-action"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Spring Security in Action - opens in a new tab"
+          >Spring Security in Action<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        Cătălin Tudose, author of
+        <a
+          href="https://www.manning.com/books/junit-in-action-third-edition"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="JUnit in Action - opens in a new tab"
+          >JUnit in Action<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        Neil Madden, author of
+        <a
+          href="https://www.manning.com/books/api-security-in-action"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="API Security in Action - opens in a new tab"
+          >API Security in Action<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        Thomas Vitale, author of
+        <a
+          href="https://www.manning.com/books/cloud-native-spring-in-action"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Cloud Native Spring in Action - opens in a new tab"
+          >Cloud Native Spring in Action<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        Adam Freeman, author of
+        <a
+          href="https://www.manning.com/books/essential-typescript-5-third-edition"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Essential TypeScript 5 - opens in a new tab"
+          >Essential TypeScript 5<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+        &amp;
+        <a
+          href="https://www.amazon.com/Pro-Angular-Build-Powerful-Dynamic/dp/1484281756"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Pro Angular - opens in a new tab"
+          >Pro Angular<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        David A. Black and Joseph Leo III, authors of
+        <a
+          href="https://www.manning.com/books/the-well-grounded-rubyist-third-edition"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="The Well-Grounded Rubyist - opens in a new tab"
+          >The Well-Grounded Rubyist<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        Joshua Block, author of
+        <a
+          href="https://www.amazon.com/Effective-Java-Joshua-Bloch/dp/0134685997"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Effective Java - opens in a new tab"
+          >Effective Java<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+    </ul>
+  </section>
+  <section
+    aria-labelledby="frontendSources"
+    appMedia
+    app-media-base-class="sources-page-content-container"
+  >
+    <h2 id="frontendSources">Frontend Sources</h2>
+    <ul>
+      <li>
+        <a
+          href="https://www.figma.com/file/1aiblQciNmPSUcQD27GtHt/GroupHQ-Demo?type=design&node-id=0%3A1&mode=design&t=RvuApHhMdKFzUKfm-1"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Figma Design Files (Mock-ups & Prototyping) - opens in a new tab"
+          >Figma Design Files (Mock-ups & Prototyping)<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        <a
+          href="https://github.com/GroupHQ/groupHQ-ui"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GroupHQ User Interface (frontend) - opens in a new tab"
+          >GroupHQ User Interface (frontend)<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+    </ul>
+  </section>
+  <section
+    aria-labelledby="backendSources"
+    appMedia
+    app-media-base-class="sources-page-content-container"
+  >
+    <h2 id="backendSources">Backend Sources</h2>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/GroupHQ/group-service"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Group Service - opens in a new tab"
+          >Group Service<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        <a
+          href="https://github.com/GroupHQ/group-sync"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Group Sync - opens in a new tab"
+          >Group Sync<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        <a
+          href="https://github.com/GroupHQ/edge-service"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Edge Service (i.e. API Gateway) - opens in a new tab"
+          >Edge Service (i.e. API Gateway)<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        <a
+          href="https://github.com/GroupHQ/groupHQ-deployment"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GroupHQ Deployment Manifests Repository - opens in a new tab"
+          >GroupHQ Deployment Manifests Repository<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+    </ul>
+  </section>
+  <section
+    aria-labelledby="continuousTestingSources"
+    appMedia
+    app-media-base-class="sources-page-content-container"
+  >
+    <h2 id="continuousTestingSources">Continuous Testing Sources</h2>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/GroupHQ/grouphq-continuous-testing-proxy-server"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Continuous Testing Proxy Server - opens in a new tab"
+          >Continuous Testing Proxy Server<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        <a
+          href="https://github.com/GroupHQ/grouphq-continuous-testing-test-suite"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Continuous Testing Test Suite (hosts user-automated acceptance tests) - opens in a new tab"
+          >Continuous Testing Test Suite (hosts user-automated acceptance
+          tests)<mat-icon fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+      <li>
+        <a
+          href="https://5160-70-107-109-25.ngrok-free.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="BuildWise (Continuous Testing Server) - opens in a new tab"
+          >BuildWise (Continuous Testing Server)<mat-icon
+            fontSet="material-symbols-outlined"
+            >arrow_outward</mat-icon
+          ></a
+        >
+      </li>
+    </ul>
+  </section>
 </div>

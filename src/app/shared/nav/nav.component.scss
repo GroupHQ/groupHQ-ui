@@ -14,24 +14,28 @@
     // default title style
     #logo-link {
       text-decoration: none;
-      color: theme.$grouphq-ui-none;
+      color: theme.$grouphq-ui-not-found;
+      outline-color: theme.$grouphq-ui-not-found;
     }
 
     &.groups {
       #logo-link {
         color: theme.$grouphq-ui-groups;
+        outline-color: theme.$grouphq-ui-groups;
       }
     }
 
     &.about {
       #logo-link {
         color: theme.$grouphq-ui-about;
+        outline-color: theme.$grouphq-ui-about;
       }
     }
 
     &.sources {
       #logo-link {
         color: theme.$grouphq-ui-sources;
+        outline-color: theme.$grouphq-ui-sources;
       }
     }
   }

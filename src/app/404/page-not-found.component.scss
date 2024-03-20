@@ -5,6 +5,7 @@
   flex-direction: column;
   flex: 1;
   background-color: theme.$grouphq-ui-not-found;
+  justify-content: center;
   position: relative;
 }
 
@@ -12,7 +13,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 324px;
   position: relative;
 
   .page-not-found-title {
@@ -46,4 +46,27 @@
   height: 100%;
   background: url("../../assets/Crazy Nodes.png") repeat 50%;
   filter: brightness(50%) saturate(0%);
+}
+
+.page-not-found-message {
+  > p {
+    color: #fff;
+  }
+
+  text-align: center;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 32px 240px;
+  z-index: 1;
+
+  &.page-not-found-message-tablet {
+    margin: 32px;
+  }
+
+  &.page-not-found-message-handset {
+    margin: 16px;
+    font-size: 20px;
+  }
 }

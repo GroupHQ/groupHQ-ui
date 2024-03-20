@@ -1,14 +1,18 @@
 <mat-card
   matRipple
+  role="region"
+  [attr.aria-labelledby]="group.id"
   class="group-card"
   [ngClass]="{
     'group-card--full': group.members.length >= group.maxGroupSize
   }"
   (click)="openDialog()"
+  (keydown.enter)="openDialog()"
+  tabindex="0"
   data-test="group-card"
 >
   <div class="title-container">
-    <p class="title" data-test="title">{{ group.title }}</p>
+    <p [id]="group.id" class="title" data-test="title">{{ group.title }}</p>
     @if (userService.currentGroupId === group.id) {
       <mat-icon
         aria-hidden="false"

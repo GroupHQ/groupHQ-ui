@@ -46,6 +46,8 @@ export class GroupCardComponent implements OnDestroy {
     dialogConfig.maxWidth = "100vw"; // overrides default in-line style of 80vw
     dialogConfig.maxHeight = "100%";
     dialogConfig.data = this.group;
+    dialogConfig.ariaLabelledBy = "group-details-dialog-title";
+    dialogConfig.ariaDescribedBy = "group-details-dialog-description";
 
     this.groupDetailsDialogRef = this.dialog.open(
       GroupDetailsDialogComponent,
