@@ -26,16 +26,16 @@ export class RequestCompleteState<T> extends RequestState<T> {
   override onRequest(): Observable<T> {
     this.cleanUp();
 
-    console.log("RequestComplete handles request.");
+    console.debug("RequestComplete handles request.");
 
     switch (this.currentConnectorState) {
       case ConnectorStatesEnum.CONNECTED:
-        console.log("Rsocket connected. Transitioning to RequestingState.");
+        console.debug("Rsocket connected. Transitioning to RequestingState.");
         this.requestService.nextRequestState(StateEnum.LOADING);
         this.requestService.state = new RequestingState(this.requestService);
         break;
       case ConnectorStatesEnum.RETRYING:
-        console.log(
+        console.debug(
           "Rsocket is retrying. Transitioning to RsocketRetryingState.",
         );
         this.requestService.nextRequestState(StateEnum.RETRYING);
@@ -44,7 +44,7 @@ export class RequestCompleteState<T> extends RequestState<T> {
         );
         break;
       case ConnectorStatesEnum.INITIALIZING:
-        console.error(
+        console.debug(
           "Rsocket is initializing. Transitioning to WaitingForRsocketState.",
         );
         this.requestService.nextRequestState(StateEnum.LOADING);

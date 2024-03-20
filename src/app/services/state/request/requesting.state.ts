@@ -4,11 +4,15 @@ import { WaitingForRsocketState } from "./waitingForRsocket.state";
 import { ConnectorStatesEnum } from "../../network/rsocket/ConnectorStatesEnum";
 import { StateEnum } from "../StateEnum";
 
+/**
+ * This class represents the state of the request service when it begins the request process,
+ * occurring after the backed connector is ready (e.g. when an RSocket or WebSocket connection is ready).
+ */
 export class RequestingState<T> extends RequestState<T> {
   constructor(requestService: RequestServiceStateInterface<T>) {
     super(requestService);
 
-    console.log("Requesting data...");
+    console.debug("Requesting data...");
     this.requestService.nextRequestState(StateEnum.REQUESTING);
     this.requestService.sendRequest();
 
@@ -29,7 +33,7 @@ export class RequestingState<T> extends RequestState<T> {
   onRsocketDisconnect(): void {
     this.cleanUp();
 
-    console.error("Rsocket disconnected while requesting data.");
+    console.warn("Rsocket disconnected while requesting data.");
     this.requestService.state = new WaitingForRsocketState(this.requestService);
   }
 }

@@ -12,6 +12,10 @@ import { StateUpdateService } from "./stateUpdate.service";
 import { GroupSortingService } from "./groupSorting.service";
 import { GroupEventVisitor } from "../../services/notifications/visitors/group/groupEvent.visitor";
 
+/**
+ * Manages the currently requested groups and works with other services to
+ * store, sort, and update the groups.
+ */
 @Injectable({
   providedIn: "root",
 })
@@ -105,8 +109,9 @@ export class GroupManagerService {
   }
 
   /**
-   * Currently, the backend returns a GROUP_UPDATED event when a group is disbanded.
-   * This may change in the future.
+   * Currently, the backend returns a GROUP_UPDATED event when a group is disbanded,
+   * therefore, this method is needed to convert the event type to GROUP_DISBANDED as
+   * expected by the {@link animate} method.
    * @param event An event
    * @private
    */
@@ -139,7 +144,7 @@ export class GroupManagerService {
         this.flipService.animate(changeFunction, this._changeDetectorRef);
       }
     } catch (e) {
-      console.error(
+      console.warn(
         "Falling back to no animation. There was an error animating group change",
         e,
       );

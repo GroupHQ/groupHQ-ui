@@ -40,7 +40,7 @@ export class UserService {
   private saveOrGetUuidFromLocalStorage() {
     let uuid = localStorage.getItem(this.MY_UUID_KEY);
     if (!uuid) {
-      console.debug("localStorage.getItem(this.MY_UUID_KEY) === null");
+      console.debug("Saving new user uuid to local storage");
       uuid = this.saveNewUuidToLocalStorage();
     }
 

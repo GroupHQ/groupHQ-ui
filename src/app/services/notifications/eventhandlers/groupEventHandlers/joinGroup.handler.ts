@@ -53,7 +53,7 @@ export class JoinGroupHandler implements EventHandler {
     if (this.userService.currentGroupId === groupId) return;
 
     this.userService.setUserInGroup(groupId, joinedMember.id);
-    console.log("Current group id: ", this.userService.currentGroupId);
+    console.debug("Current group id: ", this.userService.currentGroupId);
     this.notificationService.showMessage(
       `Successfully joined group as ${joinedMember.username}!`,
     );

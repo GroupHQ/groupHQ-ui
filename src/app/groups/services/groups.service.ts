@@ -99,7 +99,7 @@ export class GroupsService {
     if (index != -1) {
       this.groups.splice(index, 0, group);
     } else {
-      this.groups.push(group);
+      this.groups.push(group); // no group exists with more or less members, add to end of list
     }
   }
 

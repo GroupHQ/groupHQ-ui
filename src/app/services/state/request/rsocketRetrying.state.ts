@@ -5,7 +5,7 @@ import { ConnectorStatesEnum } from "../../network/rsocket/ConnectorStatesEnum";
 
 export class RsocketRetryingState<T> extends RequestState<T> {
   constructor(requestService: RequestServiceStateInterface<T>) {
-    console.log("Rsocket is retrying...");
+    console.debug("Rsocket is retrying...");
     super(requestService);
 
     const subscription = this.requestService.connectorState.subscribe(
@@ -21,7 +21,7 @@ export class RsocketRetryingState<T> extends RequestState<T> {
 
   onReady(): void {
     this.cleanUp();
-    console.log(
+    console.debug(
       "Rsocket connected after retry. Transitioning to RequestingState.",
     );
     this.requestService.state = new RequestingState(this.requestService);

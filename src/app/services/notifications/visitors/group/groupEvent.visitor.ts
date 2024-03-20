@@ -18,7 +18,7 @@ export class GroupEventVisitor implements EventVisitor {
   ) {}
 
   visitPrivateEvent(event: PrivateEventModel): void {
-    console.log("PrivateGroupVisitor visited", event);
+    console.debug("PrivateGroupVisitor visited", event);
 
     switch (event.eventType) {
       case EventTypeEnum.GROUP_UPDATED:
@@ -37,7 +37,7 @@ export class GroupEventVisitor implements EventVisitor {
   }
 
   visitPublicEvent(event: PublicEventModel): void {
-    console.log("PublicGroupVisitor visited", event);
+    console.debug("PublicGroupVisitor visited", event);
 
     switch (event.eventType) {
       case EventTypeEnum.GROUP_CREATED:

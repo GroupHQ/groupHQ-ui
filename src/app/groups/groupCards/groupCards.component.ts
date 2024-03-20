@@ -63,7 +63,7 @@ export class GroupCardsComponent implements OnInit, AfterViewInit, OnDestroy {
     const fetchMemberStatusSubscription = fetchCurrentMember
       .getState$()
       .subscribe((state) => {
-        console.log(
+        console.debug(
           `Current state: ${this.memberRequestState}, new state: ${state}`,
         );
         switch (state) {

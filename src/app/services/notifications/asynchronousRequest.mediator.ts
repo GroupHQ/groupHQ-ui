@@ -12,6 +12,7 @@ import { EventRevivable } from "../../model/events/event.revivable";
 
 /**
  * This service submits asynchronous RSocket requests and handles their response.
+ * Utilizes several services to submit requests, monitor response streams, and handle response events.
  */
 @Injectable({
   providedIn: "root",
@@ -48,7 +49,7 @@ export class AsynchronousRequestMediator {
           event.accept(this.groupEventVisitor);
         },
         error: (error) => {
-          console.error(`Error processing event: ${error.message}`);
+          console.warn(`Error processing event: ${error.message}`);
           switch (error.message) {
             case StateEnum.REQUEST_TIMEOUT:
               this.handleRequestTimeoutError();

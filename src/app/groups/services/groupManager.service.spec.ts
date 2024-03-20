@@ -169,7 +169,7 @@ describe("GroupManagerService", () => {
           values[key] = event;
         });
 
-        console.log("Observable info", marbles, values);
+        console.debug("Observable info", marbles, values);
         const events$ = cold(`(${marbles})`, values);
 
         eventStreamServiceSpy.stream.and.returnValue(events$);

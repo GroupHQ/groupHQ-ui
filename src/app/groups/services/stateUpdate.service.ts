@@ -5,6 +5,10 @@ import { PublicEventModel } from "../../model/events/publicEvent.model";
 import { GroupsService } from "./groups.service";
 import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
 
+/**
+ * Helper service to manage and update both the request and component states based
+ * on both the request states and the events that are received.
+ */
 @Injectable({
   providedIn: "root",
 })
@@ -55,14 +59,20 @@ export class StateUpdateService {
     }
   }
 
-  private componentStateMapper(status: StateEnum) {
+  /**
+   * Maps the given state to a corresponding component state and updates the component state if necessary.
+   * Components are not interested in all states, but only a subset of them.
+   * @param state
+   * @private
+   */
+  private componentStateMapper(state: StateEnum) {
     if (this._componentState$.getValue() === StateEnum.READY) {
       return;
     }
 
     let mappedStatus: StateEnum;
 
-    switch (status) {
+    switch (state) {
       case StateEnum.READY:
         mappedStatus = StateEnum.READY;
         break;

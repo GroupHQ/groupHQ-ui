@@ -7,7 +7,7 @@ import { StateEnum } from "../StateEnum";
 
 export class WaitingForRsocketState<T> extends RequestState<T> {
   constructor(requestService: RequestServiceStateInterface<T>) {
-    console.log("Waiting for Rsocket connection to be ready...");
+    console.debug("Waiting for Rsocket connection to be ready...");
     super(requestService);
 
     const subscription = this.requestService.connectorState.subscribe(
@@ -25,13 +25,15 @@ export class WaitingForRsocketState<T> extends RequestState<T> {
 
   onReady(): void {
     this.cleanUp();
-    console.log("Rsocket connected. Transitioning to RequestingState.");
+    console.debug("Rsocket connected. Transitioning to RequestingState.");
     this.requestService.state = new RequestingState(this.requestService);
   }
 
   onRetrying(): void {
     this.cleanUp();
-    console.log("Rsocket is retrying. Transitioning to RsocketRetryingState.");
+    console.debug(
+      "Rsocket is retrying. Transitioning to RsocketRetryingState.",
+    );
     this.requestService.nextRequestState(StateEnum.RETRYING);
     this.requestService.state = new RsocketRetryingState(this.requestService);
   }

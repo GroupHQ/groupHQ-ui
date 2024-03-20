@@ -6,6 +6,15 @@ import {
   style,
 } from "@angular/animations";
 
+/**
+ * Service to handle the FLIP animation pattern for Angular components.
+ * Goals:
+ * 1. Animate the movement of elements on the page by recording their position before and after a change,
+ * and then animating the change.
+ * 2. For elements currently animating, record their current position in the animation and animate them
+ * from that position to their new final position.
+ */
+
 /* eslint @typescript-eslint/no-explicit-any: "off" */
 @Injectable({
   providedIn: "root",

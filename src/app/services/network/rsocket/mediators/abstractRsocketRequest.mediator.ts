@@ -19,6 +19,9 @@ import { ConnectorStatesEnum } from "../ConnectorStatesEnum";
 import { RequestState } from "../../../state/request/request.state";
 import { RsocketRequestFactory } from "../rsocketRequest.factory";
 
+/**
+ * Provides common functionality for managing both the request statuses and their responses for RSocket requests.
+ */
 export abstract class AbstractRsocketRequestMediator<TData, RData>
   implements
     Retryable,
