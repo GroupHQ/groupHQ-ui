@@ -1,17 +1,17 @@
 import { Injectable } from "@angular/core";
 import { EventHandler } from "../eventHandler";
-import { UserService } from "../../../user/user.service";
-import { NotificationService } from "../../notification.service";
-import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
-import { PublicEventModel } from "../../../../model/events/publicEvent.model";
-import { MemberModel } from "../../../../model/member.model";
-import { ErrorDataModel } from "../../../../model/errorData.model";
-import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
+import { UserService } from "../../user/user.service";
+import { NotificationService } from "../../notifications/notification.service";
+import { PrivateEventModel } from "../../../model/events/privateEvent.model";
+import { PublicEventModel } from "../../../model/events/publicEvent.model";
+import { MemberModel } from "../../../model/member.model";
+import { ErrorDataModel } from "../../../model/errorData.model";
+import { EventStatusEnum } from "../../../model/enums/eventStatus.enum";
 import {
   isEventDataErrorModel,
   isEventDataMemberModel,
 } from "../eventDataValidators";
-import { GroupsService } from "../../../../groups/services/groups.service";
+import { GroupsService } from "../../../groups/services/groups.service";
 
 @Injectable({
   providedIn: "root",

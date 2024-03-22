@@ -1,7 +1,7 @@
 import { PrivateEventModel } from "./privateEvent.model";
 import { EventRevivable } from "./event.revivable";
 import { PublicEventModel } from "./publicEvent.model";
-import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
+import { EventVisitor } from "../../services/eventvisitors/eventVisitor";
 
 describe("EventRevivable", () => {
   let visitorSpy: EventVisitor;

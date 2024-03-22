@@ -5,7 +5,7 @@ import {
   MatDialogRef,
   MatDialogState,
 } from "@angular/material/dialog";
-import { AsynchronousRequestMediator } from "../../../services/notifications/asynchronousRequest.mediator";
+import { AsynchronousRequestMediator } from "../../../services/network/rsocket/mediators/asynchronousRequest.mediator";
 import { UserService } from "../../../services/user/user.service";
 import { ConfigService } from "../../../config/config.service";
 import { GroupModel } from "../../../model/group.model";

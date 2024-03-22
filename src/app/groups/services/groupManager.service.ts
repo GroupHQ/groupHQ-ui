@@ -5,12 +5,12 @@ import { GroupModel } from "../../model/group.model";
 import { EventTypeEnum } from "../../model/enums/eventType.enum";
 import { map, Subscription } from "rxjs";
 import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
-import { EventStreamService } from "../../services/notifications/eventStream.service";
+import { EventStreamService } from "../../services/network/rsocket/mediators/eventStream.service";
 import { StateEnum } from "../../services/state/StateEnum";
 import { FlipService } from "../../services/animation/flip.service";
 import { StateUpdateService } from "./stateUpdate.service";
 import { GroupSortingService } from "./groupSorting.service";
-import { GroupEventVisitor } from "../../services/notifications/visitors/group/groupEvent.visitor";
+import { GroupEventVisitor } from "../../services/eventvisitors/group/groupEvent.visitor";
 
 /**
  * Manages the currently requested groups and works with other services to

@@ -1,11 +1,11 @@
 import { EventStreamService } from "./eventStream.service";
 import { TestBed } from "@angular/core/testing";
-import { RsocketRequestMediatorFactory } from "../network/rsocket/mediators/rsocketRequestMediator.factory";
-import { RequestServiceComponentInterface } from "../network/rsocket/mediators/interfaces/requestServiceComponent.interface";
+import { RsocketRequestMediatorFactory } from "./rsocketRequestMediator.factory";
+import { RequestServiceComponentInterface } from "./interfaces/requestServiceComponent.interface";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
 import { EMPTY, of } from "rxjs";
-import { ConfigService } from "../../config/config.service";
-import { StateEnum } from "../state/StateEnum";
+import { ConfigService } from "../../../../config/config.service";
+import { StateEnum } from "../../../state/StateEnum";
 
 describe("EventStreamService", () => {
   let service: EventStreamService;

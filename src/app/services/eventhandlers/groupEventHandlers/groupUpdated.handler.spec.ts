@@ -1,13 +1,13 @@
 import { EventHandler } from "../eventHandler";
 import { GroupUpdatedHandler } from "./groupUpdated.handler";
 import { TestBed } from "@angular/core/testing";
-import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
-import { UserService } from "../../../user/user.service";
-import { NotificationService } from "../../notification.service";
-import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
-import { GroupStatusEnum } from "../../../../model/enums/groupStatus.enum";
-import { GroupModel } from "../../../../model/group.model";
-import { PublicEventModel } from "../../../../model/events/publicEvent.model";
+import { PrivateEventModel } from "../../../model/events/privateEvent.model";
+import { UserService } from "../../user/user.service";
+import { NotificationService } from "../../notifications/notification.service";
+import { EventStatusEnum } from "../../../model/enums/eventStatus.enum";
+import { GroupStatusEnum } from "../../../model/enums/groupStatus.enum";
+import { GroupModel } from "../../../model/group.model";
+import { PublicEventModel } from "../../../model/events/publicEvent.model";
 
 describe("GroupUpdatedHandler", () => {
   let groupUpdatedHandler: EventHandler;

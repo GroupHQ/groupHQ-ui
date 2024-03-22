@@ -22,7 +22,7 @@ import { Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { v4 as uuidv4 } from "uuid";
-import { AsynchronousRequestMediator } from "../../../services/notifications/asynchronousRequest.mediator";
+import { AsynchronousRequestMediator } from "../../../services/network/rsocket/mediators/asynchronousRequest.mediator";
 import { GroupJoinRequestEvent } from "../../../model/requestevent/GroupJoinRequestEvent";
 
 @Component({

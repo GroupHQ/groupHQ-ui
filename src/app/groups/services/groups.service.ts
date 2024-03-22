@@ -67,10 +67,10 @@ export class GroupsService {
 
     switch (this.groupSortingService.currentSort) {
       case GroupSortEnum.OLDEST:
-        this.groups.push(groupToAdd);
+        this.insertGroupByCreatedDate(groupToAdd, GroupSortEnum.OLDEST);
         break;
       case GroupSortEnum.NEWEST:
-        this.groups.unshift(groupToAdd);
+        this.insertGroupByCreatedDate(groupToAdd, GroupSortEnum.NEWEST);
         break;
       case GroupSortEnum.LEAST_MEMBERS:
         this.insertGroupByMemberCount(groupToAdd, GroupSortEnum.LEAST_MEMBERS);
@@ -85,6 +85,36 @@ export class GroupsService {
     }
 
     return true;
+  }
+
+  private insertGroupByCreatedDate(
+    group: GroupModel,
+    sortType: GroupSortEnum.NEWEST | GroupSortEnum.OLDEST,
+  ) {
+    const index =
+      sortType === GroupSortEnum.NEWEST
+        ? this.findFirstGroupWithOlderCreatedDate(group)
+        : this.findFirstGroupWithNewerCreatedDate(group);
+
+    if (index != -1) {
+      this.groups.splice(index, 0, group);
+    } else if (sortType === GroupSortEnum.NEWEST) {
+      this.groups.unshift(group); // no group exists with newer created date, add to start of list
+    } else if (sortType === GroupSortEnum.OLDEST) {
+      this.groups.push(group); // no group exists with older created date, add to end of list
+    }
+  }
+
+  private findFirstGroupWithNewerCreatedDate(group: GroupModel): number {
+    return this.groups.findIndex(
+      (groupInList) => groupInList.createdDate > group.createdDate,
+    );
+  }
+
+  private findFirstGroupWithOlderCreatedDate(group: GroupModel): number {
+    return this.groups.findIndex(
+      (groupInList) => groupInList.createdDate < group.createdDate,
+    );
   }
 
   private insertGroupByMemberCount(

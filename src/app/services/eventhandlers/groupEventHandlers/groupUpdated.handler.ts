@@ -1,14 +1,14 @@
 import { Injectable } from "@angular/core";
 import { EventHandler } from "../eventHandler";
-import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
-import { PublicEventModel } from "../../../../model/events/publicEvent.model";
-import { UserService } from "../../../user/user.service";
-import { NotificationService } from "../../notification.service";
-import { GroupModel } from "../../../../model/group.model";
-import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
+import { PrivateEventModel } from "../../../model/events/privateEvent.model";
+import { PublicEventModel } from "../../../model/events/publicEvent.model";
+import { UserService } from "../../user/user.service";
+import { NotificationService } from "../../notifications/notification.service";
+import { GroupModel } from "../../../model/group.model";
+import { EventStatusEnum } from "../../../model/enums/eventStatus.enum";
 import { isEventDataGroupModel } from "../eventDataValidators";
-import { GroupStatusEnum } from "../../../../model/enums/groupStatus.enum";
-import { GroupsService } from "../../../../groups/services/groups.service";
+import { GroupStatusEnum } from "../../../model/enums/groupStatus.enum";
+import { GroupsService } from "../../../groups/services/groups.service";
 
 @Injectable({
   providedIn: "root",
