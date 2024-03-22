@@ -122,7 +122,7 @@ describe("GroupsService", () => {
       expect(service.groups).toEqual([]);
     });
 
-    describe("when the sort type is OLDEST or unrecognized", () => {
+    describe("when the sort type is unrecognized", () => {
       it("should add the group to the end of the list", () => {
         const sortTypes: GroupSortEnum[] = [
           GroupSortEnum.OLDEST,
@@ -141,6 +141,102 @@ describe("GroupsService", () => {
           expect(service.groups.length).toEqual(3);
           expect(service.groups[2]).toEqual(group);
         }
+      });
+    });
+
+    describe("when the sort type is OLDEST", () => {
+      it("should add the group before the first group that is younger than it", () => {
+        groupSortingService.changeSort = GroupSortEnum.OLDEST;
+
+        const groupDates: Partial<GroupModel>[] = [
+          { createdDate: Date.UTC(2020).toString() },
+          { createdDate: Date.UTC(2021).toString() },
+          { createdDate: Date.UTC(2022).toString() },
+          { createdDate: Date.UTC(2023).toString() },
+        ];
+        service.groups = [
+          createGroup([], groupDates[0]),
+          createGroup([], groupDates[2]),
+          createGroup([], groupDates[3]),
+        ];
+
+        const group = createGroup([], groupDates[1]);
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(4);
+        expect(service.groups[1]).toEqual(group);
+      });
+
+      it("should add the group to the end of the list if no other group is younger than it", () => {
+        groupSortingService.changeSort = GroupSortEnum.OLDEST;
+
+        const groupDates: Partial<GroupModel>[] = [
+          { createdDate: Date.UTC(2020).toString() },
+          { createdDate: Date.UTC(2021).toString() },
+          { createdDate: Date.UTC(2022).toString() },
+          { createdDate: Date.UTC(2023).toString() },
+        ];
+        service.groups = [
+          createGroup([], groupDates[0]),
+          createGroup([], groupDates[1]),
+          createGroup([], groupDates[2]),
+        ];
+
+        const group = createGroup([], groupDates[3]);
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(4);
+        expect(service.groups[3]).toEqual(group);
+      });
+    });
+
+    describe("when the sort type is NEWEST", () => {
+      it("should add the group before the first group that is older than it", () => {
+        groupSortingService.changeSort = GroupSortEnum.NEWEST;
+
+        const groupDates: Partial<GroupModel>[] = [
+          { createdDate: Date.UTC(2023).toString() },
+          { createdDate: Date.UTC(2022).toString() },
+          { createdDate: Date.UTC(2021).toString() },
+          { createdDate: Date.UTC(2020).toString() },
+        ];
+        service.groups = [
+          createGroup([], groupDates[0]),
+          createGroup([], groupDates[1]),
+          createGroup([], groupDates[3]),
+        ];
+
+        const group = createGroup([], groupDates[2]);
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(4);
+        expect(service.groups[2]).toEqual(group);
+      });
+
+      it("should add the group to the beginning of the list if no other group is older than it", () => {
+        groupSortingService.changeSort = GroupSortEnum.NEWEST;
+
+        const groupDates: Partial<GroupModel>[] = [
+          { createdDate: Date.UTC(2023).toString() },
+          { createdDate: Date.UTC(2022).toString() },
+          { createdDate: Date.UTC(2021).toString() },
+          { createdDate: Date.UTC(2020).toString() },
+        ];
+        service.groups = [
+          createGroup([], groupDates[1]),
+          createGroup([], groupDates[2]),
+          createGroup([], groupDates[3]),
+        ];
+
+        const group = createGroup([], groupDates[0]);
+
+        service.handleGroupUpdate(group);
+
+        expect(service.groups.length).toEqual(4);
+        expect(service.groups[0]).toEqual(group);
       });
     });
 
