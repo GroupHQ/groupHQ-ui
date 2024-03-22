@@ -1,5 +1,5 @@
 import { PublicEventModel } from "./publicEvent.model";
-import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
+import { EventVisitor } from "../../services/eventvisitors/eventVisitor";
 import { AggregateTypeEnum } from "../enums/aggregateType.enum";
 import { EventTypeEnum } from "../enums/eventType.enum";
 import { EventStatusEnum } from "../enums/eventStatus.enum";

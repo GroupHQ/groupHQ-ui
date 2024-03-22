@@ -1,14 +1,14 @@
-import { RsocketRequestMediatorFactory } from "../network/rsocket/mediators/rsocketRequestMediator.factory";
-import { NotificationService } from "./notification.service";
+import { RsocketRequestMediatorFactory } from "./rsocketRequestMediator.factory";
+import { NotificationService } from "../../../notifications/notification.service";
 import { Injectable } from "@angular/core";
-import { RequestEvent } from "../../model/requestevent/RequestEvent";
+import { RequestEvent } from "../../../../model/requestevent/RequestEvent";
 import { map, Observable } from "rxjs";
-import { StateEnum } from "../state/StateEnum";
-import { GroupEventVisitor } from "./visitors/group/groupEvent.visitor";
+import { StateEnum } from "../../../state/StateEnum";
+import { GroupEventVisitor } from "../../../eventvisitors/group/groupEvent.visitor";
 import { EventStreamService } from "./eventStream.service";
 import { AsyncRequestStatusService } from "./asyncRequestStatus.service";
-import { Event } from "../../model/events/event";
-import { EventRevivable } from "../../model/events/event.revivable";
+import { Event } from "../../../../model/events/event";
+import { EventRevivable } from "../../../../model/events/event.revivable";
 
 /**
  * This service submits asynchronous RSocket requests and handles their response.

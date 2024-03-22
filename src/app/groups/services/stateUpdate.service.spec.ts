@@ -3,7 +3,7 @@ import { StateUpdateService } from "./stateUpdate.service";
 import { GroupsService } from "./groups.service";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
 import { PublicEventModel } from "../../model/events/publicEvent.model";
-import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
+import { EventVisitor } from "../../services/eventvisitors/eventVisitor";
 import { StateEnum } from "../../services/state/StateEnum";
 import { finalize, of, tap } from "rxjs";
 

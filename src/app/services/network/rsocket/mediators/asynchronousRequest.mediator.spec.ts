@@ -1,23 +1,23 @@
 import { AsynchronousRequestMediator } from "./asynchronousRequest.mediator";
 import { TestBed } from "@angular/core/testing";
-import { ConnectorStatesEnum } from "../network/rsocket/ConnectorStatesEnum";
+import { ConnectorStatesEnum } from "../ConnectorStatesEnum";
 import { BehaviorSubject } from "rxjs";
-import { RsocketService } from "../network/rsocket/rsocket.service";
+import { RsocketService } from "../rsocket.service";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
-import { RetryOptions } from "../retry/retry.options";
-import { ConfigService } from "../../config/config.service";
-import { NotificationService } from "./notification.service";
-import { RsocketRequestFactory } from "../network/rsocket/rsocketRequest.factory";
-import { PrivateEventModel } from "../../model/events/privateEvent.model";
+import { RetryOptions } from "../../../retry/retry.options";
+import { ConfigService } from "../../../../config/config.service";
+import { NotificationService } from "../../../notifications/notification.service";
+import { RsocketRequestFactory } from "../rsocketRequest.factory";
+import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
 import { v4 as uuidv4 } from "uuid";
-import { EventStatusEnum } from "../../model/enums/eventStatus.enum";
-import { EventTypeEnum } from "../../model/enums/eventType.enum";
-import { AggregateTypeEnum } from "../../model/enums/aggregateType.enum";
-import { MemberModel } from "../../model/member.model";
-import { MemberStatusEnum } from "../../model/enums/memberStatus.enum";
-import { GroupJoinRequestEvent } from "../../model/requestevent/GroupJoinRequestEvent";
-import { StateEnum } from "../state/StateEnum";
-import { UserService } from "../user/user.service";
+import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
+import { EventTypeEnum } from "../../../../model/enums/eventType.enum";
+import { AggregateTypeEnum } from "../../../../model/enums/aggregateType.enum";
+import { MemberModel } from "../../../../model/member.model";
+import { MemberStatusEnum } from "../../../../model/enums/memberStatus.enum";
+import { GroupJoinRequestEvent } from "../../../../model/requestevent/GroupJoinRequestEvent";
+import { StateEnum } from "../../../state/StateEnum";
+import { UserService } from "../../../user/user.service";
 
 /**
  * This test is an integration test between AsynchronousRequestMediator and its dependencies.

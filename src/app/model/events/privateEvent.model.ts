@@ -3,7 +3,7 @@ import { EventTypeEnum } from "../enums/eventType.enum";
 import { EventStatusEnum } from "../enums/eventStatus.enum";
 import { EventDataModel } from "./eventDataModel";
 import { Event } from "./event";
-import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
+import { EventVisitor } from "../../services/eventvisitors/eventVisitor";
 
 export class PrivateEventModel implements Event {
   constructor(

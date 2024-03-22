@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { GroupInputNameDialogComponent } from "./groupInputNameDialog.component";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { AsynchronousRequestMediator } from "../../../services/notifications/asynchronousRequest.mediator";
+import { AsynchronousRequestMediator } from "../../../services/network/rsocket/mediators/asynchronousRequest.mediator";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ConfigService } from "../../../config/config.service";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";

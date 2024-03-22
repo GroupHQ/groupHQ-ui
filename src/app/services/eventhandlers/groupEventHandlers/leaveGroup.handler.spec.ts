@@ -1,13 +1,13 @@
 import { LeaveGroupHandler } from "./leaveGroup.handler";
-import { UserService } from "../../../user/user.service";
-import { NotificationService } from "../../notification.service";
-import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
-import { PublicEventModel } from "../../../../model/events/publicEvent.model";
+import { UserService } from "../../user/user.service";
+import { NotificationService } from "../../notifications/notification.service";
+import { PrivateEventModel } from "../../../model/events/privateEvent.model";
+import { PublicEventModel } from "../../../model/events/publicEvent.model";
 import { TestBed } from "@angular/core/testing";
-import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
-import { MemberModel } from "../../../../model/member.model";
-import { MemberStatusEnum } from "../../../../model/enums/memberStatus.enum";
-import { ErrorDataModel } from "../../../../model/errorData.model";
+import { EventStatusEnum } from "../../../model/enums/eventStatus.enum";
+import { MemberModel } from "../../../model/member.model";
+import { MemberStatusEnum } from "../../../model/enums/memberStatus.enum";
+import { ErrorDataModel } from "../../../model/errorData.model";
 
 describe("LeaveGroupHandler", () => {
   let leaveGroupHandler: LeaveGroupHandler;

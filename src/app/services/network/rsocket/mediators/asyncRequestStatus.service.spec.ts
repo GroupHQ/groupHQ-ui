@@ -2,12 +2,12 @@ import { AsyncRequestStatusService } from "./asyncRequestStatus.service";
 import { TestBed } from "@angular/core/testing";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
 import { Observable } from "rxjs";
-import { Event } from "../../model/events/event";
-import { AggregateTypeEnum } from "../../model/enums/aggregateType.enum";
-import { EventTypeEnum } from "../../model/enums/eventType.enum";
-import { EventStatusEnum } from "../../model/enums/eventStatus.enum";
+import { Event } from "../../../../model/events/event";
+import { AggregateTypeEnum } from "../../../../model/enums/aggregateType.enum";
+import { EventTypeEnum } from "../../../../model/enums/eventType.enum";
+import { EventStatusEnum } from "../../../../model/enums/eventStatus.enum";
 import { v4 as uuidv4 } from "uuid";
-import { StateEnum } from "../state/StateEnum";
+import { StateEnum } from "../../../state/StateEnum";
 
 function createMockEvent(): Event {
   return {

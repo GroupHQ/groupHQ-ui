@@ -14,8 +14,8 @@ import {
   timeout,
   TimeoutError,
 } from "rxjs";
-import { StateEnum } from "../state/StateEnum";
-import { Event } from "../../model/events/event";
+import { StateEnum } from "../../../state/StateEnum";
+import { Event } from "../../../../model/events/event";
 
 /**
  * This service is responsible for managing the status of asynchronous requests.

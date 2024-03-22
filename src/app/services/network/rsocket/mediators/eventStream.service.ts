@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { RequestServiceComponentInterface } from "../network/rsocket/mediators/interfaces/requestServiceComponent.interface";
-import { RsocketRequestMediatorFactory } from "../network/rsocket/mediators/rsocketRequestMediator.factory";
+import { RequestServiceComponentInterface } from "./interfaces/requestServiceComponent.interface";
+import { RsocketRequestMediatorFactory } from "./rsocketRequestMediator.factory";
 import { Observable, throwError } from "rxjs";
-import { StateEnum } from "../state/StateEnum";
+import { StateEnum } from "../../../state/StateEnum";
 
 /**
  * This service is responsible for managing event streams.

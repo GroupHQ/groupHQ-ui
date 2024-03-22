@@ -3,9 +3,9 @@ import { GroupUpdatedHandler } from "../../eventhandlers/groupEventHandlers/grou
 import { JoinGroupHandler } from "../../eventhandlers/groupEventHandlers/joinGroup.handler";
 import { LeaveGroupHandler } from "../../eventhandlers/groupEventHandlers/leaveGroup.handler";
 import { TestBed } from "@angular/core/testing";
-import { PublicEventModel } from "../../../../model/events/publicEvent.model";
-import { PrivateEventModel } from "../../../../model/events/privateEvent.model";
-import { EventTypeEnum } from "../../../../model/enums/eventType.enum";
+import { PublicEventModel } from "../../../model/events/publicEvent.model";
+import { PrivateEventModel } from "../../../model/events/privateEvent.model";
+import { EventTypeEnum } from "../../../model/enums/eventType.enum";
 
 describe("GroupEventVisitor", () => {
   let visitor: GroupEventVisitor;

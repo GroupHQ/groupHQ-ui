@@ -3,7 +3,7 @@ import { TestBed } from "@angular/core/testing";
 import { TestScheduler } from "rxjs/internal/testing/TestScheduler";
 import { GroupSortingService } from "./groupSorting.service";
 import { GroupSortEnum } from "../../model/enums/groupSort.enum";
-import { EventStreamService } from "../../services/notifications/eventStream.service";
+import { EventStreamService } from "../../services/network/rsocket/mediators/eventStream.service";
 import { StateUpdateService } from "./stateUpdate.service";
 import { StateEnum } from "../../services/state/StateEnum";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";

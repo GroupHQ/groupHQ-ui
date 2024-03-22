@@ -21,7 +21,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { GroupLeaveRequestEvent } from "../../../model/requestevent/GroupLeaveRequestEvent";
 import { v4 as uuidv4 } from "uuid";
-import { AsynchronousRequestMediator } from "../../../services/notifications/asynchronousRequest.mediator";
+import { AsynchronousRequestMediator } from "../../../services/network/rsocket/mediators/asynchronousRequest.mediator";
 import { DateAgoPipe } from "./date-ago.pipe";
 
 @Component({

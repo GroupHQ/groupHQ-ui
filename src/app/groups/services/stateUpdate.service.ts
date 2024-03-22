@@ -3,7 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import { StateEnum } from "../../services/state/StateEnum";
 import { PublicEventModel } from "../../model/events/publicEvent.model";
 import { GroupsService } from "./groups.service";
-import { EventVisitor } from "../../services/notifications/visitors/eventVisitor";
+import { EventVisitor } from "../../services/eventvisitors/eventVisitor";
 
 /**
  * Helper service to manage and update both the request and component states based
