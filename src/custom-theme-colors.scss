@@ -5,8 +5,8 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$grouphq-ui-primary: mat.define-palette(mat.$indigo-palette);
-$grouphq-ui-accent: mat.define-palette(mat.$cyan-palette, 700, 500, 900);
+$grouphq-ui-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
+$grouphq-ui-accent: mat.m2-define-palette(mat.$m2-cyan-palette, 700, 500, 900);
 $grouphq-ui-groups: #2b40b1;
 $grouphq-ui-about: #a06101;
 $grouphq-ui-sources: #b510ae;
@@ -14,5 +14,5 @@ $grouphq-ui-none: #9396a2;
 $grouphq-ui-not-found: #a91a1a;
 
 // The warn palette is optional (defaults to red).
-$grouphq-ui-warn: mat.define-palette(mat.$red-palette, 700, 500, 900);
+$grouphq-ui-warn: mat.m2-define-palette(mat.$m2-red-palette, 700, 500, 900);
 $grouphq-ui-warn-default: #d32f2f;
