@@ -1,7 +1,6 @@
-import { RetryOptions } from "../services/retry/retry.options";
-import { InjectionToken } from "@angular/core";
+import { RetryOptions } from "../app/services/retry/retry.options";
 
-export type Config = {
+export type EnvironmentSchema = {
   api: {
     host: string;
     port: number;
@@ -26,7 +25,3 @@ export type Config = {
     loadingDelaySeconds: number;
   };
 };
-
-export const APP_CONFIG: InjectionToken<Config> = new InjectionToken<Config>(
-  "Application Config",
-);
