@@ -11,11 +11,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser-esbuild",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/grouphq-ui",
+            "outputPath": {
+              "base": "dist/grouphq-ui"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -25,7 +26,8 @@
               "src/robots.txt"
             ],
             "styles": ["src/custom-theme.scss", "src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -44,7 +46,6 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
