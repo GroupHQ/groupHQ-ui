@@ -1,91 +1,89 @@
-import { Inject, Injectable } from "@angular/core";
-import { APP_CONFIG, Config } from "./config";
+import { Injectable } from "@angular/core";
 import { RetryOptions } from "../services/retry/retry.options";
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class ConfigService {
-  constructor(@Inject(APP_CONFIG) private readonly config: Config) {}
-
   public get retryServices() {
-    return this.config.retryServices;
+    return environment.retryServices;
   }
 
   public get getGroupBoardLoadingDelaySeconds() {
-    return this.config.groupBoardComponent.loadingDelaySeconds;
+    return environment.groupBoardComponent.loadingDelaySeconds;
   }
 
   public get rsocketHost() {
-    return this.config.rsocket.host;
+    return environment.rsocket.host;
   }
 
   public get rsocketPort() {
-    return this.config.rsocket.port;
+    return environment.rsocket.port;
   }
 
   public get rsocketEndpoint() {
-    return this.config.rsocket.endpoint;
+    return environment.rsocket.endpoint;
   }
 
   public get rsocketProtocol() {
-    return this.config.rsocket.protocol;
+    return environment.rsocket.protocol;
   }
 
   public get rsocketKeepAlive() {
-    return this.config.rsocket.keepAlive;
+    return environment.rsocket.keepAlive;
   }
 
   public get rsocketLifetime() {
-    return this.config.rsocket.lifetime;
+    return environment.rsocket.lifetime;
   }
 
   public get rsocketMinimumDisconnectRetryTime() {
-    return this.config.rsocket.minimumDisconnectRetryTime;
+    return environment.rsocket.minimumDisconnectRetryTime;
   }
 
   public get rsocketMaximumDisconnectRetryTime() {
-    return this.config.rsocket.maximumDisconnectRetryTime;
+    return environment.rsocket.maximumDisconnectRetryTime;
   }
 
   public get apiHost() {
-    return this.config.api.host;
+    return environment.api.host;
   }
 
   public get apiPort() {
-    return this.config.api.port;
+    return environment.api.port;
   }
 
   public get apiEndpoint() {
-    return this.config.api.endpoint;
+    return environment.api.endpoint;
   }
 
   public get apiProtocol() {
-    return this.config.api.protocol;
+    return environment.api.protocol;
   }
 
   public get retryDefaultStrategy(): RetryOptions {
     return {
-      MAX_ATTEMPTS: this.config.retryServices.retryDefault.MAX_ATTEMPTS ?? 5,
+      MAX_ATTEMPTS: environment.retryServices.retryDefault.MAX_ATTEMPTS ?? 5,
       MIN_RETRY_INTERVAL:
-        this.config.retryServices.retryDefault.MIN_RETRY_INTERVAL ?? 5,
+        environment.retryServices.retryDefault.MIN_RETRY_INTERVAL ?? 5,
       MAX_RETRY_INTERVAL:
-        this.config.retryServices.retryDefault.MAX_RETRY_INTERVAL ?? 5,
+        environment.retryServices.retryDefault.MAX_RETRY_INTERVAL ?? 5,
     };
   }
 
   public get retryForeverStrategy(): RetryOptions {
     const MAX_RETRY_ATTEMPTS =
-      this.config.retryServices.retryForeverConstant.MAX_ATTEMPTS == -1
+      environment.retryServices.retryForeverConstant.MAX_ATTEMPTS == -1
         ? Number.MAX_VALUE
-        : this.config.retryServices.retryForeverConstant.MAX_ATTEMPTS;
+        : environment.retryServices.retryForeverConstant.MAX_ATTEMPTS;
 
     return {
       MAX_ATTEMPTS: MAX_RETRY_ATTEMPTS ?? Number.MAX_VALUE,
       MIN_RETRY_INTERVAL:
-        this.config.retryServices.retryForeverConstant.MIN_RETRY_INTERVAL ?? 5,
+        environment.retryServices.retryForeverConstant.MIN_RETRY_INTERVAL ?? 5,
       MAX_RETRY_INTERVAL:
-        this.config.retryServices.retryForeverConstant.MAX_RETRY_INTERVAL ?? 5,
+        environment.retryServices.retryForeverConstant.MAX_RETRY_INTERVAL ?? 5,
     };
   }
 }

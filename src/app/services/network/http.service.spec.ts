@@ -3,10 +3,14 @@ import { HttpService } from "./http.service";
 import { ConfigService } from "../../config/config.service";
 import { GroupModel } from "../../model/group.model";
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from "@angular/common/http/testing";
 import { GroupStatusEnum } from "../../model/enums/groupStatus.enum";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("HttpService", () => {
   let service: HttpService;
@@ -14,8 +18,13 @@ describe("HttpService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [HttpService, { provide: ConfigService, useValue: {} }],
+      imports: [],
+      providers: [
+        HttpService,
+        { provide: ConfigService, useValue: {} },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
 
     service = TestBed.inject(HttpService);
